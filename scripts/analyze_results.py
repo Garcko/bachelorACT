@@ -177,8 +177,8 @@ def printResults(domains, planners, outFile):
         doc.add(r"\subsection*{IPPC Scores: %s}" % domainName)
         addIPPCScoreTable(doc, domains[domainName], planners)
 
-    doc.add(r"\subsection*{Total Time (in hours)}")
-    addTotalTimeTable(doc, domains, planners)
+    #doc.add(r"\subsection*{Total Time (in hours)}")
+    #addTotalTimeTable(doc, domains, planners)
 
     doc.add(r"\subsection*{IPPC Scores: Total}")
     addTotalIPPCScoreTable(doc, domains, planners)

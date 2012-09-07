@@ -11,9 +11,9 @@ import tarfile
 import shutil
 import statistics
 
-compress = True
+doCompress = True
 benchmarkSet = "IPPC2011"
-numberOfRuns = 30 #TODO: Derive this automatically!
+numberOfRuns = 100 #TODO: Derive this automatically!
 
 def summarizeResultsOfDir(dirName, plannerName):
     if not os.path.isdir(dirName):
@@ -21,7 +21,11 @@ def summarizeResultsOfDir(dirName, plannerName):
 
     files = os.listdir(dirName)
     if "result.xml" in files:
-        return
+        if not doCompress or "results.bz2" in files:
+            return
+        else:
+            compress(dirName)
+            return
 
     for fileName in files:
          if fileName.endswith(".err"):
@@ -92,31 +96,38 @@ def writeResultSummary(dirName, plannerName, results, times, timesPerDomain, tot
         reslist.append("")
     reslist.append("</PlannerResult>")
 
-    print "...parsing results finished."
-
-    if compress:
-        print "compressing " + dirName + "..."
-        tar = tarfile.open("results.bz2", "w:bz2")
-        arcName = os.path.basename(dirName)
-        tar.add(dirName,arcName)
-        tar.close()
-
-        files = os.listdir(dirName)
-        for fileName in files:
-            os.remove(dirName+"/"+fileName)
-
-        shutil.copyfile("results.bz2",dirName+"/"+"results.bz2")
-        os.remove("results.bz2")
-        print dirName + "/results.bz2 created."
-        print "...compressing finished."
-
     f = open(dirName+"/"+"result.xml", 'w+')
 
     for entry in reslist:
         f.write(entry+"\n")
     f.close()
 
+    print "...parsing results finished."
+
+    if doCompress:
+        compress(dirName)
+        
     print dirName + "/results.xml s created.\n"
+
+def compress(dirName):
+    files = os.listdir(dirName)
+    if len(files) == 1 and "result.xml" in files:
+        return
+    print "compressing " + dirName + "..."
+    tar = tarfile.open("results.bz2", "w:bz2")
+    arcName = os.path.basename(dirName)
+    tar.add(dirName,arcName)
+    tar.close()
+
+    for fileName in files:
+        if fileName != "result.xml":
+            os.remove(dirName+"/"+fileName)
+
+    shutil.copyfile("results.bz2",dirName+"/"+"results.bz2")
+    os.remove("results.bz2")
+    print dirName + "/results.bz2 created."
+    print "...compressing finished."
+
 
 def parseLogFile(fileName):
     f = open(fileName)
@@ -179,8 +190,8 @@ def tail(f, window=20):
     return '\n'.join(''.join(data).splitlines()[-window:])
 
 def summarizeResults(directory, _compress) :
-    global compress
-    compress = _compress
+    global doCompress
+    doCompress = _compress
 
     resultDirNames = os.listdir(directory)
     for resultDirName in resultDirNames:
