@@ -11,7 +11,6 @@ import tarfile
 import shutil
 import statistics
 
-doCompress = True
 benchmarkSet = "IPPC2011"
 numberOfRuns = 100 #TODO: Derive this automatically!
 
@@ -21,16 +20,7 @@ def summarizeResultsOfDir(dirName, plannerName):
 
     files = os.listdir(dirName)
     if "result.xml" in files:
-        if not doCompress or "results.bz2" in files:
-            return
-        else:
-            compress(dirName)
-            return
-
-    for fileName in files:
-         if fileName.endswith(".err") and os.path.getsize(dirName+"/"+fileName) != 0:
-             print "Cannot summarize results in" + dirName + ": Contains a nonempty error file!"
-             return
+        return
 
     print "parsing results in " + dirName + "..."
 
@@ -42,29 +32,33 @@ def summarizeResultsOfDir(dirName, plannerName):
 
     for fileName in files:
         if fileName.endswith(".log") and not fileName.endswith("server.log"):
-            res,time,round_by_round = parseLogFile(dirName+"/"+fileName)
-            if res is None:
-                print "Cannot read average reward in " + dirName + "/" + fileName + "!"
-                return
-            if time is None:
-                print "Cannot read total time in " + dirName + "/" + fileName + "!"
-                return
-            if len(round_by_round) != numberOfRuns:
-                print "Missing round by round results in " + dirName + "/" + fileName + "!"
-                return
-            domainName = fileName.split("_")[0].split("/")[-1]
-            if not domainName in results:
-                results[domainName] = dict()
-                times[domainName] = dict()
-                timesPerDomain[domainName] = float(0.0)
-                roundByRoundResults[domainName] = dict()
-            problemNumber = fileName.split("__")[1].split(".")[0]
-            assert not problemNumber in results[domainName]
-            results[domainName][problemNumber] = res
-            times[domainName][problemNumber] = time
-            timesPerDomain[domainName] += time
-            total_time += time
-            roundByRoundResults[domainName][problemNumber] = round_by_round
+            errorFile = fileName[:-4]+".err"
+            if os.path.getsize(dirName+"/"+errorFile) != 0:
+                continue
+            else:
+                res,time,round_by_round = parseLogFile(dirName+"/"+fileName)
+                if res is None:
+                    print "Cannot read average reward in " + dirName + "/" + fileName + "!"
+                    return
+                if time is None:
+                    print "Cannot read total time in " + dirName + "/" + fileName + "!"
+                    return
+                if len(round_by_round) != numberOfRuns:
+                    print "Missing round by round results in " + dirName + "/" + fileName + "!"
+                    return
+                domainName = fileName.split("_")[0].split("/")[-1]
+                if not domainName in results:
+                    results[domainName] = dict()
+                    times[domainName] = dict()
+                    timesPerDomain[domainName] = float(0.0)
+                    roundByRoundResults[domainName] = dict()
+                problemNumber = fileName.split("__")[1].split(".")[0]
+                assert not problemNumber in results[domainName]
+                results[domainName][problemNumber] = res
+                times[domainName][problemNumber] = time
+                timesPerDomain[domainName] += time
+                total_time += time
+                roundByRoundResults[domainName][problemNumber] = round_by_round
 
     writeResultSummary(dirName, plannerName, results, times, timesPerDomain, total_time, roundByRoundResults)
 
@@ -102,31 +96,8 @@ def writeResultSummary(dirName, plannerName, results, times, timesPerDomain, tot
     f.close()
 
     print "...parsing results finished."
-
-    if doCompress:
-        compress(dirName)
         
     print dirName + "/results.xml s created.\n"
-
-def compress(dirName):
-    files = os.listdir(dirName)
-    if len(files) == 1 and "result.xml" in files:
-        return
-    print "compressing " + dirName + "..."
-    tar = tarfile.open("results.bz2", "w:bz2")
-    arcName = os.path.basename(dirName)
-    tar.add(dirName,arcName)
-    tar.close()
-
-    for fileName in files:
-        if fileName != "result.xml":
-            os.remove(dirName+"/"+fileName)
-
-    shutil.copyfile("results.bz2",dirName+"/"+"results.bz2")
-    os.remove("results.bz2")
-    print dirName + "/results.bz2 created."
-    print "...compressing finished."
-
 
 def parseLogFile(fileName):
     f = open(fileName)
@@ -188,21 +159,16 @@ def tail(f, window=20):
         block -= 1
     return '\n'.join(''.join(data).splitlines()[-window:])
 
-def summarizeResults(directory, _compress) :
-    global doCompress
-    doCompress = _compress
+def summarizeIncompleteResults(directory) :
 
     resultDirNames = os.listdir(directory)
     for resultDirName in resultDirNames:
         summarizeResultsOfDir(directory+resultDirName, resultDirName.replace("_"," "))
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print >> sys.stderr, "Usage: summarize_results.py <resultsDir> [--notar]"
+    if len(sys.argv) != 2:
+        print >> sys.stderr, "Usage: summarize_incomplete_results.py <resultsDir>"
         exit()
 
-    if len(sys.argv) == 3 and sys.argv[2] == "--notar":
-        summarizeResults(sys.argv[1], False)
-    else:
-        summarizeResults(sys.argv[1], True)
+    summarizeIncompleteResults(sys.argv[1])
 
