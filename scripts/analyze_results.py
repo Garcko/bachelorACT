@@ -156,6 +156,8 @@ def readResults(dirName, domains, planners, plannerType):
             instance.times[planner.name] = time
             planner.times[domainName][problemName] = time
 
+    planners.sort(key=lambda Planner: Planner.name)
+
     return domains, planners
 
 def printResults(domains, planners, outFile):
