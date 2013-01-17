@@ -39,13 +39,13 @@ def summarizeResultsOfDir(dirName, plannerName):
                 res,time,round_by_round = parseLogFile(dirName+"/"+fileName)
                 if res is None:
                     print "Cannot read average reward in " + dirName + "/" + fileName + "!"
-                    return
+                    continue
                 if time is None:
                     print "Cannot read total time in " + dirName + "/" + fileName + "!"
-                    return
+                    continue
                 if len(round_by_round) != numberOfRuns:
                     print "Missing round by round results in " + dirName + "/" + fileName + "!"
-                    return
+                    continue
                 domainName = fileName.split("_")[0].split("/")[-1]
                 if not domainName in results:
                     results[domainName] = dict()

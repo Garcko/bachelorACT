@@ -8,14 +8,14 @@ syntax: glob
 src/Makefile.depend
 src/prost
 src/prost-debug
-src/prost64
-src/prost64-debug
 src/.obj/*
 testbed/highscores/*/*.bz2
 testbed/highscores/*/*.log
 testbed/highscores/*/*.err
 testbed/server/*
 testbed/results/*
+testbed/benchmarks/test/*
+scripts/tex/*
 
 syntax: regexp
 .*\#.*\#$

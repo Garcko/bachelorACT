@@ -179,8 +179,8 @@ def printResults(domains, planners, outFile):
         doc.add(r"\subsection*{IPPC Scores: %s}" % domainName)
         addIPPCScoreTable(doc, domains[domainName], planners)
 
-    #doc.add(r"\subsection*{Total Time (in hours)}")
-    #addTotalTimeTable(doc, domains, planners)
+    doc.add(r"\subsection*{Total Time (in minutes)}")
+    addTotalTimeTable(doc, domains, planners)
 
     doc.add(r"\subsection*{IPPC Scores: Total}")
     addTotalIPPCScoreTable(doc, domains, planners)
@@ -220,7 +220,7 @@ def addTotalTimeTable(doc, domains, planners):
             if planner.totalTime < 0.0:
                 table.add_cell("n/a", span=2, align="c")
             else:
-                table.add_cell(str(round(planner.totalTime/1440.0,2)), span=2, align="c")
+                table.add_cell(str(round(planner.totalTime/60.0,2)), span=2, align="c")
             table.add_row()
         else:
             hasOther = True
@@ -237,11 +237,11 @@ def addTotalTimeTable(doc, domains, planners):
                 if planner.timesPerDomain[domainName] < 0.0:
                     table.add_cell("n/a", span=2, align="c")
                 else:
-                    table.add_cell(str(round(planner.timesPerDomain[domainName]/1440.0,2)), span=2, align="c")
+                    table.add_cell(str(round(planner.timesPerDomain[domainName]/60.0,2)), span=2, align="c")
             if planner.totalTime < 0.0:
                 table.add_cell("n/a", span=2, align="c")
             else:
-                table.add_cell(str(round(planner.totalTime/1440.0,2)), span=2, align="c")
+                table.add_cell(str(round(planner.totalTime/60.0,2)), span=2, align="c")
             table.add_row()
 
     doc.add(table, r"\bigskip") 

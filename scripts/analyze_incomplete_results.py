@@ -256,8 +256,10 @@ def addTotalIPPCScoreTable(doc, domains, planners):
                     table.add_cell("\\textbf{"+str(domainSum)+"}", span=2, align="c")
                 else:
                     table.add_cell(str(domainSum), span=2, align="c")
-
-            IPPCSum = round(float(IPPCSum / (float(numberOfInstances))),2)
+            if numberOfInstances == 0:
+                IPPCSum = 0
+            else:
+                IPPCSum = round(float(IPPCSum / (float(numberOfInstances))),2)
             if IPPCSum >= 0.98:
                 table.add_cell("\\textbf{\\textcolor{red}{"+str(IPPCSum)+"}}", span=2, align="c")
             elif IPPCSum > totalScorePrintFatThreshold:
