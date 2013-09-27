@@ -450,12 +450,12 @@ def analyzeResults(directory, outFile, compress):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3 or len(sys.argv) > 4:
-        print >> sys.stderr, "Usage: analyze_results.py <resultsDir> <outFile> [--notar]"
+        print >> sys.stderr, "Usage: analyze_results.py <resultsDir> <outFile> [--tar]"
         exit()
 
-    if len(sys.argv) == 4 and sys.argv[3] == "--notar":
-        analyzeResults(sys.argv[1], sys.argv[2], False)
-    else:
+    if len(sys.argv) == 4 and sys.argv[3] == "--tar":
         analyzeResults(sys.argv[1], sys.argv[2], True)
+    else:
+        analyzeResults(sys.argv[1], sys.argv[2], False)
 
           

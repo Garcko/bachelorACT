@@ -1,0 +1,616 @@
+<?xml version="1.0"?>
+<PlannerResult>
+	<PlannerName>rev30 [IPPC2011]</PlannerName>
+	<BenchmarkSet>IPPC2011</BenchmarkSet>
+	<NumberOfRuns>100</NumberOfRuns>
+	<Time>290514.53</Time>
+
+	<Domain>
+		<DomainName>recon</DomainName>
+		<Time>45756.34</Time>
+
+		<Problem>
+			<ProblemName>10</ProblemName>
+			<AvgReward>5.97</AvgReward>
+			<Confidence95>0.07</Confidence95>
+			<Time>4355.57</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>1</ProblemName>
+			<AvgReward>3.43</AvgReward>
+			<Confidence95>0.13</Confidence95>
+			<Time>4574.37</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>3</ProblemName>
+			<AvgReward>14.06</AvgReward>
+			<Confidence95>0.11</Confidence95>
+			<Time>4515.28</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>2</ProblemName>
+			<AvgReward>3.18</AvgReward>
+			<Confidence95>0.1</Confidence95>
+			<Time>4568.64</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>5</ProblemName>
+			<AvgReward>14.6</AvgReward>
+			<Confidence95>0.18</Confidence95>
+			<Time>4707.58</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>4</ProblemName>
+			<AvgReward>2.81</AvgReward>
+			<Confidence95>0.05</Confidence95>
+			<Time>4532.04</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>7</ProblemName>
+			<AvgReward>5.22</AvgReward>
+			<Confidence95>0.07</Confidence95>
+			<Time>4678.42</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>6</ProblemName>
+			<AvgReward>10.04</AvgReward>
+			<Confidence95>0.11</Confidence95>
+			<Time>4440.93</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>9</ProblemName>
+			<AvgReward>9.49</AvgReward>
+			<Confidence95>0.09</Confidence95>
+			<Time>4507.98</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>8</ProblemName>
+			<AvgReward>10.22</AvgReward>
+			<Confidence95>0.1</Confidence95>
+			<Time>4875.53</Time>
+		</Problem>
+
+	</Domain>
+
+	<Domain>
+		<DomainName>sysadmin</DomainName>
+		<Time>49083.93</Time>
+
+		<Problem>
+			<ProblemName>10</ProblemName>
+			<AvgReward>519.02</AvgReward>
+			<Confidence95>12.02</Confidence95>
+			<Time>4258.95</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>1</ProblemName>
+			<AvgReward>337.97</AvgReward>
+			<Confidence95>3.72</Confidence95>
+			<Time>6326.64</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>3</ProblemName>
+			<AvgReward>538.83</AvgReward>
+			<Confidence95>14.2</Confidence95>
+			<Time>5248.42</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>2</ProblemName>
+			<AvgReward>306.63</AvgReward>
+			<Confidence95>8.09</Confidence95>
+			<Time>5984.87</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>5</ProblemName>
+			<AvgReward>545.17</AvgReward>
+			<Confidence95>11.78</Confidence95>
+			<Time>4308.08</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>4</ProblemName>
+			<AvgReward>458.69</AvgReward>
+			<Confidence95>15.24</Confidence95>
+			<Time>5734.29</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>7</ProblemName>
+			<AvgReward>593.7</AvgReward>
+			<Confidence95>12.26</Confidence95>
+			<Time>4322.17</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>6</ProblemName>
+			<AvgReward>488.8</AvgReward>
+			<Confidence95>11.91</Confidence95>
+			<Time>4397.15</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>9</ProblemName>
+			<AvgReward>709.98</AvgReward>
+			<Confidence95>12.77</Confidence95>
+			<Time>4192.09</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>8</ProblemName>
+			<AvgReward>465.21</AvgReward>
+			<Confidence95>12.25</Confidence95>
+			<Time>4311.27</Time>
+		</Problem>
+
+	</Domain>
+
+	<Domain>
+		<DomainName>elevators</DomainName>
+		<Time>51365.59</Time>
+
+		<Problem>
+			<ProblemName>10</ProblemName>
+			<AvgReward>-68.43</AvgReward>
+			<Confidence95>5.8</Confidence95>
+			<Time>5302.14</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>1</ProblemName>
+			<AvgReward>-43.05</AvgReward>
+			<Confidence95>2.5</Confidence95>
+			<Time>4891.98</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>3</ProblemName>
+			<AvgReward>-55.73</AvgReward>
+			<Confidence95>1.88</Confidence95>
+			<Time>4967.45</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>2</ProblemName>
+			<AvgReward>-18.05</AvgReward>
+			<Confidence95>1.67</Confidence95>
+			<Time>4928.27</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>5</ProblemName>
+			<AvgReward>-51.85</AvgReward>
+			<Confidence95>3.45</Confidence95>
+			<Time>5177.9</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>4</ProblemName>
+			<AvgReward>-53.8</AvgReward>
+			<Confidence95>3.97</Confidence95>
+			<Time>5149.8</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>7</ProblemName>
+			<AvgReward>-83.51</AvgReward>
+			<Confidence95>4.99</Confidence95>
+			<Time>5411.11</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>6</ProblemName>
+			<AvgReward>-69.79</AvgReward>
+			<Confidence95>3.22</Confidence95>
+			<Time>5033.71</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>9</ProblemName>
+			<AvgReward>-93.52</AvgReward>
+			<Confidence95>4.39</Confidence95>
+			<Time>5176.46</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>8</ProblemName>
+			<AvgReward>-77.7</AvgReward>
+			<Confidence95>3.92</Confidence95>
+			<Time>5326.77</Time>
+		</Problem>
+
+	</Domain>
+
+	<Domain>
+		<DomainName>game</DomainName>
+		<Time>50991.09</Time>
+
+		<Problem>
+			<ProblemName>10</ProblemName>
+			<AvgReward>563.85</AvgReward>
+			<Confidence95>8.82</Confidence95>
+			<Time>4123.25</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>1</ProblemName>
+			<AvgReward>206.93</AvgReward>
+			<Confidence95>4.73</Confidence95>
+			<Time>5784.92</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>3</ProblemName>
+			<AvgReward>149.35</AvgReward>
+			<Confidence95>5.05</Confidence95>
+			<Time>6162.56</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>2</ProblemName>
+			<AvgReward>135.44</AvgReward>
+			<Confidence95>7.73</Confidence95>
+			<Time>6089.02</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>5</ProblemName>
+			<AvgReward>305.79</AvgReward>
+			<Confidence95>6.12</Confidence95>
+			<Time>5375.2</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>4</ProblemName>
+			<AvgReward>348.08</AvgReward>
+			<Confidence95>4.83</Confidence95>
+			<Time>5789.2</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>7</ProblemName>
+			<AvgReward>475.79</AvgReward>
+			<Confidence95>7.31</Confidence95>
+			<Time>4092.0</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>6</ProblemName>
+			<AvgReward>277.68</AvgReward>
+			<Confidence95>4.9</Confidence95>
+			<Time>5407.81</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>9</ProblemName>
+			<AvgReward>412.95</AvgReward>
+			<Confidence95>6.18</Confidence95>
+			<Time>4067.51</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>8</ProblemName>
+			<AvgReward>435.53</AvgReward>
+			<Confidence95>7.24</Confidence95>
+			<Time>4099.62</Time>
+		</Problem>
+
+	</Domain>
+
+	<Domain>
+		<DomainName>traffic</DomainName>
+		<Time>39712.01</Time>
+
+		<Problem>
+			<ProblemName>10</ProblemName>
+			<AvgReward>-123.12</AvgReward>
+			<Confidence95>5.08</Confidence95>
+			<Time>4096.27</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>1</ProblemName>
+			<AvgReward>-5.37</AvgReward>
+			<Confidence95>0.73</Confidence95>
+			<Time>3879.28</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>3</ProblemName>
+			<AvgReward>-25.45</AvgReward>
+			<Confidence95>2.52</Confidence95>
+			<Time>3941.74</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>2</ProblemName>
+			<AvgReward>-14.01</AvgReward>
+			<Confidence95>1.0</Confidence95>
+			<Time>3847.32</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>5</ProblemName>
+			<AvgReward>-53.31</AvgReward>
+			<Confidence95>4.02</Confidence95>
+			<Time>3903.73</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>4</ProblemName>
+			<AvgReward>-63.67</AvgReward>
+			<Confidence95>2.9</Confidence95>
+			<Time>3938.1</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>7</ProblemName>
+			<AvgReward>-52.58</AvgReward>
+			<Confidence95>3.11</Confidence95>
+			<Time>4077.9</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>6</ProblemName>
+			<AvgReward>-76.86</AvgReward>
+			<Confidence95>4.51</Confidence95>
+			<Time>3905.37</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>9</ProblemName>
+			<AvgReward>-26.59</AvgReward>
+			<Confidence95>3.72</Confidence95>
+			<Time>4074.03</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>8</ProblemName>
+			<AvgReward>-62.21</AvgReward>
+			<Confidence95>5.7</Confidence95>
+			<Time>4048.27</Time>
+		</Problem>
+
+	</Domain>
+
+	<Domain>
+		<DomainName>crossing</DomainName>
+		<Time>9852.41</Time>
+
+		<Problem>
+			<ProblemName>10</ProblemName>
+			<AvgReward>-34.8</AvgReward>
+			<Confidence95>2.09</Confidence95>
+			<Time>992.92</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>1</ProblemName>
+			<AvgReward>-4.39</AvgReward>
+			<Confidence95>0.13</Confidence95>
+			<Time>465.16</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>3</ProblemName>
+			<AvgReward>-6.36</AvgReward>
+			<Confidence95>0.35</Confidence95>
+			<Time>702.59</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>2</ProblemName>
+			<AvgReward>-5.44</AvgReward>
+			<Confidence95>0.34</Confidence95>
+			<Time>580.9</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>5</ProblemName>
+			<AvgReward>-8.14</AvgReward>
+			<Confidence95>0.72</Confidence95>
+			<Time>843.52</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>4</ProblemName>
+			<AvgReward>-11.71</AvgReward>
+			<Confidence95>1.05</Confidence95>
+			<Time>1255.64</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>7</ProblemName>
+			<AvgReward>-13.78</AvgReward>
+			<Confidence95>1.53</Confidence95>
+			<Time>1320.2</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>6</ProblemName>
+			<AvgReward>-11.61</AvgReward>
+			<Confidence95>0.88</Confidence95>
+			<Time>1197.02</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>9</ProblemName>
+			<AvgReward>-15.19</AvgReward>
+			<Confidence95>1.85</Confidence95>
+			<Time>1308.87</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>8</ProblemName>
+			<AvgReward>-27.5</AvgReward>
+			<Confidence95>2.51</Confidence95>
+			<Time>1185.59</Time>
+		</Problem>
+
+	</Domain>
+
+	<Domain>
+		<DomainName>skill</DomainName>
+		<Time>21802.12</Time>
+
+		<Problem>
+			<ProblemName>10</ProblemName>
+			<AvgReward>-262.23</AvgReward>
+			<Confidence95>43.02</Confidence95>
+			<Time>3026.97</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>1</ProblemName>
+			<AvgReward>66.97</AvgReward>
+			<Confidence95>1.58</Confidence95>
+			<Time>564.78</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>3</ProblemName>
+			<AvgReward>88.83</AvgReward>
+			<Confidence95>12.02</Confidence95>
+			<Time>1641.35</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>2</ProblemName>
+			<AvgReward>78.28</AvgReward>
+			<Confidence95>2.02</Confidence95>
+			<Time>583.74</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>5</ProblemName>
+			<AvgReward>-7.44</AvgReward>
+			<Confidence95>18.48</Confidence95>
+			<Time>3022.66</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>4</ProblemName>
+			<AvgReward>103.72</AvgReward>
+			<Confidence95>12.56</Confidence95>
+			<Time>1488.82</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>7</ProblemName>
+			<AvgReward>-66.93</AvgReward>
+			<Confidence95>26.07</Confidence95>
+			<Time>2838.9</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>6</ProblemName>
+			<AvgReward>18.05</AvgReward>
+			<Confidence95>24.2</Confidence95>
+			<Time>2959.13</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>9</ProblemName>
+			<AvgReward>-167.11</AvgReward>
+			<Confidence95>32.61</Confidence95>
+			<Time>2999.43</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>8</ProblemName>
+			<AvgReward>-159.1</AvgReward>
+			<Confidence95>39.05</Confidence95>
+			<Time>2676.34</Time>
+		</Problem>
+
+	</Domain>
+
+	<Domain>
+		<DomainName>navigation</DomainName>
+		<Time>21951.04</Time>
+
+		<Problem>
+			<ProblemName>10</ProblemName>
+			<AvgReward>-40.0</AvgReward>
+			<Confidence95>0.0</Confidence95>
+			<Time>4385.49</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>1</ProblemName>
+			<AvgReward>-10.24</AvgReward>
+			<Confidence95>1.61</Confidence95>
+			<Time>801.13</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>3</ProblemName>
+			<AvgReward>-14.28</AvgReward>
+			<Confidence95>1.78</Confidence95>
+			<Time>1124.84</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>2</ProblemName>
+			<AvgReward>-10.91</AvgReward>
+			<Confidence95>1.01</Confidence95>
+			<Time>1023.19</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>5</ProblemName>
+			<AvgReward>-20.25</AvgReward>
+			<Confidence95>1.76</Confidence95>
+			<Time>1600.29</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>4</ProblemName>
+			<AvgReward>-20.65</AvgReward>
+			<Confidence95>2.08</Confidence95>
+			<Time>1563.13</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>7</ProblemName>
+			<AvgReward>-39.88</AvgReward>
+			<Confidence95>0.19</Confidence95>
+			<Time>3212.79</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>6</ProblemName>
+			<AvgReward>-39.2</AvgReward>
+			<Confidence95>0.5</Confidence95>
+			<Time>3057.55</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>9</ProblemName>
+			<AvgReward>-40.0</AvgReward>
+			<Confidence95>0.0</Confidence95>
+			<Time>4063.12</Time>
+		</Problem>
+
+		<Problem>
+			<ProblemName>8</ProblemName>
+			<AvgReward>-29.7</AvgReward>
+			<Confidence95>2.66</Confidence95>
+			<Time>1119.51</Time>
+		</Problem>
+
+	</Domain>
+
+</PlannerResult>
