@@ -162,7 +162,7 @@ def readResults(dirName, domains, planners, plannerType):
 
 def printResults(domains, planners, outFile):
     doc = latex.Document("article")
-    doc.add_package("geometry", "a3paper", "margin=2.5cm", "landscape")
+    doc.add_package("geometry", "a4paper", "margin=2.5cm", "landscape")
     doc.add_package("scrtime")
     doc.add_package("amsmath")
     doc.add_package("amssymb")
