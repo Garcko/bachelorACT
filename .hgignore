@@ -12,7 +12,7 @@ src/.obj/*
 testbed/highscores/*/*.bz2
 testbed/highscores/*/*.log
 testbed/highscores/*/*.err
-testbed/server/*
+testbed/rddlsim/*
 testbed/results/*
 testbed/benchmarks/test/*
 scripts/tex/*
