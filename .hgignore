@@ -19,6 +19,7 @@ testbed/highscores/*/*.err
 testbed/rddlsim/*
 testbed/results/*
 testbed/benchmarks/test/*
+testbed/domains/*
 scripts/tex/*
 
 syntax: regexp
