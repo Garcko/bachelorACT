@@ -210,12 +210,6 @@ TEST_F(uctBaseTest, testValueFromString) {
     search.setValueFromString(param, value);
     EXPECT_TRUE(search.uniformRoot);
 
-    // before we enable bfs, the value should be false
-    EXPECT_FALSE(search.bfs);
-    param = "-bfs";
-    search.setValueFromString(param, value);
-    EXPECT_TRUE(search.bfs);
-
 }
 
 // Tests that uniform selection is applied at the root node.
