@@ -30,10 +30,10 @@ protected:
 
         // Initialize other variables
         qValue = 10.0;
-        parent = new BfsNode();
-        childOne = new BfsNode();
-        childTwo = new BfsNode();
-        childThree = new BfsNode();
+        parent = new BFSNode();
+        childOne = new BFSNode();
+        childTwo = new BFSNode();
+        childThree = new BFSNode();
     }
 
     virtual void teardown() {
@@ -46,10 +46,10 @@ protected:
     map<string, int> stateVariableIndices;
     vector<vector<string> > stateVariableValues;
     double qValue;
-    BfsNode* parent;
-    BfsNode* childOne;
-    BfsNode* childTwo;
-    BfsNode* childThree;
+    BFSNode* parent;
+    BFSNode* childOne;
+    BFSNode* childTwo;
+    BFSNode* childThree;
 };
 
 // Tests the initialization of a decision node child
@@ -78,7 +78,7 @@ TEST_F(bfsSearchTest, testBackupDecisionNodeLeaf) {
     // Create a node with futReward 0 without accessing private members
     parent->children.push_back(childOne);
     search.initializeDecisionNodeChild(parent, 0, 0);
-    BfsNode* node = parent->children[0];
+    BFSNode* node = parent->children[0];
     search.backupDecisionNodeLeaf(node, 10, 20);
     EXPECT_DOUBLE_EQ(20, node->getExpectedFutureRewardEstimate());
     EXPECT_DOUBLE_EQ(30, node->getExpectedRewardEstimate());
