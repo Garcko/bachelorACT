@@ -22,7 +22,7 @@ protected:
     // Otherwise, this can be skipped.
     virtual void SetUp() {
         // Parse elevator task
-		// TODO: Use the parser instead of a precompiled test instance
+        // TODO: Use the parser instead of a precompiled test instance
         string problemFileName = "../test/elevators";
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
@@ -115,7 +115,7 @@ TEST_F(uctBaseTest, testUCTSelectionWithSQRT) {
     ASSERT_NEAR(22.3606, uctSearch.parentVisitPart, 0.0001);
     // visitPart = magic_constant * sqrt(parentVisitPart/childVisits)
     // = (1000 / 500) * sqrt(22.3606/200) = 0.6687
-    ASSERT_NEAR(0.6687, uctSearch.visitPart , 0.0001);
+    ASSERT_NEAR(0.6687, uctSearch.visitPart, 0.0001);
     // ASSERT_EQ(x,uctSearch.UCTValue);
 
     // A test if the future Reward is zero
@@ -209,7 +209,6 @@ TEST_F(uctBaseTest, testValueFromString) {
     param = "-uniformroot";
     search.setValueFromString(param, value);
     EXPECT_TRUE(search.uniformRoot);
-
 }
 
 // Tests that uniform selection is applied at the root node.
@@ -321,6 +320,3 @@ TEST_F(uctBaseTest, testSelectActionRoundRobin) {
     ASSERT_EQ(1, uctSearch.bestActionIndices.size());
     ASSERT_EQ(0, uctSearch.bestActionIndices[0]);
 }
-
-
-

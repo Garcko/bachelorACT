@@ -14,43 +14,42 @@ using std::vector;
 // To use a test fixture, derive from testing::TEST
 // A test fixture can set multiple parameter before a test is run
 class bfsSearchTest : public testing::Test {
-  protected:
+protected:
     virtual void SetUp() {
-      // Parse elevator task
-	  // TODO: Use the parser instead of a precompiled test instance, 
-	  // so that if the parser changes we don't always have to recompile the
-	  // elevator file
-      string problemFileName = "../test/elevators"; 
-      Parser parser(problemFileName);
-      parser.parseTask(stateVariableIndices, stateVariableValues);
+        // Parse elevator task
+        // TODO: Use the parser instead of a precompiled test instance,
+        // so that if the parser changes we don't always have to recompile the
+        // elevator file
+        string problemFileName = "../test/elevators";
+        Parser parser(problemFileName);
+        parser.parseTask(stateVariableIndices, stateVariableValues);
 
-      // Create Prost Planner
-      string plannerDesc = "[PROST -se [MC-UCT]]"; 
-      planner = new ProstPlanner(plannerDesc);
+        // Create Prost Planner
+        string plannerDesc = "[PROST -se [MC-UCT]]";
+        planner = new ProstPlanner(plannerDesc);
 
-      // Initialize other variables
-      qValue = 10.0;
-      parent = new BfsNode();
-      childOne = new BfsNode();
-      childTwo = new BfsNode();
-      childThree = new BfsNode();
+        // Initialize other variables
+        qValue = 10.0;
+        parent = new BfsNode();
+        childOne = new BfsNode();
+        childTwo = new BfsNode();
+        childThree = new BfsNode();
     }
 
     virtual void teardown() {
-      delete planner;
-      delete parent;
+        delete planner;
+        delete parent;
     }
 
     // Declares the variables your tests want to use.
     ProstPlanner* planner;
-    map<string,int> stateVariableIndices; 
+    map<string, int> stateVariableIndices;
     vector<vector<string> > stateVariableValues;
     double qValue;
     BfsNode* parent;
     BfsNode* childOne;
     BfsNode* childTwo;
     BfsNode* childThree;
-
 };
 
 // Tests the initialization of a decision node child
@@ -78,13 +77,12 @@ TEST_F(bfsSearchTest, testBackupDecisionNodeLeaf) {
     BreadthFirstSearch search;
     // Create a node with futReward 0 without accessing private members
     parent->children.push_back(childOne);
-    search.initializeDecisionNodeChild(parent, 0,0);
+    search.initializeDecisionNodeChild(parent, 0, 0);
     BfsNode* node = parent->children[0];
     search.backupDecisionNodeLeaf(node, 10, 20);
     EXPECT_DOUBLE_EQ(20, node->getExpectedFutureRewardEstimate());
     EXPECT_DOUBLE_EQ(30, node->getExpectedRewardEstimate());
     ASSERT_TRUE(node->isSolved());
-
 }
 
 // Tests backup of a decision node
@@ -95,11 +93,11 @@ TEST_F(bfsSearchTest, testBackupDecisionNode) {
     parent->children.push_back(childThree);
 
     // Initialize children. Note that horizon is 40, thus the expected future
-    // reward will be 0, 4, 2 
+    // reward will be 0, 4, 2
     search.initializeDecisionNodeChild(parent, 0, 0);
     search.initializeDecisionNodeChild(parent, 1, 0.1);
     search.initializeDecisionNodeChild(parent, 2, 0.05);
-    
+
     delete childOne;
     delete childTwo;
     delete childThree;
@@ -109,7 +107,7 @@ TEST_F(bfsSearchTest, testBackupDecisionNode) {
     childTwo = parent->children[1];
     childThree = parent->children[2];
 
-    // Increase future reward of one child and backup parent 
+    // Increase future reward of one child and backup parent
     search.backupDecisionNodeLeaf(childOne, 0, 10);
     search.backupDecisionNode(parent, 2, -5);
     EXPECT_DOUBLE_EQ(10, parent->getExpectedFutureRewardEstimate());
