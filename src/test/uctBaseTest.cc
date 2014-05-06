@@ -233,7 +233,7 @@ TEST_F(uctBaseTest, testSelectActionOnRoot) {
     ASSERT_EQ(1, uctSearch.bestActionIndices.size());
     ASSERT_EQ(1, uctSearch.bestActionIndices[0]);
 
-    uctSearch.currentRootNode = parent;
+    uctSearch.setCurrentRootNode(parent);
     uctSearch.selectAction(parent);
     // Now we set parent as root node but we still have yet to enable uniform
     // action selection, so this should change nothing

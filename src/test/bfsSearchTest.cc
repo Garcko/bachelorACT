@@ -11,6 +11,42 @@ using std::string;
 using std::map;
 using std::vector;
 
+class TestSearch : public BreadthFirstSearch {
+public:
+    // Wrapper functions to access protected functions
+    void wrapInitializeDecisionNodeChild(BFSNode* node,
+            unsigned int const& actionIndex,
+            double const& initialQValue) {
+        initializeDecisionNodeChild(node, actionIndex, initialQValue);
+    }
+
+    void wrapBackupDecisionNodeLeaf(BFSNode* node, double const& immReward,
+            double const& futureReward) {
+        backupDecisionNodeLeaf(node, immReward, futureReward);
+    }
+
+    void wrapBackupDecisionNode(BFSNode* node, double const& immReward,
+            double const& futureReward) {
+        backupDecisionNode(node, immReward, futureReward);
+    }
+
+    void wrapBackupChanceNode(BFSNode* node, double const& futReward) {
+        backupChanceNode(node, futReward);
+    }
+
+    int wrapSelectAction(BFSNode* node) {
+        return selectAction(node);
+    }
+
+    void wrapInitStep(State const& _rootState) {
+        initStep(_rootState);
+    }
+
+    bool getBackupLock() {
+        return backupLock;
+    }
+};
+
 // To use a test fixture, derive from testing::TEST
 // A test fixture can set multiple parameter before a test is run
 class bfsSearchTest : public testing::Test {
@@ -54,11 +90,11 @@ protected:
 
 // Tests the initialization of a decision node child
 TEST_F(bfsSearchTest, testInitializeDecisionNodeChild) {
-    BreadthFirstSearch search;
+    TestSearch search;
     parent->children.push_back(childOne);
     parent->children.push_back(childTwo);
-    search.initializeDecisionNodeChild(parent, 0, 10);
-    search.initializeDecisionNodeChild(parent, 1, -10);
+    search.wrapInitializeDecisionNodeChild(parent, 0, 10);
+    search.wrapInitializeDecisionNodeChild(parent, 1, -10);
     EXPECT_DOUBLE_EQ(400, parent->getExpectedFutureRewardEstimate());
     EXPECT_DOUBLE_EQ(400, parent->children[0]->getExpectedFutureRewardEstimate());
     EXPECT_DOUBLE_EQ(-400, parent->children[1]->getExpectedFutureRewardEstimate());
@@ -74,12 +110,12 @@ TEST_F(bfsSearchTest, testSelectOutcome) {
 
 // Tests backup of a decision node leaf
 TEST_F(bfsSearchTest, testBackupDecisionNodeLeaf) {
-    BreadthFirstSearch search;
+    TestSearch search;
     // Create a node with futReward 0 without accessing private members
     parent->children.push_back(childOne);
-    search.initializeDecisionNodeChild(parent, 0, 0);
+    search.wrapInitializeDecisionNodeChild(parent, 0, 0);
     BFSNode* node = parent->children[0];
-    search.backupDecisionNodeLeaf(node, 10, 20);
+    search.wrapBackupDecisionNodeLeaf(node, 10, 20);
     EXPECT_DOUBLE_EQ(20, node->getExpectedFutureRewardEstimate());
     EXPECT_DOUBLE_EQ(30, node->getExpectedRewardEstimate());
     ASSERT_TRUE(node->isSolved());
@@ -87,16 +123,16 @@ TEST_F(bfsSearchTest, testBackupDecisionNodeLeaf) {
 
 // Tests backup of a decision node
 TEST_F(bfsSearchTest, testBackupDecisionNode) {
-    BreadthFirstSearch search;
+    TestSearch search;
     parent->children.push_back(childOne);
     parent->children.push_back(childTwo);
     parent->children.push_back(childThree);
 
     // Initialize children. Note that horizon is 40, thus the expected future
     // reward will be 0, 4, 2
-    search.initializeDecisionNodeChild(parent, 0, 0);
-    search.initializeDecisionNodeChild(parent, 1, 0.1);
-    search.initializeDecisionNodeChild(parent, 2, 0.05);
+    search.wrapInitializeDecisionNodeChild(parent, 0, 0);
+    search.wrapInitializeDecisionNodeChild(parent, 1, 0.1);
+    search.wrapInitializeDecisionNodeChild(parent, 2, 0.05);
 
     delete childOne;
     delete childTwo;
@@ -108,18 +144,18 @@ TEST_F(bfsSearchTest, testBackupDecisionNode) {
     childThree = parent->children[2];
 
     // Increase future reward of one child and backup parent
-    search.backupDecisionNodeLeaf(childOne, 0, 10);
-    search.backupDecisionNode(parent, 2, -5);
+    search.wrapBackupDecisionNodeLeaf(childOne, 0, 10);
+    search.wrapBackupDecisionNode(parent, 2, -5);
     EXPECT_DOUBLE_EQ(10, parent->getExpectedFutureRewardEstimate());
     EXPECT_DOUBLE_EQ(12, parent->getExpectedRewardEstimate());
-    ASSERT_FALSE(search.backupLock);
+    ASSERT_FALSE(search.getBackupLock());
 
     // Increase another child with a lower value, backupLock should get true
-    search.backupDecisionNodeLeaf(childTwo, 0, 5);
-    search.backupDecisionNode(parent, 2, -1);
+    search.wrapBackupDecisionNodeLeaf(childTwo, 0, 5);
+    search.wrapBackupDecisionNode(parent, 2, -1);
     EXPECT_DOUBLE_EQ(10, parent->getExpectedFutureRewardEstimate());
     EXPECT_DOUBLE_EQ(12, parent->getExpectedRewardEstimate());
-    ASSERT_TRUE(search.backupLock);
+    ASSERT_TRUE(search.getBackupLock());
 }
 
 // Tests backup of a chance node
@@ -129,31 +165,37 @@ TEST_F(bfsSearchTest, testBackupChanceNode) {
 
 // Tests action selection for breadth first search
 TEST_F(bfsSearchTest, testSelectAction) {
-    BreadthFirstSearch search;
+    TestSearch search;
+    search.wrapInitStep(SearchEngine::initialState);
 
     parent->children.push_back(childOne);
     parent->children.push_back(childTwo);
     parent->children.push_back(childThree);
 
+    BFSNode* grandchildOne = new BFSNode();
+    BFSNode* grandchildTwo = new BFSNode();
+
+    childTwo->children.push_back(grandchildOne);
+    childThree->children.push_back(grandchildTwo);
+
 
     // TODO: Change the test so that we don't have to exploit private access of
     // visits
-    int selectedActionIndex = search.selectAction(parent);
+    int selectedActionIndex = search.wrapSelectAction(parent);
     ASSERT_EQ(0, selectedActionIndex);
-    childOne->numberOfVisits++;
-    selectedActionIndex = search.selectAction(parent);
+    search.wrapBackupDecisionNodeLeaf(childOne, 0, 0);
+    // Now child one is solved and should never get selected again
+    selectedActionIndex = search.wrapSelectAction(parent);
     ASSERT_EQ(1, selectedActionIndex);
-    childTwo->numberOfVisits++;
-    selectedActionIndex = search.selectAction(parent);
+    search.wrapBackupDecisionNode(childTwo, 0, 0);
+    selectedActionIndex = search.wrapSelectAction(parent);
     ASSERT_EQ(2, selectedActionIndex);
-    childThree->numberOfVisits++;
-    selectedActionIndex = search.selectAction(parent);
-    ASSERT_EQ(0, selectedActionIndex);
+    search.wrapBackupDecisionNode(childThree, 0, 0);
+    selectedActionIndex = search.wrapSelectAction(parent);
+    // Note that child one is solved, therefore we select child two again
+    ASSERT_EQ(1, selectedActionIndex);
 
     // TODO: Write a test where not every index of the children is used. Right
     // now the method works for these cases, but the tests should be implemented
     // to preserve maintainability.
-
-    // TODO: Write a test case where nodes get solved and action selection
-    // should not select them again
 }
