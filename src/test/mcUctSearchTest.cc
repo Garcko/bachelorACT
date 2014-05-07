@@ -12,6 +12,22 @@ using std::string;
 using std::map;
 using std::vector;
 
+class TestSearch : public MCUCTSearch {
+public:
+
+    // Wrapper functions to access protected functions
+    void wrapInitializeDecisionNodeChild(MCUCTNode* node,
+            unsigned int const& actionIndex,
+            double const& initialQValue) {
+        initializeDecisionNodeChild(node, actionIndex, initialQValue);
+    }
+
+    void wrapBackupDecisionNode(MCUCTNode* node, double const& immReward,
+            double const& futureReward) {
+        backupDecisionNode(node, immReward, futureReward);
+    }
+};
+
 // To use a test fixture, derive from testing::TEST
 // A test fixture can set multiple parameter before a test is run
 class mcUctSearchTest : public testing::Test {
@@ -21,9 +37,6 @@ protected:
     // Otherwise, this can be skipped.
     virtual void SetUp() {
         // Parse elevator task
-        // TODO: Use the parser instead of a precompiled test instance,
-        // so that if the parser changes we don't always have to recompile the
-        // elevator file
         string problemFileName = "../test/elevators";
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
@@ -55,12 +68,12 @@ protected:
 
 // tests the initialization of a decicion node child
 TEST_F(mcUctSearchTest, testInitializeDecisionNodeChild) {
-    MCUCTSearch uctSearch;
+    TestSearch uctSearch;
     uctSearch.setNumberOfInitialVisits(initVisits);
     MCUCTNode* parent = new MCUCTNode();
     MCUCTNode* child = new MCUCTNode();
     parent->children.push_back(child);
-    uctSearch.initializeDecisionNodeChild(parent, 0, qValue);
+    uctSearch.wrapInitializeDecisionNodeChild(parent, 0, qValue);
     EXPECT_DOUBLE_EQ(400, parent->getExpectedFutureRewardEstimate());
     EXPECT_EQ(1, parent->getNumberOfVisits());
 
@@ -70,19 +83,19 @@ TEST_F(mcUctSearchTest, testInitializeDecisionNodeChild) {
 
 // Tests the backup function for decision nodes
 TEST_F(mcUctSearchTest, testBackupDecisionNode) {
-    MCUCTSearch uctSearch;
+    TestSearch uctSearch;
     uctSearch.setNumberOfInitialVisits(initVisits);
     MCUCTNode* parent = new MCUCTNode();
     MCUCTNode* child = new MCUCTNode();
     parent->children.push_back(child);
     // sets the future reward to 400 and the visits to 1
-    uctSearch.initializeDecisionNodeChild(parent, 0, qValue);
+    uctSearch.wrapInitializeDecisionNodeChild(parent, 0, qValue);
     // performs a backup with immediate and future rewards both 0
-    uctSearch.backupDecisionNode(parent, 0, 0);
+    uctSearch.wrapBackupDecisionNode(parent, 0, 0);
     EXPECT_EQ(2, parent->getNumberOfVisits());
     EXPECT_DOUBLE_EQ(200, parent->getExpectedRewardEstimate());
     //performs another backup
-    uctSearch.backupDecisionNode(parent, 20, 100);
+    uctSearch.wrapBackupDecisionNode(parent, 20, 100);
     EXPECT_EQ(3, parent->getNumberOfVisits());
     double res = 520.0 / 3.0;
     EXPECT_DOUBLE_EQ(res, parent->getExpectedRewardEstimate());

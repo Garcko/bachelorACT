@@ -13,6 +13,7 @@ using std::vector;
 
 class TestSearch : public BreadthFirstSearch {
 public:
+
     // Wrapper functions to access protected functions
     void wrapInitializeDecisionNodeChild(BFSNode* node,
             unsigned int const& actionIndex,
@@ -53,9 +54,6 @@ class bfsSearchTest : public testing::Test {
 protected:
     virtual void SetUp() {
         // Parse elevator task
-        // TODO: Use the parser instead of a precompiled test instance,
-        // so that if the parser changes we don't always have to recompile the
-        // elevator file
         string problemFileName = "../test/elevators";
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
