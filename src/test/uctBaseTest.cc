@@ -1,5 +1,3 @@
-// Copyright 2014, University of Freiburg
-// Arbeitsgruppe für Grundlagen der Künstlichen Intelligenz
 // Author: Florian Geißer <geisserf@informatik.uni-freiburg.de>
 
 #include <gtest/gtest.h>
