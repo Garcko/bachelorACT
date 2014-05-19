@@ -35,7 +35,6 @@ public:
         maxLockDepth = _depth;
     }
 
-
 };
 
 class thtsTest : public testing::Test {
@@ -69,11 +68,14 @@ TEST_F(thtsTest, testInitializeDecisionNodeWithRewardLockNode) {
     // goal is already a reward lock
     int robotIsAtGoalPosIndex = stateVariableIndices["robot-at(x3, y3)"];
     vector<double> stateVector;
-    for (int i; i < State::stateSize; ++i) {
+    for (int i = 0 ; i < State::numberOfDeterministicStateFluents; ++i) {
+        stateVector.push_back(0);
+    }
+    for (int i = 0; i < State::numberOfProbabilisticStateFluents; ++i) {
         stateVector.push_back(0);
     }
     stateVector[robotIsAtGoalPosIndex] = 1.0;
-    State stateWithRewardLock = State(stateVector, 5);
+    State stateWithRewardLock(stateVector, 5);
     State::calcStateFluentHashKeys(stateWithRewardLock);
     State::calcStateHashKey(stateWithRewardLock);
     // Set the actual state and index to the correct state and initialize the
@@ -92,7 +94,10 @@ TEST_F(thtsTest, testInitializeDecisionNodeWhereBackupDepthChanges) {
     UniformEvaluationSearch* _initializer = new UniformEvaluationSearch();
     search.setInitializer(_initializer);
     vector<double> stateVector;
-    for (int i; i < State::stateSize; ++i) {
+    for (int i = 0; i < State::numberOfDeterministicStateFluents; ++i) {
+        stateVector.push_back(0);
+    }
+    for (int i = 0; i < State::numberOfProbabilisticStateFluents; ++i) {
         stateVector.push_back(0);
     }
     int varIndex = stateVariableIndices["robot-at(x1, y1)"];
@@ -173,13 +178,17 @@ TEST_F(thtsTest, testVisitDecisionNodeWithRewardLock) {
     // goal is already a reward lock
     int robotIsAtGoalPosIndex = stateVariableIndices["robot-at(x3, y3)"];
     vector<double> stateVector;
-    for (int i; i < State::stateSize; ++i) {
+    for (int i = 0; i < State::numberOfDeterministicStateFluents; ++i) {
+        stateVector.push_back(0);
+    }
+    for (int i = 0; i < State::numberOfProbabilisticStateFluents; ++i) {
         stateVector.push_back(0);
     }
     stateVector[robotIsAtGoalPosIndex] = 1.0;
     State stateWithRewardLock = State(stateVector, 5);
     State::calcStateFluentHashKeys(stateWithRewardLock);
     State::calcStateHashKey(stateWithRewardLock);
+
     // Set the actual state and index to the correct state and initialize the
     // node
     search.wrapInitStep(stateWithRewardLock);
