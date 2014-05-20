@@ -72,9 +72,3 @@ TEST(preprocessorTest, calculateMinMaxRewardWithoutVectorCachingExists) {
     ASSERT_NEAR( -0.7311116, minValue, 0.0001);
     ASSERT_NEAR(0.18377236, maxValue, 0.0001);
 }
-TEST(preprocessorTest, calculateDomainTest) {
-     vector<set<double> > vec;
-     ActionState action(0);
-     double minRes = numeric_limits<double>::max();
-     double maxRes = -numeric_limits<double>::max();
-}
