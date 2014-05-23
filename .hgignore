@@ -13,6 +13,13 @@ src/search/Makefile.depend
 src/search/prost
 src/search/prost-debug
 src/search/.obj/*
+src/test/parser/preprocessorTest
+src/test/search/bfsSearchTest
+src/test/search/evaluateToKleeneTest
+src/test/search/mcUctSearchTest
+src/test/search/thtsTest
+src/test/search/uctBaseTest
+src/test/search/uniformEvaluationTest
 testbed/highscores/*/*.bz2
 testbed/highscores/*/*.log
 testbed/highscores/*/*.err
