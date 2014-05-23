@@ -97,7 +97,7 @@ TEST(uniformEvaluationTest, testSetValueFromString) {
 
     // Dummies to simulate a rewardCPF
     LogicalExpression* dummyExp;
-    RewardFunction dummyCPF(dummyExp, 0, -2.0, 3.0);
+    RewardFunction dummyCPF(dummyExp, 0, -2.0, 3.0, true);
     SearchEngine::rewardCPF = &dummyCPF;
     uniSearch.setValueFromString(param, value);
     uniSearch.estimateStateValue(dummyState, stateValue);
