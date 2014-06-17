@@ -5,6 +5,7 @@ syntax: glob
 *.q
 *.log
 *.err
+tags
 src/rddl_parser/Makefile.depend
 src/rddl_parser/rddl-parser
 src/rddl_parser/rddl-parser-debug
@@ -13,13 +14,8 @@ src/search/Makefile.depend
 src/search/prost
 src/search/prost-debug
 src/search/.obj/*
-src/test/parser/preprocessorTest
-src/test/search/bfsSearchTest
-src/test/search/evaluateToKleeneTest
-src/test/search/mcUctSearchTest
-src/test/search/thtsTest
-src/test/search/uctBaseTest
-src/test/search/uniformEvaluationTest
+src/test/parser/*Test
+src/test/search/*Test
 testbed/highscores/*/*.bz2
 testbed/highscores/*/*.log
 testbed/highscores/*/*.err
