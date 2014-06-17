@@ -22,7 +22,8 @@ testbed/highscores/*/*.err
 testbed/rddlsim/*
 testbed/results/*
 testbed/benchmarks/test/*
-testbed/domains/*
+testbed/benchmarks/*/rddl_prefix/*
+testbed/benchmarks/*/prost/*
 scripts/tex/*
 
 syntax: regexp
