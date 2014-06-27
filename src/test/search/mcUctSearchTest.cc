@@ -8,7 +8,7 @@ using std::string;
 using std::map;
 using std::vector;
 
-class TestSearch : public MCUCTSearch {
+class MCUCTTestSearch : public MCUCTSearch {
 public:
 
     // Wrapper functions to access protected functions
@@ -26,7 +26,7 @@ public:
 
 // To use a test fixture, derive from testing::TEST
 // A test fixture can set multiple parameter before a test is run
-class mcUctSearchTest : public testing::Test {
+class MCUCTSearchTest : public testing::Test {
 protected:
     // virtual void SetUp() will be called before each test is run.  You
     // should define it if you need to initialize the variables.
@@ -63,8 +63,8 @@ protected:
 };
 
 // tests the initialization of a decicion node child
-TEST_F(mcUctSearchTest, testInitializeDecisionNodeChild) {
-    TestSearch uctSearch;
+TEST_F(MCUCTSearchTest, testMCUCTInitializeDecisionNodeChild) {
+    MCUCTTestSearch uctSearch;
     uctSearch.setNumberOfInitialVisits(initVisits);
     MCUCTNode* parent = new MCUCTNode();
     MCUCTNode* child = new MCUCTNode();
@@ -78,8 +78,8 @@ TEST_F(mcUctSearchTest, testInitializeDecisionNodeChild) {
 }
 
 // Tests the backup function for decision nodes
-TEST_F(mcUctSearchTest, testBackupDecisionNode) {
-    TestSearch uctSearch;
+TEST_F(MCUCTSearchTest, testMCUCTBackupDecisionNode) {
+    MCUCTTestSearch uctSearch;
     uctSearch.setNumberOfInitialVisits(initVisits);
     MCUCTNode* parent = new MCUCTNode();
     MCUCTNode* child = new MCUCTNode();

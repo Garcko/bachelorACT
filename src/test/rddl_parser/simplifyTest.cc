@@ -6,7 +6,7 @@ using std::string;
 using std::vector;
 using std::map;
 
-class simplifyTest : public testing::Test {
+class SimplifyTest : public testing::Test {
 protected:
     // Tests accessing private members
     void testNestedIfThenElseSimplification() {
@@ -37,7 +37,7 @@ protected:
 
 };
 
-TEST_F(simplifyTest, testNestedIfThenElseSimplification) {
+TEST_F(SimplifyTest, testNestedIfThenElseSimplification) {
     testNestedIfThenElseSimplification();
 
 }

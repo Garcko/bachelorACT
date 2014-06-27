@@ -9,9 +9,9 @@ using std::map;
 using std::set;
 using std::numeric_limits;
 
-class evaluateToKleeneTest : public testing::Test {
+class EvaluateToKleeneTest : public testing::Test {
 protected:
-    evaluateToKleeneTest() {
+    EvaluateToKleeneTest() {
         string domainName = "crossing_traffic";
         string problemFileName = "../test/testdomains/"+domainName+"_inst_mdp__1";
         Parser parser(problemFileName);
@@ -79,7 +79,7 @@ protected:
 };
 
 // Tests the evaluation of a deterministic state fluent with boolean values
-TEST_F(evaluateToKleeneTest, testEvalBooleanDeterministicStateFluent) {
+TEST_F(EvaluateToKleeneTest, testEvalBooleanDeterministicStateFluent) {
     // Get the state fluent which corresponds to obstacle-at(x2,y2)
     LogicalExpression* fluent = SearchEngine::stateFluents[stateIndex];
     // Test evaluation with one value 1
@@ -101,7 +101,7 @@ TEST_F(evaluateToKleeneTest, testEvalBooleanDeterministicStateFluent) {
 }
 
 // Tests the evaluation of a probabilistic state fluent with boolean values
-TEST_F(evaluateToKleeneTest, testEvalBooleanProbabilisticStateFluent) {
+TEST_F(EvaluateToKleeneTest, testEvalBooleanProbabilisticStateFluent) {
     vector<double> stateVector;
     fluentName = "obstacle-at(x3, y2)";
     for (int i = 0; i < State::numberOfDeterministicStateFluents; ++i) {
@@ -158,7 +158,7 @@ TEST_F(evaluateToKleeneTest, testEvalBooleanProbabilisticStateFluent) {
 
 // Tests the evaluation of an action fluent when there are no
 // concurrent actions
-TEST_F(evaluateToKleeneTest, testEvalActionFluentSingleAction) {
+TEST_F(EvaluateToKleeneTest, testEvalActionFluentSingleAction) {
     // Get corresponding action state 
     fluentName = "move-west";
     ActionState* actionState;
@@ -203,7 +203,7 @@ TEST_F(evaluateToKleeneTest, testEvalActionFluentSingleAction) {
 }
 
 // Tests the evaluation of an action fluent with concurrent actions
-TEST_F(evaluateToKleeneTest, testEvalActionFluentConcurrentActions) {
+TEST_F(EvaluateToKleeneTest, testEvalActionFluentConcurrentActions) {
     string domainName = "earth_observation";
     string problemFileName = "../test/testdomains/" + 
         domainName + "_inst_mdp__03";
@@ -253,7 +253,7 @@ TEST_F(evaluateToKleeneTest, testEvalActionFluentConcurrentActions) {
 }
 
 // Tests kleene evaluation of a constant
-TEST_F(evaluateToKleeneTest, testEvaluateConstant) {
+TEST_F(EvaluateToKleeneTest, testEvaluateConstant) {
     string s = "$c(2.0)";
     LogicalExpression* constant = LogicalExpression::createFromString(s);
 
@@ -269,7 +269,7 @@ TEST_F(evaluateToKleeneTest, testEvaluateConstant) {
 }
 
 // Tests kleene evaluation of conjunctions which are either 1 or 0
-TEST_F(evaluateToKleeneTest, testEvalConjunctionWithSingleResult) {
+TEST_F(EvaluateToKleeneTest, testEvalConjunctionWithSingleResult) {
     string s = "and($c(1) $c(0) $c(0))";
     LogicalExpression* conjunct = LogicalExpression::createFromString(s);
 
@@ -321,7 +321,7 @@ TEST_F(evaluateToKleeneTest, testEvalConjunctionWithSingleResult) {
 }
 
 // Tests kleene evaluation of conjunctions which can be 1 or 0
-TEST_F(evaluateToKleeneTest, testEvalConjunctionWithMultiResult) {
+TEST_F(EvaluateToKleeneTest, testEvalConjunctionWithMultiResult) {
     // AND({0,1}, 0] = 0
     std::stringstream ss;
     ss <<"and($s(" << stateIndex << ")  $c(0))";
@@ -366,7 +366,7 @@ TEST_F(evaluateToKleeneTest, testEvalConjunctionWithMultiResult) {
 }
 
 // Tests kleene evaluation of disjunctions which are either 1 or 0
-TEST_F(evaluateToKleeneTest, testEvalDisjunctionWithSingleResult) {
+TEST_F(EvaluateToKleeneTest, testEvalDisjunctionWithSingleResult) {
     string s = "or($c(1) $c(0) $c(0))";
     LogicalExpression* disjunct = LogicalExpression::createFromString(s);
 
@@ -418,7 +418,7 @@ TEST_F(evaluateToKleeneTest, testEvalDisjunctionWithSingleResult) {
 }
 
 // Tests kleene evaluation of disjunctions which can be 1 or 0
-TEST_F(evaluateToKleeneTest, testEvalDisjunctionWithMultiResult) {
+TEST_F(EvaluateToKleeneTest, testEvalDisjunctionWithMultiResult) {
     // OR({0,1}, 0] = {0,1}
     std::stringstream ss;
     ss <<"or($s(" << stateIndex << ")  $c(0))";
@@ -463,7 +463,7 @@ TEST_F(evaluateToKleeneTest, testEvalDisjunctionWithMultiResult) {
 }
 
 // Tests kleene evaluation with EqualsExpression
-TEST_F(evaluateToKleeneTest, testEvalEqualsWithSingleResult) {
+TEST_F(EvaluateToKleeneTest, testEvalEqualsWithSingleResult) {
     // Simple tests
     string s = "==($c(1) $c(0))";
     LogicalExpression* equal = LogicalExpression::createFromString(s);
@@ -502,7 +502,7 @@ TEST_F(evaluateToKleeneTest, testEvalEqualsWithSingleResult) {
 }
 
 // Tests kleene evaluation of equals which can be 1 or 0
-TEST_F(evaluateToKleeneTest, testEvalEqualsMultiResult) {
+TEST_F(EvaluateToKleeneTest, testEvalEqualsMultiResult) {
     // {0,1} == 0 = {0,1}
     std::stringstream ss;
     ss <<"==($s(" << stateIndex << ")  $c(0))";
@@ -560,7 +560,7 @@ TEST_F(evaluateToKleeneTest, testEvalEqualsMultiResult) {
 }
 
 // Tests kleene evaluation with Greater Expression
-TEST_F(evaluateToKleeneTest, testEvalGreaterWithSingleResult) {
+TEST_F(EvaluateToKleeneTest, testEvalGreaterWithSingleResult) {
     // Simple tests
     string s = ">($c(1) $c(0))";
     LogicalExpression* greater = LogicalExpression::createFromString(s);
@@ -606,7 +606,7 @@ TEST_F(evaluateToKleeneTest, testEvalGreaterWithSingleResult) {
 }
 
 // Tests kleene evaluation of greater which can be 1 or 0
-TEST_F(evaluateToKleeneTest, testEvalGreaterMultiResult) {
+TEST_F(EvaluateToKleeneTest, testEvalGreaterMultiResult) {
     // {0,1} > 0 = {0,1}
     std::stringstream ss;
     ss <<">($s(" << stateIndex << ")  $c(0))";
@@ -672,7 +672,7 @@ TEST_F(evaluateToKleeneTest, testEvalGreaterMultiResult) {
 }
 
 // Tests kleene evaluation with Lower Expression
-TEST_F(evaluateToKleeneTest, testEvalLowerWithSingleResult) {
+TEST_F(EvaluateToKleeneTest, testEvalLowerWithSingleResult) {
     // Simple tests
     string s = "<($c(1) $c(0))";
     LogicalExpression* lower = LogicalExpression::createFromString(s);
@@ -718,7 +718,7 @@ TEST_F(evaluateToKleeneTest, testEvalLowerWithSingleResult) {
 }
 
 // Tests kleene evaluation of lower which can be 1 or 0
-TEST_F(evaluateToKleeneTest, testEvalLowerMultiResult) {
+TEST_F(EvaluateToKleeneTest, testEvalLowerMultiResult) {
     // {0,1} < 0 = 0
     std::stringstream ss;
     ss <<"<($s(" << stateIndex << ")  $c(0))";
@@ -784,7 +784,7 @@ TEST_F(evaluateToKleeneTest, testEvalLowerMultiResult) {
 }
 
 // Tests kleene evaluation with GreaterEqual Expression
-TEST_F(evaluateToKleeneTest, testEvalGreaterEqualWithSingleResult) {
+TEST_F(EvaluateToKleeneTest, testEvalGreaterEqualWithSingleResult) {
     // Simple tests
     string s = ">=($c(1) $c(0))";
     LogicalExpression* greaterEqual = LogicalExpression::createFromString(s);
@@ -830,7 +830,7 @@ TEST_F(evaluateToKleeneTest, testEvalGreaterEqualWithSingleResult) {
 }
 
 // Tests kleene evaluation of lowerEqual which can be 1 or 0
-TEST_F(evaluateToKleeneTest, testEvalGreaterEqualMultiResult) {
+TEST_F(EvaluateToKleeneTest, testEvalGreaterEqualMultiResult) {
     // {0,1} >= 0 = 1
     std::stringstream ss;
     ss <<">=($s(" << stateIndex << ")  $c(0))";
@@ -896,7 +896,7 @@ TEST_F(evaluateToKleeneTest, testEvalGreaterEqualMultiResult) {
 }
 
 // Tests kleene evaluation with LowerEqual Expression
-TEST_F(evaluateToKleeneTest, testEvalLowerEqualWithSingleResult) {
+TEST_F(EvaluateToKleeneTest, testEvalLowerEqualWithSingleResult) {
     // Simple tests
     string s = "<=($c(1) $c(0))";
     LogicalExpression* lowerEqual = LogicalExpression::createFromString(s);
@@ -942,7 +942,7 @@ TEST_F(evaluateToKleeneTest, testEvalLowerEqualWithSingleResult) {
 }
 
 // Tests kleene evaluation of lowerEqual which can be 1 or 0
-TEST_F(evaluateToKleeneTest, testEvalLowerEqualMultiResult) {
+TEST_F(EvaluateToKleeneTest, testEvalLowerEqualMultiResult) {
     // {0,1} <= 0 = {0,1}
     std::stringstream ss;
     ss <<"<=($s(" << stateIndex << ")  $c(0))";
@@ -1008,7 +1008,7 @@ TEST_F(evaluateToKleeneTest, testEvalLowerEqualMultiResult) {
 }
 
 // Tests kleene evaluation of simple additions
-TEST_F(evaluateToKleeneTest, testEvalAdditionWithSingleResult) {
+TEST_F(EvaluateToKleeneTest, testEvalAdditionWithSingleResult) {
     string s = "+($c(1) $c(0) $c(0))";
     LogicalExpression* addition = LogicalExpression::createFromString(s);
 
@@ -1086,7 +1086,7 @@ TEST_F(evaluateToKleeneTest, testEvalAdditionWithSingleResult) {
 }
 
 // Tests kleene evaluation of additions on one multistate
-TEST_F(evaluateToKleeneTest, testEvalAdditionWithOneMultiState) {
+TEST_F(EvaluateToKleeneTest, testEvalAdditionWithOneMultiState) {
     // {0,1} + 0 = {0,1}
     std::stringstream ss;
     ss <<"+($s(" << stateIndex << ")  $c(0))";
@@ -1156,7 +1156,7 @@ TEST_F(evaluateToKleeneTest, testEvalAdditionWithOneMultiState) {
 }
 
 // Tests kleene evaluation of additions on multistates
-TEST_F(evaluateToKleeneTest, testEvalAdditionWithMultiStates) {
+TEST_F(EvaluateToKleeneTest, testEvalAdditionWithMultiStates) {
     // {0,1} + {0,1} = {0,1,2}
     std::stringstream ss;
     ss <<"+($s(" << stateIndex << ")  $s(" << stateIndex << "))";
@@ -1201,7 +1201,7 @@ TEST_F(evaluateToKleeneTest, testEvalAdditionWithMultiStates) {
 
 // Tests kleene evaluation of simple subtractions. Note that subtractions 
 // are only defined for two expressions
-TEST_F(evaluateToKleeneTest, testEvalSubtractionWithSingleResult) {
+TEST_F(EvaluateToKleeneTest, testEvalSubtractionWithSingleResult) {
     string s = "-($c(0) $c(1))";
     LogicalExpression* subtraction = LogicalExpression::createFromString(s);
     subtraction->evaluateToKleene(result, dummyState, *actionDummy);
@@ -1253,7 +1253,7 @@ TEST_F(evaluateToKleeneTest, testEvalSubtractionWithSingleResult) {
 }
 
 // Tests kleene evaluation of subtractions on one multistate
-TEST_F(evaluateToKleeneTest, testEvalSubtractionWithOneMultiState) {
+TEST_F(EvaluateToKleeneTest, testEvalSubtractionWithOneMultiState) {
     // {0,1} - 0 = {0,1}
     std::stringstream ss;
     ss <<"-($s(" << stateIndex << ")  $c(0))";
@@ -1323,7 +1323,7 @@ TEST_F(evaluateToKleeneTest, testEvalSubtractionWithOneMultiState) {
 }
 
 // Tests kleene evaluation of subtractions on multistates
-TEST_F(evaluateToKleeneTest, testEvalSubtractionWithMultiStates) {
+TEST_F(EvaluateToKleeneTest, testEvalSubtractionWithMultiStates) {
     // {0,1} - {0,1} = {0,-1,1}
     std::stringstream ss;
     ss <<"-($s(" << stateIndex << ")  $s(" << stateIndex << "))";
@@ -1339,7 +1339,7 @@ TEST_F(evaluateToKleeneTest, testEvalSubtractionWithMultiStates) {
 
 // Tests kleene evaluation of simple multiplications. Note that multiplications 
 // are only defined for two expressions
-TEST_F(evaluateToKleeneTest, testEvalMultiplicationWithSingleResult) {
+TEST_F(EvaluateToKleeneTest, testEvalMultiplicationWithSingleResult) {
     string s = "*($c(0) $c(1))";
     LogicalExpression* multiplication = LogicalExpression::createFromString(s);
     multiplication->evaluateToKleene(result, dummyState, *actionDummy);
@@ -1391,7 +1391,7 @@ TEST_F(evaluateToKleeneTest, testEvalMultiplicationWithSingleResult) {
 }
 
 // Tests kleene evaluation of multiplications on one multistate
-TEST_F(evaluateToKleeneTest, testEvalMultiplicationWithOneMultiState) {
+TEST_F(EvaluateToKleeneTest, testEvalMultiplicationWithOneMultiState) {
     // {0,1} * 0 = {0,1}
     std::stringstream ss;
     ss <<"*($s(" << stateIndex << ")  $c(0))";
@@ -1459,7 +1459,7 @@ TEST_F(evaluateToKleeneTest, testEvalMultiplicationWithOneMultiState) {
 }
 
 // Tests kleene evaluation of multiplications on multistates
-TEST_F(evaluateToKleeneTest, testEvalMultiplicationWithMultiStates) {
+TEST_F(EvaluateToKleeneTest, testEvalMultiplicationWithMultiStates) {
     // {0,1} * {0,1} = {0,1}
     std::stringstream ss;
     ss <<"*($s(" << stateIndex << ")  $s(" << stateIndex << "))";
@@ -1474,7 +1474,7 @@ TEST_F(evaluateToKleeneTest, testEvalMultiplicationWithMultiStates) {
 
 // Tests kleene evaluation of simple divisions. Note that divisions 
 // are only defined for two expressions
-TEST_F(evaluateToKleeneTest, testEvalDivisionWithSingleResult) {
+TEST_F(EvaluateToKleeneTest, testEvalDivisionWithSingleResult) {
     string s = "/($c(0) $c(1))";
     LogicalExpression* division = LogicalExpression::createFromString(s);
     division->evaluateToKleene(result, dummyState, *actionDummy);
@@ -1526,7 +1526,7 @@ TEST_F(evaluateToKleeneTest, testEvalDivisionWithSingleResult) {
 }
 
 // Tests kleene evaluation of divisions on one multistate
-TEST_F(evaluateToKleeneTest, testEvalDivisionWithOneMultiState) {
+TEST_F(EvaluateToKleeneTest, testEvalDivisionWithOneMultiState) {
     // {0,1} / 1) = {1,0}
     std::stringstream ss;
     ss <<"/($s(" << stateIndex << ")  $c(1))";
@@ -1551,7 +1551,7 @@ TEST_F(evaluateToKleeneTest, testEvalDivisionWithOneMultiState) {
 }
 
 // Tests kleene evaluation of negation
-TEST_F(evaluateToKleeneTest, testEvalNegation) {
+TEST_F(EvaluateToKleeneTest, testEvalNegation) {
     // ~{0,1} = {0,1}
     std::stringstream ss;
     ss <<"~($s(" << stateIndex << ")  $s(" << stateIndex << "))";
@@ -1585,7 +1585,7 @@ TEST_F(evaluateToKleeneTest, testEvalNegation) {
 }
 
 // Tests kleene evaluation of bernoulli distribution
-TEST_F(evaluateToKleeneTest, testEvalBernoulli) {
+TEST_F(EvaluateToKleeneTest, testEvalBernoulli) {
     // Bernoulli(1) = 1
     std::stringstream ss;
     ss <<"Bernoulli($c(1))";
@@ -1650,7 +1650,7 @@ TEST_F(evaluateToKleeneTest, testEvalBernoulli) {
 }
 
 // Tests kleene evaluation of discrete distribution
-TEST_F(evaluateToKleeneTest, testEvalDiscrete) {
+TEST_F(EvaluateToKleeneTest, testEvalDiscrete) {
     // Discrete(1 : 0.4, 2 : 0.4, 3 : 0.2) = {1,2,3}
     std::stringstream ss;
     ss <<"Discrete(($c(1) : $c(0.4)) ($c(2) : $c(0.4)) ($c(3) : $c(0.2)))";
@@ -1686,11 +1686,11 @@ TEST_F(evaluateToKleeneTest, testEvalDiscrete) {
 }
 
 // Tests kleene evaluation of multiconditions
-TEST_F(evaluateToKleeneTest, testEvalMultiCond) {
+TEST_F(EvaluateToKleeneTest, testEvalMultiCond) {
     // if (0) then (0.5) else (2) = 2
     std::stringstream ss;
     ss.str("");
-    ss << "switch(case($c(0) $c(0.5)) case($c(1) $c(2)))";
+    ss << "switch( ($c(0) : $c(0.5)) ($c(1) : $c(2)))";
     string s = ss.str();
     result.clear();
     LogicalExpression* multicond = LogicalExpression::createFromString(s);
@@ -1700,7 +1700,7 @@ TEST_F(evaluateToKleeneTest, testEvalMultiCond) {
 
     // if ({0,1}) then (0.5) else (2) = {0.5, 2}
     ss.str("");
-    ss <<"switch(case($s(" << stateIndex << ") $c(0.5)) case($c(1) $c(2)))";
+    ss <<"switch( ($s(" << stateIndex << ") : $c(0.5)) ($c(1) : $c(2)))";
     s = ss.str();
     result.clear();
     multicond = LogicalExpression::createFromString(s);

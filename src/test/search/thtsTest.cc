@@ -8,7 +8,7 @@ using std::string;
 using std::vector;
 using std::map;
 
-class TestSearch : public MCUCTSearch {
+class THTSTestSearch : public MCUCTSearch {
 public:
     // Wrapper functions to access protected functions
     void wrapInitStep(State const& _rootState) {
@@ -37,10 +37,10 @@ public:
 
 };
 
-class thtsTest : public testing::Test {
+class THTSTest : public testing::Test {
 protected:
 
-    thtsTest() {
+    THTSTest() {
         string domainName = "crossing_traffic";
         string problemFileName =
             "../test/testdomains/" + domainName + "_inst_mdp__1";
@@ -55,7 +55,7 @@ protected:
 
     // Tests accessing private members
     void testInitializeDecisionNodeWhereBackupDepthChanges() {
-        TestSearch search;
+        THTSTestSearch search;
         UniformEvaluationSearch* _initializer = new UniformEvaluationSearch();
         search.setInitializer(_initializer);
         vector<double> stateVector;
@@ -98,7 +98,7 @@ protected:
     }
 
     void testCorrectNumberOfInitializedDecisionNodes() {
-        TestSearch search;
+        THTSTestSearch search;
         UniformEvaluationSearch* _initializer = new UniformEvaluationSearch();
         search.setInitializer(_initializer);
         // Set the actual state and index to the intial state and initialize the
@@ -125,8 +125,8 @@ protected:
 
 // What should happen, when we initialize a decision node?
 // - If the node is a reward lock, just set reward lock flag and return
-TEST_F(thtsTest, testInitializeDecisionNodeWithRewardLockNode) {
-    TestSearch search;
+TEST_F(THTSTest, testInitializeDecisionNodeWithRewardLockNode) {
+    THTSTestSearch search;
     // Create a state that is a reward lock and set it as root. We use the
     // crossing_traffic instance, where the state when the robot has reached a
     // goal is already a reward lock
@@ -153,13 +153,13 @@ TEST_F(thtsTest, testInitializeDecisionNodeWithRewardLockNode) {
 
 // - If the maximum backupLock depth is still the same as the max search depth,
 // it should get set to the actual depth of the search.
-TEST_F(thtsTest, testInitializeDecisionNodeWhereBackupDepthChanges) {
+TEST_F(THTSTest, testInitializeDecisionNodeWhereBackupDepthChanges) {
     testInitializeDecisionNodeWhereBackupDepthChanges();
 }
 
 // - The node should have as many children as there are applicable actions.
-TEST_F(thtsTest, testInitializeDecisionNodeCorrectApplicableActions) {
-    TestSearch search;
+TEST_F(THTSTest, testInitializeDecisionNodeCorrectApplicableActions) {
+    THTSTestSearch search;
     UniformEvaluationSearch* _initializer = new UniformEvaluationSearch();
     search.setInitializer(_initializer);
     // Set the actual state and index to the intial state and initialize the
@@ -179,13 +179,13 @@ TEST_F(thtsTest, testInitializeDecisionNodeCorrectApplicableActions) {
 }
 
 // A simple test to assure that the number of initialized nodes is tracked
-TEST_F(thtsTest, testCorrectNumberOfInitializedDecisionNodes) {
+TEST_F(THTSTest, testCorrectNumberOfInitializedDecisionNodes) {
     testCorrectNumberOfInitializedDecisionNodes();
 }
 
 
-TEST_F(thtsTest, testVisitDecisionNodeWithRewardLock) {
-    TestSearch search;
+TEST_F(THTSTest, testVisitDecisionNodeWithRewardLock) {
+    THTSTestSearch search;
     // Create a state that is a reward lock and set it as root. We use the
     // crossing_traffic instance, where the state when the robot has reached a
     // goal is already a reward lock

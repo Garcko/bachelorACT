@@ -9,9 +9,9 @@ using std::map;
 using std::set;
 using std::numeric_limits;
 
-class evaluateTest : public testing::Test {
+class EvaluateTest : public testing::Test {
 protected:
-    evaluateTest() {
+    EvaluateTest() {
         string domainName = "crossing_traffic";
         string problemFileName = "../test/testdomains/"+domainName+"_inst_mdp__1";
         Parser parser(problemFileName);
@@ -73,7 +73,7 @@ protected:
 };
 
 // Tests the evaluation of a deterministic state fluent with boolean values
-TEST_F(evaluateTest, testEvalBooleanDeterministicStateFluent) {
+TEST_F(EvaluateTest, testEvalBooleanDeterministicStateFluent) {
     // Get the state fluent which corresponds to obstacle-at(x2,y2)
     LogicalExpression* fluent = SearchEngine::stateFluents[stateIndex];
     // Test evaluation with one value 1
@@ -87,7 +87,7 @@ TEST_F(evaluateTest, testEvalBooleanDeterministicStateFluent) {
 }
 
 // Tests the evaluation of a probabilistic state fluent with boolean values
-TEST_F(evaluateTest, testEvalBooleanProbabilisticStateFluent) {
+TEST_F(EvaluateTest, testEvalBooleanProbabilisticStateFluent) {
     vector<double> stateVector;
     fluentName = "obstacle-at(x3, y2)";
     for (int i = 0; i < State::numberOfDeterministicStateFluents; ++i) {
@@ -129,7 +129,7 @@ TEST_F(evaluateTest, testEvalBooleanProbabilisticStateFluent) {
 
 // Tests the evaluation of an action fluent when there are no
 // concurrent actions
-TEST_F(evaluateTest, testEvalActionFluentSingleAction) {
+TEST_F(EvaluateTest, testEvalActionFluentSingleAction) {
     // Get corresponding action state 
     fluentName = "move-west";
     ActionState* actionState;
@@ -172,7 +172,7 @@ TEST_F(evaluateTest, testEvalActionFluentSingleAction) {
 }
 
 // Tests the evaluation of an action fluent with concurrent actions
-TEST_F(evaluateTest, testEvalActionFluentConcurrentActions) {
+TEST_F(EvaluateTest, testEvalActionFluentConcurrentActions) {
     string domainName = "earth_observation";
     string problemFileName = "../test/testdomains/" + 
         domainName + "_inst_mdp__03";
@@ -220,7 +220,7 @@ TEST_F(evaluateTest, testEvalActionFluentConcurrentActions) {
 }
 
 // Tests evaluation of a constant
-TEST_F(evaluateTest, testEvaluateConstant) {
+TEST_F(EvaluateTest, testEvaluateConstant) {
     s = "$c(2.0)";
     LogicalExpression* constant = LogicalExpression::createFromString(s);
 
@@ -234,7 +234,7 @@ TEST_F(evaluateTest, testEvaluateConstant) {
 }
 
 // Tests evaluation of conjunctions which are either 1 or 0
-TEST_F(evaluateTest, testEvalConjunctionWithSingleResult) {
+TEST_F(EvaluateTest, testEvalConjunctionWithSingleResult) {
     s = "and($c(1) $c(0) $c(0))";
     LogicalExpression* conjunct = LogicalExpression::createFromString(s);
 
@@ -279,7 +279,7 @@ TEST_F(evaluateTest, testEvalConjunctionWithSingleResult) {
 }
 
 // Tests evaluation of disjunctions which are either 1 or 0
-TEST_F(evaluateTest, testEvalDisjunctionWithSingleResult) {
+TEST_F(EvaluateTest, testEvalDisjunctionWithSingleResult) {
     s = "or($c(1) $c(0) $c(0))";
     LogicalExpression* disjunct = LogicalExpression::createFromString(s);
     disjunct->evaluate(result, dummyState, *actionDummy);
@@ -323,7 +323,7 @@ TEST_F(evaluateTest, testEvalDisjunctionWithSingleResult) {
 }
 
 // Tests evaluation with EqualsExpression
-TEST_F(evaluateTest, testEvalEqualsWithSingleResult) {
+TEST_F(EvaluateTest, testEvalEqualsWithSingleResult) {
     s = "==($c(1) $c(0))";
     LogicalExpression* equal = LogicalExpression::createFromString(s);
     equal->evaluate(result, dummyState, *actionDummy);
@@ -355,7 +355,7 @@ TEST_F(evaluateTest, testEvalEqualsWithSingleResult) {
 }
 
 // Tests evaluation with Greater Expression
-TEST_F(evaluateTest, testEvalGreaterWithSingleResult) {
+TEST_F(EvaluateTest, testEvalGreaterWithSingleResult) {
     s = ">($c(1) $c(0))";
     LogicalExpression* greater = LogicalExpression::createFromString(s);
     greater->evaluate(result, dummyState, *actionDummy);
@@ -393,7 +393,7 @@ TEST_F(evaluateTest, testEvalGreaterWithSingleResult) {
 }
 
 // Tests evaluation with Lower Expression
-TEST_F(evaluateTest, testEvalLowerWithSingleResult) {
+TEST_F(EvaluateTest, testEvalLowerWithSingleResult) {
     s = "<($c(1) $c(0))";
     LogicalExpression* lower = LogicalExpression::createFromString(s);
     lower->evaluate(result, dummyState, *actionDummy);
@@ -437,7 +437,7 @@ TEST_F(evaluateTest, testEvalLowerWithSingleResult) {
 }
 
 // Tests evaluation with GreaterEqual Expression
-TEST_F(evaluateTest, testEvalGreaterEqualWithSingleResult) {
+TEST_F(EvaluateTest, testEvalGreaterEqualWithSingleResult) {
     s = ">=($c(1) $c(0))";
     LogicalExpression* greaterEqual = LogicalExpression::createFromString(s);
 
@@ -476,7 +476,7 @@ TEST_F(evaluateTest, testEvalGreaterEqualWithSingleResult) {
 }
 
 // Tests evaluation with LowerEqual Expression
-TEST_F(evaluateTest, testEvalLowerEqualWithSingleResult) {
+TEST_F(EvaluateTest, testEvalLowerEqualWithSingleResult) {
     s = "<=($c(1) $c(0))";
     LogicalExpression* lowerEqual = LogicalExpression::createFromString(s);
 
@@ -515,7 +515,7 @@ TEST_F(evaluateTest, testEvalLowerEqualWithSingleResult) {
 }
 
 // Tests evaluation of simple additions
-TEST_F(evaluateTest, testEvalAdditionWithSingleResult) {
+TEST_F(EvaluateTest, testEvalAdditionWithSingleResult) {
     s = "+($c(1) $c(0) $c(0))";
     LogicalExpression* addition = LogicalExpression::createFromString(s);
 
@@ -583,7 +583,7 @@ TEST_F(evaluateTest, testEvalAdditionWithSingleResult) {
 
 // Tests evaluation of subtractions. Note that subtractions 
 // are only defined for two expressions
-TEST_F(evaluateTest, testEvalSubtractionWithSingleResult) {
+TEST_F(EvaluateTest, testEvalSubtractionWithSingleResult) {
     s = "-($c(0) $c(1))";
     LogicalExpression* subtraction = LogicalExpression::createFromString(s);
     subtraction->evaluate(result, dummyState, *actionDummy);
@@ -629,7 +629,7 @@ TEST_F(evaluateTest, testEvalSubtractionWithSingleResult) {
 
 // Tests of multiplications. Note that multiplications 
 // are only defined for two expressions
-TEST_F(evaluateTest, testEvalMultiplicationWithSingleResult) {
+TEST_F(EvaluateTest, testEvalMultiplicationWithSingleResult) {
     s = "*($c(0) $c(1))";
     LogicalExpression* multiplication = LogicalExpression::createFromString(s);
     multiplication->evaluate(result, dummyState, *actionDummy);
@@ -674,7 +674,7 @@ TEST_F(evaluateTest, testEvalMultiplicationWithSingleResult) {
 
 // Tests evaluation of divisions. Note that divisions 
 // are only defined for two expressions
-TEST_F(evaluateTest, testEvalDivisionWithSingleResult) {
+TEST_F(EvaluateTest, testEvalDivisionWithSingleResult) {
     s = "/($c(0) $c(1))";
     LogicalExpression* division = LogicalExpression::createFromString(s);
     division->evaluate(result, dummyState, *actionDummy);
@@ -719,7 +719,7 @@ TEST_F(evaluateTest, testEvalDivisionWithSingleResult) {
 }
 
 // Tests evaluation of negation
-TEST_F(evaluateTest, testEvalNegation) {
+TEST_F(EvaluateTest, testEvalNegation) {
     // ~1 = 0
     s = "~($c(1))";
     LogicalExpression* negation = LogicalExpression::createFromString(s);
@@ -736,10 +736,10 @@ TEST_F(evaluateTest, testEvalNegation) {
 }
 
 // Tests evaluation of multiconditions
-TEST_F(evaluateTest, testEvalMultiCond) {
+TEST_F(EvaluateTest, testEvalMultiCond) {
     // if (1) then (0.5) if(1) then (2)
     std::stringstream ss;
-    ss << "switch(case($c(1) $c(0.5)) case($c(1) $c(2)))";
+    ss << "switch( ($c(1) : $c(0.5)) ($c(1) : $c(2)))";
     string s = ss.str();
     LogicalExpression* multicond = LogicalExpression::createFromString(s);
     multicond->evaluate(result, dummyState, *actionDummy);
@@ -747,7 +747,7 @@ TEST_F(evaluateTest, testEvalMultiCond) {
 
     // if (0) then (0.5) else (2) = 2
     ss.str("");
-    ss <<"switch(case($c(0) $c(0.5)) case($c(1) $c(2)))";
+    ss <<"switch( ($c(0) : $c(0.5)) ($c(1) : $c(2)))";
     s = ss.str();
     result = 0;
     multicond = LogicalExpression::createFromString(s);
@@ -756,26 +756,26 @@ TEST_F(evaluateTest, testEvalMultiCond) {
 }
 
 // Tests evaluation of if's inside other conditions
-TEST_F(evaluateTest, testEvalNestedCond) {
+TEST_F(EvaluateTest, testEvalNestedCond) {
     // equals 2 * 0.5 = 1
-    s = "*(switch(case($c(0) $c(1)) case($c(1) $c(2)))"
-        "switch(case($c(1) $c(0.5)) case($c(1) $c(2))))";
+    s = "*(switch( ($c(0) : $c(1)) ($c(1) : $c(2)))"
+        "switch( ($c(1) : $c(0.5)) ($c(1) : $c(2))))";
     LogicalExpression* multiplication = LogicalExpression::createFromString(s);
     multiplication->evaluate(result, dummyState, *actionDummy);
     ASSERT_DOUBLE_EQ(1, result);
 
     // equals 3 * 2 * 0.5 = 3
-    s = "*(switch(case($c(0) $c(1)) case($c(0) $c(2)) case($c(1) $c(3)))" 
-        "*(switch(case($c(0) $c(1)) case($c(1) $c(2)))"
-        "switch(case($c(1) $c(0.5)) case($c(1) $c(2)))))";
+    s = "*(switch( ($c(0) : $c(1)) ($c(0) : $c(2)) ($c(1) : $c(3)))" 
+        "*(switch( ($c(0) : $c(1)) ($c(1) : $c(2)))"
+        "switch( ($c(1) : $c(0.5)) ($c(1) : $c(2)))))";
     multiplication = LogicalExpression::createFromString(s);
     multiplication->evaluate(result, dummyState, *actionDummy);
     ASSERT_DOUBLE_EQ(3, result);
 
     // equals 3 + 2 + 0.5 = 5.5
-    s = "+(switch(case($c(0) $c(1)) case($c(0) $c(2)) case($c(1) $c(3)))" 
-        "switch(case($c(0) $c(1)) case($c(1) $c(2)))"
-        "switch(case($c(1) $c(0.5)) case($c(1) $c(2))))";
+    s = "+(switch( ($c(0) : $c(1)) ($c(0) : $c(2)) ($c(1) : $c(3)))" 
+        "switch( ($c(0) : $c(1)) ($c(1) : $c(2)))"
+        "switch( ($c(1) : $c(0.5)) ($c(1) : $c(2))))";
     multiplication = LogicalExpression::createFromString(s);
     multiplication->evaluate(result, dummyState, *actionDummy);
     ASSERT_DOUBLE_EQ(5.5, result);

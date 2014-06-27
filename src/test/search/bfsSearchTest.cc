@@ -7,7 +7,7 @@ using std::string;
 using std::map;
 using std::vector;
 
-class TestSearch : public BreadthFirstSearch {
+class BFSTestSearch : public BreadthFirstSearch {
 public:
 
     // Wrapper functions to access protected functions
@@ -46,7 +46,7 @@ public:
 
 // To use a test fixture, derive from testing::TEST
 // A test fixture can set multiple parameter before a test is run
-class bfsSearchTest : public testing::Test {
+class BFSSearchTest : public testing::Test {
 protected:
     virtual void SetUp() {
         // Parse elevator task
@@ -84,8 +84,8 @@ protected:
 };
 
 // Tests the initialization of a decision node child
-TEST_F(bfsSearchTest, testInitializeDecisionNodeChild) {
-    TestSearch search;
+TEST_F(BFSSearchTest, testBFSInitializeDecisionNodeChild) {
+    BFSTestSearch search;
     parent->children.push_back(childOne);
     parent->children.push_back(childTwo);
     search.wrapInitializeDecisionNodeChild(parent, 0, 10);
@@ -99,13 +99,13 @@ TEST_F(bfsSearchTest, testInitializeDecisionNodeChild) {
 }
 
 // Tests the outcome selection
-TEST_F(bfsSearchTest, testSelectOutcome) {
+TEST_F(BFSSearchTest, testBFSSelectOutcome) {
     // TODO: Write an actual test for this
 }
 
 // Tests backup of a decision node leaf
-TEST_F(bfsSearchTest, testBackupDecisionNodeLeaf) {
-    TestSearch search;
+TEST_F(BFSSearchTest, testBFSBackupDecisionNodeLeaf) {
+    BFSTestSearch search;
     // Create a node with futReward 0 without accessing private members
     parent->children.push_back(childOne);
     search.wrapInitializeDecisionNodeChild(parent, 0, 0);
@@ -117,8 +117,8 @@ TEST_F(bfsSearchTest, testBackupDecisionNodeLeaf) {
 }
 
 // Tests backup of a decision node
-TEST_F(bfsSearchTest, testBackupDecisionNode) {
-    TestSearch search;
+TEST_F(BFSSearchTest, testBFSBackupDecisionNode) {
+    BFSTestSearch search;
     parent->children.push_back(childOne);
     parent->children.push_back(childTwo);
     parent->children.push_back(childThree);
@@ -154,13 +154,13 @@ TEST_F(bfsSearchTest, testBackupDecisionNode) {
 }
 
 // Tests backup of a chance node
-TEST_F(bfsSearchTest, testBackupChanceNode) {
+TEST_F(BFSSearchTest, testBFSBackupChanceNode) {
     // TODO Test case
 }
 
 // Tests action selection for breadth first search
-TEST_F(bfsSearchTest, testSelectAction) {
-    TestSearch search;
+TEST_F(BFSSearchTest, testBFSSelectAction) {
+    BFSTestSearch search;
     search.wrapInitStep(SearchEngine::initialState);
 
     parent->children.push_back(childOne);

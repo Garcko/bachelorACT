@@ -9,7 +9,7 @@ using std::string;
 using std::map;
 using std::vector;
 
-class TestSearch : public MCUCTSearch {
+class UCTBaseTestSearch : public MCUCTSearch {
 public:
     // wrapper to test protected methods
     int wrapSelectAction(MCUCTNode* node) {
@@ -64,7 +64,7 @@ public:
 
 // To use a test fixture, derive from testing::TEST
 // A test fixture can set multiple parameter before a test is run
-class uctBaseTest : public testing::Test {
+class UCTBaseTest : public testing::Test {
 protected:
     // Routines called before each test
     virtual void SetUp() {
@@ -100,7 +100,7 @@ protected:
 
     // Tests accessing private members
     void testMCUCTSelectionWithLOG() {
-        TestSearch uctSearch;
+        UCTBaseTestSearch uctSearch;
         child->futureReward = 50;
         parent->futureReward = 1000;
         parent->numberOfVisits = 500;
@@ -127,7 +127,7 @@ protected:
     }
 
     void testMCUCTSelectionWithSQRT() {
-        TestSearch uctSearch;
+        UCTBaseTestSearch uctSearch;
         uctSearch.setExplorationRateFunction("SQRT");
         child->futureReward = 50;
         parent->futureReward = 1000;
@@ -155,7 +155,7 @@ protected:
     }
 
     void testMCUCTSelectionWithLIN() {
-        TestSearch uctSearch;
+        UCTBaseTestSearch uctSearch;
         uctSearch.setExplorationRateFunction("LIN");
         child->futureReward = 50;
         parent->futureReward = 1000;
@@ -183,7 +183,7 @@ protected:
     }
 
     void testMCUCTSelectionWithLNQUAD() {
-        TestSearch uctSearch;
+        UCTBaseTestSearch uctSearch;
         uctSearch.setExplorationRateFunction("LNQUAD");
         child->futureReward = 50;
         parent->futureReward = 1000;
@@ -210,7 +210,7 @@ protected:
     }
 
     void testSelectLeastVisitedAction() {
-        TestSearch uctSearch;
+        UCTBaseTestSearch uctSearch;
         parent->children.push_back(childOne);
         parent->children.push_back(childTwo);
         parent->children.push_back(childThree);
@@ -245,7 +245,7 @@ protected:
     }
 
     void testSelectUnselectedAction() {
-        TestSearch uctSearch;
+        UCTBaseTestSearch uctSearch;
         parent->children.push_back(childOne);
         parent->children.push_back(childTwo);
         parent->children.push_back(childThree);
@@ -285,34 +285,34 @@ protected:
 // tests the UCT selection with a log function as the exploration-rate
 // and McUctSearch as search pattern
 // function
-TEST_F(uctBaseTest, testMCUCTSelectionWithLOG) {
+TEST_F(UCTBaseTest, testMCUCTSelectionWithLOG) {
     testMCUCTSelectionWithLOG();
 }
 
 // tests the UCT selection with a sqrt function as the exploration-rate
 // and McUctSearch as search pattern
 // function
-TEST_F(uctBaseTest, testMCUCTSelectionWithSQRT) {
+TEST_F(UCTBaseTest, testMCUCTSelectionWithSQRT) {
     testMCUCTSelectionWithSQRT();
 }
 
 // tests the UCT selection with a linear function as the exploration-rate
 // and McUctSearch as search pattern
 // function
-TEST_F(uctBaseTest, testMCUCTSelectionWithLIN) {
+TEST_F(UCTBaseTest, testMCUCTSelectionWithLIN) {
     testMCUCTSelectionWithLIN();
 }
 
 // tests the UCT selection with the e^sqrt(x) function as the exploration-rate
 // and McUctSearch as search pattern
 // function
-TEST_F(uctBaseTest, testMCUCTSelectionWithLNQUAD) {
+TEST_F(UCTBaseTest, testMCUCTSelectionWithLNQUAD) {
     testMCUCTSelectionWithLNQUAD();
 }
 
 // tests different string parameters
-TEST_F(uctBaseTest, testValueFromString) {
-    TestSearch search;
+TEST_F(UCTBaseTest, testValueFromString) {
+    UCTBaseTestSearch search;
     string param = "-er";
     string value = "SQRT";
     search.setValueFromString(param, value);
@@ -336,11 +336,11 @@ TEST_F(uctBaseTest, testValueFromString) {
 }
 
 // Tests that the action with least visits is selected at the root node
-TEST_F(uctBaseTest, testSelectLeastVisitedAction) {
+TEST_F(UCTBaseTest, testSelectLeastVisitedAction) {
     testSelectLeastVisitedAction();
 }
 
 // If a child has not yet been visited it should be selected first.
-TEST_F(uctBaseTest, testSelectUnselectedAction) {
+TEST_F(UCTBaseTest, testSelectUnselectedAction) {
     testSelectUnselectedAction();
 }

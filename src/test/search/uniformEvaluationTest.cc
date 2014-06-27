@@ -12,7 +12,7 @@ using std::string;
 
 // Tests the estimateQValuesFunction when no further parameters are given, i.e.
 // the initial value was not set by hand.
-TEST(uniformEvaluationTest, estimateQValuesStandard) {
+TEST(UniformEvaluationTest, estimateQValuesStandard) {
     State dummyState;
     // Actions with index = i are applicable, actions with index = -1 are not
     // applicable, otherwise an action is unreasonable, see
@@ -41,7 +41,7 @@ TEST(uniformEvaluationTest, estimateQValuesStandard) {
 }
 
 // Tests Q-value estimation with a set initial Q-value.
-TEST(uniformEvaluationTest, estimateQValuesWithSetValue) {
+TEST(UniformEvaluationTest, estimateQValuesWithSetValue) {
     State dummyState;
     int actionIndices[] = {
         -1, 1, 2, 1, 4, -1, -1, 7, 8, 7, 10
@@ -73,7 +73,7 @@ TEST(uniformEvaluationTest, estimateQValuesWithSetValue) {
 }
 
 // A trivial test for state value estimation.
-TEST(uniformEvaluationTest, estimateStateValue) {
+TEST(UniformEvaluationTest, estimateStateValue) {
     State dummyState;
     UniformEvaluationSearch uniSearch;
     double stateValue = 0.0;
@@ -84,7 +84,7 @@ TEST(uniformEvaluationTest, estimateStateValue) {
 
 
 // Tests the different string parameters.
-TEST(uniformEvaluationTest, testSetValueFromString) {
+TEST(UniformEvaluationTest, testSetValueFromString) {
     UniformEvaluationSearch uniSearch;
     State dummyState;
     string param = "-val";
@@ -96,7 +96,7 @@ TEST(uniformEvaluationTest, testSetValueFromString) {
     value = "INFTY";
 
     // Dummies to simulate a rewardCPF
-    LogicalExpression* dummyExp;
+    LogicalExpression* dummyExp = NULL;
     RewardFunction dummyCPF(dummyExp, 0, -2.0, 3.0, true);
     SearchEngine::rewardCPF = &dummyCPF;
     uniSearch.setValueFromString(param, value);
