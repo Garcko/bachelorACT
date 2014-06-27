@@ -162,7 +162,7 @@ def readResults(dirName, domains, planners, plannerType):
 
 def printResults(domains, planners, outFile):
     doc = latex.Document("article")
-    doc.add_package("geometry", "a3paper", "margin=2.5cm", "landscape")
+    doc.add_package("geometry", "a4paper", "margin=2.5cm", "landscape")
     doc.add_package("scrtime")
     doc.add_package("amsmath")
     doc.add_package("amssymb")
@@ -236,6 +236,7 @@ def addTotalIPPCScoreTable(doc, domains, planners):
     if hasOther:
         table.add_hline()
 
+    printedNumInstances = 0
     for planner in planners:
         if planner.plannerType is "Other":
             table.add_cell(planner.name)
@@ -267,6 +268,23 @@ def addTotalIPPCScoreTable(doc, domains, planners):
             else:
                 table.add_cell(str(IPPCSum), span=2, align="c")
             table.add_row()
+            printedNumInstances += 1
+            if printedNumInstances == 25:
+                printedNumInstances = 0
+                doc.add(table, r"\bigskip")  
+                doc.add(r"\newpage")
+                table = latex.Table(table_style)
+                head = table.head()
+                head.add_hline()
+                head.add_cell(r"")
+
+                for domainName in domains:
+                    head.add_cell(domainName, span=2, align="c")
+                head.add_cell("Total", span=2, align="c")
+                head.add_row()
+                head.add_hline()
+                head.add_hline()
+                table.foot().add_hline()
 
     doc.add(table, r"\bigskip")        
 
@@ -304,6 +322,8 @@ def addIPPCScoreTable(doc, domain, planners):
     if hasOther:
         table.add_hline()
 
+    printedNumInstances = 0
+
     for planner in planners:
         if planner.plannerType is "Other":
             table.add_cell(planner.name)
@@ -319,6 +339,23 @@ def addIPPCScoreTable(doc, domain, planners):
                 else:
                     table.add_cell(str(score), span=2, align="c")
             table.add_row()
+            printedNumInstances += 1
+            if printedNumInstances == 25:
+                printedNumInstances = 0
+                doc.add(table, r"\bigskip")
+                doc.add(r"\newpage")
+
+                table = latex.Table(table_style)
+                head = table.head()
+                head.add_hline()
+                head.add_cell(r"")
+
+                for instanceName in domain.instances:
+                    head.add_cell(instanceName, span=2, align="c")
+                head.add_row()
+                head.add_hline()
+                head.add_hline()
+                table.foot().add_hline()
 
     doc.add(table, r"\bigskip")
 
@@ -348,15 +385,17 @@ def addRewardTable(doc, domain, planners):
                 score = domain.instances[instanceName].getIPPCScore(planner.name)
                 conf95 = domain.instances[instanceName].confidence95[planner.name]
                 if score == 1.0:
-                    table.add_cell("\\textbf{\\textcolor{red}{"+str(reward)+"($\\pm$"+str(conf95)+")}}", span=2, align="c")
+                    table.add_cell("\\textbf{\\textcolor{red}{"+str(reward)+"}}", span=2, align="c")
                 else:
-                    table.add_cell("$"+str(reward)+"(\\pm"+str(conf95)+")$", span=2, align="c")
+                    table.add_cell("$"+str(reward)+"$", span=2, align="c")
             table.add_row()
         else:
             hasOther = True
 
     if hasOther:
         table.add_hline()
+
+    printedNumInstances = 0
 
     for planner in planners:
         if planner.plannerType is "Other":
@@ -372,12 +411,30 @@ def addRewardTable(doc, domain, planners):
                     conf95 = ""
 
                 if score == 1.0:
-                    table.add_cell("\\textbf{\\textcolor{red}{"+str(reward)+"($\pm$"+str(conf95)+")}}", span=2, align="c")
+                    table.add_cell("\\textbf{\\textcolor{red}{$"+str(reward)+"$}}", span=2, align="c")
                 elif score > printFatThreshold:
-                    table.add_cell("\\textbf{$"+str(reward)+"(\\pm"+str(conf95)+")$}", span=2, align="c")
+                    table.add_cell("\\textbf{$"+str(reward)+"$}", span=2, align="c")
                 else:
-                    table.add_cell("$"+str(reward)+"(\\pm"+str(conf95)+")$", span=2, align="c")
+                    table.add_cell("$"+str(reward)+"$", span=2, align="c")
             table.add_row()
+
+            printedNumInstances += 1
+            if printedNumInstances == 25:
+                printedNumInstances = 0
+                doc.add(table, r"\bigskip")
+                doc.add(r"\newpage")
+
+                table = latex.Table(table_style)
+                head = table.head()
+                head.add_hline()
+                head.add_cell(r"")
+
+                for instanceName in domain.instances:
+                    head.add_cell(instanceName, span=2, align="c")
+                head.add_row()
+                head.add_hline()
+                head.add_hline()
+                table.foot().add_hline()
 
     doc.add(table, r"\bigskip")
 

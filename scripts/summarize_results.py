@@ -13,7 +13,7 @@ import statistics
 
 doCompress = True
 benchmarkSet = "IPPC2011"
-numberOfRuns = 100 #TODO: Derive this automatically!
+numberOfRuns = 30 #TODO: Derive this automatically!
 
 def summarizeResultsOfDir(dirName, plannerName):
     if not os.path.isdir(dirName):
@@ -130,7 +130,7 @@ def compress(dirName):
 
 def parseLogFile(fileName):
     f = open(fileName)
-    rest = tail(f,4)
+    rest = tail(f,3)
     rest = rest.split("\n")[0];
     rest = rest.split(":")
     reward = None
@@ -155,7 +155,7 @@ def parseLogFile(fileName):
     f = open(fileName)
     roundByRoundResults = list()
     for line in f:
-        if line.startswith(">>> END OF ROUND -- REWARD RECEIVED:"):
+        if line.startswith(">>> END OF ROUND"):
             line = line.split(" ")
             rbrres = round(float(line[-1]),2)
             roundByRoundResults.append(rbrres)
