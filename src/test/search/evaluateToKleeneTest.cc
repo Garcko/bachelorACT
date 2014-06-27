@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "../gtest/gtest.h"
 #include "../../search/thts.h"
 #include "../../search/prost_planner.h"
 #include "../../search/parser.h"
@@ -13,7 +13,7 @@ class evaluateToKleeneTest : public testing::Test {
 protected:
     evaluateToKleeneTest() {
         string domainName = "crossing_traffic";
-        string problemFileName = "../../testbed/domains/"+domainName+"_inst_mdp__1";
+        string problemFileName = "../test/testdomains/"+domainName+"_inst_mdp__1";
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
         // Create an Action State dummy, since we don't need one
@@ -205,7 +205,7 @@ TEST_F(evaluateToKleeneTest, testEvalActionFluentSingleAction) {
 // Tests the evaluation of an action fluent with concurrent actions
 TEST_F(evaluateToKleeneTest, testEvalActionFluentConcurrentActions) {
     string domainName = "earth_observation";
-    string problemFileName = "../../testbed/specialDomains/" + 
+    string problemFileName = "../test/testdomains/" + 
         domainName + "_inst_mdp__03";
     Parser parser(problemFileName);
     parser.parseTask(stateVariableIndices, stateVariableValues);
@@ -1687,28 +1687,20 @@ TEST_F(evaluateToKleeneTest, testEvalDiscrete) {
 
 // Tests kleene evaluation of multiconditions
 TEST_F(evaluateToKleeneTest, testEvalMultiCond) {
-    // if (1) then (0.5)
-    std::stringstream ss;
-    ss <<"if($c(1)) then($c(0.5))";
-    string s = ss.str();
-    LogicalExpression* multicond = LogicalExpression::createFromString(s);
-    multicond->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
-    ASSERT_EQ(1, result.size());
-    ASSERT_TRUE(result.find(0.5) != result.end());
-
     // if (0) then (0.5) else (2) = 2
+    std::stringstream ss;
     ss.str("");
-    ss <<"if($c(0)) then($c(0.5)) elif($c(1)) then($c(2))";
-    s = ss.str();
+    ss << "switch(case($c(0) $c(0.5)) case($c(1) $c(2)))";
+    string s = ss.str();
     result.clear();
-    multicond = LogicalExpression::createFromString(s);
+    LogicalExpression* multicond = LogicalExpression::createFromString(s);
     multicond->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(2) != result.end());
 
     // if ({0,1}) then (0.5) else (2) = {0.5, 2}
     ss.str("");
-    ss <<"if($s(" << stateIndex << ")) then($c(0.5)) elif($c(1)) then($c(2))";
+    ss <<"switch(case($s(" << stateIndex << ") $c(0.5)) case($c(1) $c(2)))";
     s = ss.str();
     result.clear();
     multicond = LogicalExpression::createFromString(s);

@@ -1,8 +1,4 @@
-// Copyright 2014, University of Freiburg
-// Arbeitsgruppe für Grundlagen der Künstlichen Intelligenz
-// Author: Florian Geißer <geisserf@informatik.uni-freiburg.de>
-
-#include <gtest/gtest.h>
+#include "../gtest/gtest.h"
 #include "../../search/uct_base.h"
 #include "../../search/mc_uct_search.h"
 #include "../../search/prost_planner.h"
@@ -37,7 +33,7 @@ protected:
     // Otherwise, this can be skipped.
     virtual void SetUp() {
         // Parse elevator task
-        string problemFileName = "../test/search/elevators";
+        string problemFileName = "../test/testdomains/elevators_inst_mdp__1";
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
 

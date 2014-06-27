@@ -1,7 +1,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <gtest/gtest.h>
+#include "../gtest/gtest.h"
 #include "../../search/uniform_evaluation_search.h"
 #include "../../search/parser.h"
 #include "../../search/prost_planner.h"

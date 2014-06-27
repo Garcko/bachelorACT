@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "../gtest/gtest.h"
 #include "../../search/thts.h"
 #include "../../search/prost_planner.h"
 #include "../../search/parser.h"
@@ -18,11 +18,11 @@ public:
     void wrapInitializeDecisionNode(MCUCTNode* node) {
         initializeDecisionNode(node);
     }
-    
+
     double wrapVisitDecisionNode(MCUCTNode* node) {
         return visitDecisionNode(node);
     }
-    
+
     MCUCTNode* wrapGetSearchNode() {
         return getSearchNode();
     }
@@ -42,13 +42,77 @@ protected:
 
     thtsTest() {
         string domainName = "crossing_traffic";
-        string problemFileName = "../../testbed/domains/"+domainName+"_inst_mdp__1";
+        string problemFileName =
+            "../test/testdomains/" + domainName + "_inst_mdp__1";
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
 
         // Create Prost Planner
         string plannerDesc = "[PROST -se [MC-UCT -i [Uniform]]]";
         planner = new ProstPlanner(plannerDesc);
+
+    }
+
+    // Tests accessing private members
+    void testInitializeDecisionNodeWhereBackupDepthChanges() {
+        TestSearch search;
+        UniformEvaluationSearch* _initializer = new UniformEvaluationSearch();
+        search.setInitializer(_initializer);
+        vector<double> stateVector;
+        for (int i = 0; i < State::numberOfDeterministicStateFluents; ++i) {
+            stateVector.push_back(0);
+        }
+        for (int i = 0; i < State::numberOfProbabilisticStateFluents; ++i) {
+            stateVector.push_back(0);
+        }
+        int varIndex = stateVariableIndices["robot-at(x1, y1)"];
+        stateVector[varIndex] = 1.0;
+
+        State lowDepthState = State(stateVector, 25);
+        State::calcStateFluentHashKeys(lowDepthState);
+        State::calcStateHashKey(lowDepthState);
+
+        // Initialize search with the initial state
+        search.wrapInitStep(SearchEngine::initialState);
+        search.setMaxLockDepth(40);
+        // Simulate that the search is already deeper in the tree
+        search.currentStateIndex = 25;
+        search.states[search.currentStateIndex] = lowDepthState;
+        MCUCTNode* node = search.wrapGetSearchNode();
+        search.wrapInitializeDecisionNode(node);
+        ASSERT_EQ(25, search.getMaxLockDepth());
+
+        // For any other call in the same trial the lock depth stays the same
+        stateVector[varIndex] = 0.0;
+        varIndex = stateVariableIndices["robot-at(x2, y2)"];
+        stateVector[varIndex] = 1.0;
+
+        State nextDepthState = State(stateVector, 24);
+        State::calcStateFluentHashKeys(nextDepthState);
+        State::calcStateHashKey(nextDepthState);
+        search.currentStateIndex = 24;
+        search.states[search.currentStateIndex] = nextDepthState;
+        search.wrapInitializeDecisionNode(node);
+        ASSERT_EQ(25, search.getMaxLockDepth());
+
+    }
+
+    void testCorrectNumberOfInitializedDecisionNodes() {
+        TestSearch search;
+        UniformEvaluationSearch* _initializer = new UniformEvaluationSearch();
+        search.setInitializer(_initializer);
+        // Set the actual state and index to the intial state and initialize the
+        // node
+        search.wrapInitStep(SearchEngine::initialState);
+        MCUCTNode* node = search.wrapGetSearchNode();
+        // Note that this node is not the same as the current root node 
+        search.wrapInitializeDecisionNode(node);
+        // Thus we should get one more initialized decision node
+        ASSERT_EQ(1, search.initializedDecisionNodes);
+        // Now we call the method on the correct root node, thus nothing should
+        // change
+        search.wrapInitializeDecisionNode(search.currentRootNode);
+        ASSERT_EQ(1, search.initializedDecisionNodes);
 
     }
 
@@ -90,45 +154,7 @@ TEST_F(thtsTest, testInitializeDecisionNodeWithRewardLockNode) {
 // - If the maximum backupLock depth is still the same as the max search depth,
 // it should get set to the actual depth of the search.
 TEST_F(thtsTest, testInitializeDecisionNodeWhereBackupDepthChanges) {
-    TestSearch search;
-    UniformEvaluationSearch* _initializer = new UniformEvaluationSearch();
-    search.setInitializer(_initializer);
-    vector<double> stateVector;
-    for (int i = 0; i < State::numberOfDeterministicStateFluents; ++i) {
-        stateVector.push_back(0);
-    }
-    for (int i = 0; i < State::numberOfProbabilisticStateFluents; ++i) {
-        stateVector.push_back(0);
-    }
-    int varIndex = stateVariableIndices["robot-at(x1, y1)"];
-    stateVector[varIndex] = 1.0;
-
-    State lowDepthState = State(stateVector, 25);
-    State::calcStateFluentHashKeys(lowDepthState);
-    State::calcStateHashKey(lowDepthState);
-
-    // Initialize search with the initial state
-    search.wrapInitStep(SearchEngine::initialState);
-    search.setMaxLockDepth(40);
-    // Simulate that the search is already deeper in the tree
-    search.currentStateIndex = 25;
-    search.states[search.currentStateIndex] = lowDepthState;
-    MCUCTNode* node = search.wrapGetSearchNode();
-    search.wrapInitializeDecisionNode(node);
-    ASSERT_EQ(25, search.getMaxLockDepth());
-
-    // For any other call in the same trial the lock depth stays the same
-    stateVector[varIndex] = 0.0;
-    varIndex = stateVariableIndices["robot-at(x2, y2)"];
-    stateVector[varIndex] = 1.0;
-
-    State nextDepthState = State(stateVector, 24);
-    State::calcStateFluentHashKeys(nextDepthState);
-    State::calcStateHashKey(nextDepthState);
-    search.currentStateIndex = 24;
-    search.states[search.currentStateIndex] = nextDepthState;
-    search.wrapInitializeDecisionNode(node);
-    ASSERT_EQ(25, search.getMaxLockDepth());
+    testInitializeDecisionNodeWhereBackupDepthChanges();
 }
 
 // - The node should have as many children as there are applicable actions.
@@ -154,22 +180,9 @@ TEST_F(thtsTest, testInitializeDecisionNodeCorrectApplicableActions) {
 
 // A simple test to assure that the number of initialized nodes is tracked
 TEST_F(thtsTest, testCorrectNumberOfInitializedDecisionNodes) {
-    TestSearch search;
-    UniformEvaluationSearch* _initializer = new UniformEvaluationSearch();
-    search.setInitializer(_initializer);
-    // Set the actual state and index to the intial state and initialize the
-    // node
-    search.wrapInitStep(SearchEngine::initialState);
-    MCUCTNode* node = search.wrapGetSearchNode();
-    // Note that this node is not the same as the current root node 
-    search.wrapInitializeDecisionNode(node);
-    // Thus we should get one more initialized decision node
-    ASSERT_EQ(1, search.initializedDecisionNodes);
-    // Now we call the method on the correct root node, thus nothing should
-    // change
-    search.wrapInitializeDecisionNode(search.currentRootNode);
-    ASSERT_EQ(1, search.initializedDecisionNodes);
+    testCorrectNumberOfInitializedDecisionNodes();
 }
+
 
 TEST_F(thtsTest, testVisitDecisionNodeWithRewardLock) {
     TestSearch search;
@@ -197,5 +210,5 @@ TEST_F(thtsTest, testVisitDecisionNodeWithRewardLock) {
     // The reward is calculated by 
     // reward + futReward * (ignoredSteps + currentStateIndex).
     ASSERT_DOUBLE_EQ(0, search.wrapVisitDecisionNode(node));
-    
+
 }

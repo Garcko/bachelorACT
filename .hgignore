@@ -14,7 +14,7 @@ src/search/Makefile.depend
 src/search/prost
 src/search/prost-debug
 src/search/.obj/*
-src/test/parser/*Test
+src/test/rddl_parser/*Test
 src/test/search/*Test
 testbed/highscores/*/*.bz2
 testbed/highscores/*/*.log
@@ -25,6 +25,7 @@ testbed/benchmarks/test/*
 testbed/benchmarks/*/rddl_prefix/*
 testbed/benchmarks/*/prost/*
 scripts/tex/*
+coverage/
 
 syntax: regexp
 .*\#.*\#$

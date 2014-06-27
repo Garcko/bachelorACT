@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "../gtest/gtest.h"
 #include "../../search/thts.h"
 #include "../../search/prost_planner.h"
 #include "../../search/parser.h"
@@ -13,7 +13,7 @@ class evaluateTest : public testing::Test {
 protected:
     evaluateTest() {
         string domainName = "crossing_traffic";
-        string problemFileName = "../../testbed/domains/"+domainName+"_inst_mdp__1";
+        string problemFileName = "../test/testdomains/"+domainName+"_inst_mdp__1";
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
         // Create an Action State dummy, since we don't need one
@@ -174,7 +174,7 @@ TEST_F(evaluateTest, testEvalActionFluentSingleAction) {
 // Tests the evaluation of an action fluent with concurrent actions
 TEST_F(evaluateTest, testEvalActionFluentConcurrentActions) {
     string domainName = "earth_observation";
-    string problemFileName = "../../testbed/specialDomains/" + 
+    string problemFileName = "../test/testdomains/" + 
         domainName + "_inst_mdp__03";
     Parser parser(problemFileName);
     parser.parseTask(stateVariableIndices, stateVariableValues);
@@ -635,12 +635,11 @@ TEST_F(evaluateTest, testEvalMultiplicationWithSingleResult) {
     multiplication->evaluate(result, dummyState, *actionDummy);
     ASSERT_DOUBLE_EQ(0, result);
 
-    s = "*($c(1) $c(1))";
+    s = "*(*($c(1) $c(1)) $c(1))";
     multiplication = LogicalExpression::createFromString(s);
     result = 0;
     multiplication->evaluate(result, dummyState, *actionDummy);
     ASSERT_DOUBLE_EQ(1, result);
-
 
     s = "*($c(0) $c(0))";
     multiplication = LogicalExpression::createFromString(s);
@@ -738,20 +737,47 @@ TEST_F(evaluateTest, testEvalNegation) {
 
 // Tests evaluation of multiconditions
 TEST_F(evaluateTest, testEvalMultiCond) {
-    // if (1) then (0.5)
+    // if (1) then (0.5) if(1) then (2)
     std::stringstream ss;
-    ss <<"if($c(1)) then($c(0.5))";
-    s = ss.str();
+    ss << "switch(case($c(1) $c(0.5)) case($c(1) $c(2)))";
+    string s = ss.str();
     LogicalExpression* multicond = LogicalExpression::createFromString(s);
     multicond->evaluate(result, dummyState, *actionDummy);
     ASSERT_DOUBLE_EQ(0.5, result);
 
     // if (0) then (0.5) else (2) = 2
     ss.str("");
-    ss <<"if($c(0)) then($c(0.5)) elif($c(1)) then($c(2))";
+    ss <<"switch(case($c(0) $c(0.5)) case($c(1) $c(2)))";
     s = ss.str();
     result = 0;
     multicond = LogicalExpression::createFromString(s);
     multicond->evaluate(result, dummyState, *actionDummy);
     ASSERT_DOUBLE_EQ(2, result);
 }
+
+// Tests evaluation of if's inside other conditions
+TEST_F(evaluateTest, testEvalNestedCond) {
+    // equals 2 * 0.5 = 1
+    s = "*(switch(case($c(0) $c(1)) case($c(1) $c(2)))"
+        "switch(case($c(1) $c(0.5)) case($c(1) $c(2))))";
+    LogicalExpression* multiplication = LogicalExpression::createFromString(s);
+    multiplication->evaluate(result, dummyState, *actionDummy);
+    ASSERT_DOUBLE_EQ(1, result);
+
+    // equals 3 * 2 * 0.5 = 3
+    s = "*(switch(case($c(0) $c(1)) case($c(0) $c(2)) case($c(1) $c(3)))" 
+        "*(switch(case($c(0) $c(1)) case($c(1) $c(2)))"
+        "switch(case($c(1) $c(0.5)) case($c(1) $c(2)))))";
+    multiplication = LogicalExpression::createFromString(s);
+    multiplication->evaluate(result, dummyState, *actionDummy);
+    ASSERT_DOUBLE_EQ(3, result);
+
+    // equals 3 + 2 + 0.5 = 5.5
+    s = "+(switch(case($c(0) $c(1)) case($c(0) $c(2)) case($c(1) $c(3)))" 
+        "switch(case($c(0) $c(1)) case($c(1) $c(2)))"
+        "switch(case($c(1) $c(0.5)) case($c(1) $c(2))))";
+    multiplication = LogicalExpression::createFromString(s);
+    multiplication->evaluate(result, dummyState, *actionDummy);
+    ASSERT_DOUBLE_EQ(5.5, result);
+}
+
