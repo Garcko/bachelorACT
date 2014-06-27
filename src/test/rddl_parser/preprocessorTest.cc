@@ -11,7 +11,7 @@ using std::set;
 using std::numeric_limits;
 
 // Skill teaching domain includes +,*,-,neg, state, constant, unaries
-TEST(preprocessorTest, calculateMinMaxRewardWithoutVectorCaching) {
+TEST(PreprocessorTest, calculateMinMaxRewardWithoutVectorCaching) {
     // Prepare test setting
     string folder = "../test/testdomains/";
     string domainName = "skill_teaching";
@@ -20,9 +20,9 @@ TEST(preprocessorTest, calculateMinMaxRewardWithoutVectorCaching) {
     RDDLParser parser;
     PlanningTask* task = parser.parse(domainFileName, problemFileName);
     Instantiator instantiator(task);
-    instantiator.instantiateNoOutput();
+    instantiator.instantiate(false);
     Preprocessor preprocessor(task);
-    preprocessor.preprocessNoOutput();
+    preprocessor.preprocess(false);
 
     double minValue = *(task->rewardCPF->domain.begin());
     double maxValue = *(task->rewardCPF->domain.rbegin());
@@ -33,7 +33,7 @@ TEST(preprocessorTest, calculateMinMaxRewardWithoutVectorCaching) {
 
 // Crossing traffic domain includes +,-,neg, state, constant, unaries,
 // conjunction
-TEST(preprocessorTest, calculateMinMaxRewardWithoutVectorCachingUnary) {
+TEST(PreprocessorTest, calculateMinMaxRewardWithoutVectorCachingUnary) {
     // Prepare test setting
     string folder = "../test/testdomains/";
     string domainName = "crossing_traffic";
@@ -42,10 +42,10 @@ TEST(preprocessorTest, calculateMinMaxRewardWithoutVectorCachingUnary) {
     RDDLParser parser;
     PlanningTask* task = parser.parse(domainFileName, problemFileName);
     Instantiator instantiator(task);
-    instantiator.instantiateNoOutput();
+    instantiator.instantiate(false);
     task->rewardCPF->cachingType = "";
     Preprocessor preprocessor(task);
-    preprocessor.preprocessNoOutput();
+    preprocessor.preprocess(false);
 
     double minValue = *(task->rewardCPF->domain.begin());
     double maxValue = *(task->rewardCPF->domain.rbegin());
@@ -54,7 +54,7 @@ TEST(preprocessorTest, calculateMinMaxRewardWithoutVectorCachingUnary) {
     ASSERT_NEAR(0, maxValue, 0.0001);
 }
 
-TEST(preprocessorTest, calculateMinMaxRewardWithoutVectorCachingExists) {
+TEST(PreprocessorTest, calculateMinMaxRewardWithoutVectorCachingExists) {
     // Prepare test setting
     string folder = "../test/testdomains/";
     string domainName = "recon";
@@ -63,10 +63,10 @@ TEST(preprocessorTest, calculateMinMaxRewardWithoutVectorCachingExists) {
     RDDLParser parser;
     PlanningTask* task = parser.parse(domainFileName, problemFileName);
     Instantiator instantiator(task);
-    instantiator.instantiateNoOutput();
+    instantiator.instantiate(false);
     task->rewardCPF->cachingType = "";
     Preprocessor preprocessor(task);
-    preprocessor.preprocessNoOutput();
+    preprocessor.preprocess(false);
 
     double minValue = *(task->rewardCPF->domain.begin());
     double maxValue = *(task->rewardCPF->domain.rbegin());

@@ -39,5 +39,4 @@ protected:
 
 TEST_F(SimplifyTest, testNestedIfThenElseSimplification) {
     testNestedIfThenElseSimplification();
-
 }
