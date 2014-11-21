@@ -19,7 +19,7 @@ src/search/.obj/*
 testbed/highscores/*/*.bz2
 testbed/highscores/*/*.log
 testbed/highscores/*/*.err
-testbed/rddlsim/*
+testbed/rddlsim
 testbed/results/*
 testbed/benchmarks/test/*
 testbed/benchmarks/*/rddl_prefix/*
