@@ -60,7 +60,7 @@ class Instance:
     def getIPPCScore(self, plannerName):
         assert plannerName in self.results
 
-        if self.results[plannerName] < self.minValue:
+        if self.results[plannerName] <= self.minValue:
             return 0.0
         elif self.normFactor == 0:
             return 1.0
