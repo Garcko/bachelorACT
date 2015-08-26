@@ -15,16 +15,16 @@ public:
         initStep(_rootState);
     }
 
-    void wrapInitializeDecisionNode(MCUCTNode* node) {
+    void wrapInitializeDecisionNode(THTSSearchNode* node) {
         initializeDecisionNode(node);
     }
 
-    double wrapVisitDecisionNode(MCUCTNode* node) {
-        return visitDecisionNode(node);
+    void wrapVisitDecisionNode(THTSSearchNode* node) {
+        visitDecisionNode(node);
     }
 
-    MCUCTNode* wrapGetSearchNode() {
-        return getSearchNode();
+    THTSSearchNode* wrapGetRootNode() {
+        return getRootNode();
     }
 
     int getMaxLockDepth() {
@@ -76,9 +76,9 @@ protected:
         search.wrapInitStep(SearchEngine::initialState);
         search.setMaxLockDepth(40);
         // Simulate that the search is already deeper in the tree
-        search.currentStateIndex = 25;
-        search.states[search.currentStateIndex] = lowDepthState;
-        MCUCTNode* node = search.wrapGetSearchNode();
+        search.stepsToGoInCurrentState = 25;
+        search.states[search.stepsToGoInCurrentState] = lowDepthState;
+        THTSSearchNode* node = search.wrapGetRootNode();
         search.wrapInitializeDecisionNode(node);
         ASSERT_EQ(25, search.getMaxLockDepth());
 
@@ -90,8 +90,8 @@ protected:
         State nextDepthState = State(stateVector, 24);
         State::calcStateFluentHashKeys(nextDepthState);
         State::calcStateHashKey(nextDepthState);
-        search.currentStateIndex = 24;
-        search.states[search.currentStateIndex] = nextDepthState;
+        search.stepsToGoInCurrentState = 24;
+        search.states[search.stepsToGoInCurrentState] = nextDepthState;
         search.wrapInitializeDecisionNode(node);
         ASSERT_EQ(25, search.getMaxLockDepth());
 
@@ -104,7 +104,7 @@ protected:
         // Set the actual state and index to the intial state and initialize the
         // node
         search.wrapInitStep(SearchEngine::initialState);
-        MCUCTNode* node = search.wrapGetSearchNode();
+        THTSSearchNode* node = search.wrapGetRootNode();
         // Note that this node is not the same as the current root node 
         search.wrapInitializeDecisionNode(node);
         // Thus we should get one more initialized decision node
@@ -122,35 +122,6 @@ protected:
     vector<vector<string> > stateVariableValues;
 };
 
-
-// What should happen, when we initialize a decision node?
-// - If the node is a reward lock, just set reward lock flag and return
-TEST_F(THTSTest, testInitializeDecisionNodeWithRewardLockNode) {
-    THTSTestSearch search;
-    // Create a state that is a reward lock and set it as root. We use the
-    // crossing_traffic instance, where the state when the robot has reached a
-    // goal is already a reward lock
-    int robotIsAtGoalPosIndex = stateVariableIndices["robot-at(x3, y3)"];
-    vector<double> stateVector;
-    for (int i = 0 ; i < State::numberOfDeterministicStateFluents; ++i) {
-        stateVector.push_back(0);
-    }
-    for (int i = 0; i < State::numberOfProbabilisticStateFluents; ++i) {
-        stateVector.push_back(0);
-    }
-    stateVector[robotIsAtGoalPosIndex] = 1.0;
-    State stateWithRewardLock(stateVector, 5);
-    State::calcStateFluentHashKeys(stateWithRewardLock);
-    State::calcStateHashKey(stateWithRewardLock);
-    // Set the actual state and index to the correct state and initialize the
-    // node
-    search.wrapInitStep(stateWithRewardLock);
-    MCUCTNode* node = search.wrapGetSearchNode();
-    search.wrapInitializeDecisionNode(node);
-    ASSERT_TRUE(node->isARewardLock());
-    ASSERT_EQ(0, node->children.size());
-}
-
 // - If the maximum backupLock depth is still the same as the max search depth,
 // it should get set to the actual depth of the search.
 TEST_F(THTSTest, testInitializeDecisionNodeWhereBackupDepthChanges) {
@@ -165,7 +136,7 @@ TEST_F(THTSTest, testInitializeDecisionNodeCorrectApplicableActions) {
     // Set the actual state and index to the intial state and initialize the
     // node
     search.wrapInitStep(SearchEngine::initialState);
-    MCUCTNode* node = search.wrapGetSearchNode();
+    THTSSearchNode* node = search.wrapGetRootNode();
     search.wrapInitializeDecisionNode(node);
     // For crossing traffic there should be initially 
     // 2 applicable actions (since we start in a corner) + noop
@@ -183,32 +154,3 @@ TEST_F(THTSTest, testCorrectNumberOfInitializedDecisionNodes) {
     testCorrectNumberOfInitializedDecisionNodes();
 }
 
-
-TEST_F(THTSTest, testVisitDecisionNodeWithRewardLock) {
-    THTSTestSearch search;
-    // Create a state that is a reward lock and set it as root. We use the
-    // crossing_traffic instance, where the state when the robot has reached a
-    // goal is already a reward lock
-    int robotIsAtGoalPosIndex = stateVariableIndices["robot-at(x3, y3)"];
-    vector<double> stateVector;
-    for (int i = 0; i < State::numberOfDeterministicStateFluents; ++i) {
-        stateVector.push_back(0);
-    }
-    for (int i = 0; i < State::numberOfProbabilisticStateFluents; ++i) {
-        stateVector.push_back(0);
-    }
-    stateVector[robotIsAtGoalPosIndex] = 1.0;
-    State stateWithRewardLock = State(stateVector, 5);
-    State::calcStateFluentHashKeys(stateWithRewardLock);
-    State::calcStateHashKey(stateWithRewardLock);
-
-    // Set the actual state and index to the correct state and initialize the
-    // node
-    search.wrapInitStep(stateWithRewardLock);
-    MCUCTNode* node = search.wrapGetSearchNode();
-    search.setCurrentRootNode(node);
-    // The reward is calculated by 
-    // reward + futReward * (ignoredSteps + currentStateIndex).
-    ASSERT_DOUBLE_EQ(0, search.wrapVisitDecisionNode(node));
-
-}

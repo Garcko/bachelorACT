@@ -12,19 +12,19 @@ using std::vector;
 class UCTBaseTestSearch : public MCUCTSearch {
 public:
     // wrapper to test protected methods
-    int wrapSelectAction(MCUCTNode* node) {
+    int wrapSelectAction(THTSSearchNode* node) {
         return selectAction(node);
     }
 
-    void wrapSelectActionBasedOnUCTFormula(MCUCTNode* parent) {
+    void wrapSelectActionBasedOnUCTFormula(THTSSearchNode* parent) {
         selectActionBasedOnUCTFormula(parent);
     }
 
-    void wrapSelectLeastVisitedAction(MCUCTNode* parent) {
+    void wrapSelectLeastVisitedAction(THTSSearchNode* parent) {
         selectLeastVisitedAction(parent);
     }
 
-    void wrapSelectUnselectedAction(MCUCTNode* parent) {
+    void wrapSelectUnselectedAction(THTSSearchNode* parent) {
         selectUnselectedAction(parent);
     }
 
@@ -80,11 +80,11 @@ protected:
         // initialize other variables
         initVisits = 1;
         qValue = 10.0;
-        parent = new MCUCTNode();
-        child = new MCUCTNode();
-        childOne = new MCUCTNode();
-        childTwo = new MCUCTNode();
-        childThree = new MCUCTNode();
+        parent = new THTSSearchNode(1.0, 40);
+        child = new THTSSearchNode(1.0, 40);
+        childOne = new THTSSearchNode(1.0, 40);
+        childTwo = new THTSSearchNode(1.0, 40);
+        childThree = new THTSSearchNode(1.0, 40);
     }
 
     // Cleanup after each test
@@ -275,11 +275,11 @@ protected:
     vector<vector<string> > stateVariableValues;
     int initVisits;
     double qValue;
-    MCUCTNode* parent;
-    MCUCTNode* child;
-    MCUCTNode* childOne;
-    MCUCTNode* childTwo;
-    MCUCTNode* childThree;
+    THTSSearchNode* parent;
+    THTSSearchNode* child;
+    THTSSearchNode* childOne;
+    THTSSearchNode* childTwo;
+    THTSSearchNode* childThree;
 };
 
 // tests the UCT selection with a log function as the exploration-rate
@@ -316,16 +316,16 @@ TEST_F(UCTBaseTest, testValueFromString) {
     string param = "-er";
     string value = "SQRT";
     search.setValueFromString(param, value);
-    EXPECT_EQ(UCTBase<MCUCTNode>::SQRT, search.getERFunction());
+    EXPECT_EQ(UCTBase<THTSSearchNode>::SQRT, search.getERFunction());
     value = "LOG";
     search.setValueFromString(param, value);
-    EXPECT_EQ(UCTBase<MCUCTNode>::LOG, search.getERFunction());
+    EXPECT_EQ(UCTBase<THTSSearchNode>::LOG, search.getERFunction());
     value = "LIN";
     search.setValueFromString(param, value);
-    EXPECT_EQ(UCTBase<MCUCTNode>::LIN, search.getERFunction());
+    EXPECT_EQ(UCTBase<THTSSearchNode>::LIN, search.getERFunction());
     value = "LNQUAD";
     search.setValueFromString(param, value);
-    EXPECT_EQ(UCTBase<MCUCTNode>::LNQUAD, search.getERFunction());
+    EXPECT_EQ(UCTBase<THTSSearchNode>::LNQUAD, search.getERFunction());
 
     // before we set uniform root, the value should be false
     EXPECT_FALSE(search.LeastVisitedEnabled());

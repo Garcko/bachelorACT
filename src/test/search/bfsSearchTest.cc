@@ -11,27 +11,29 @@ class BFSTestSearch : public BreadthFirstSearch {
 public:
 
     // Wrapper functions to access protected functions
-    void wrapInitializeDecisionNodeChild(BFSNode* node,
-            unsigned int const& actionIndex,
-            double const& initialQValue) {
-        initializeDecisionNodeChild(node, actionIndex, initialQValue);
+    void wrapInitializeDecisionNodeChild(THTSSearchNode* node,
+                                         unsigned int const& actionIndex,
+                                         double const& initialQValue) {
+        node->children[actionIndex]->futureReward = initialQValue;
+    }
+    
+    void wrapBackupDecisionNodeLeaf(THTSSearchNode* node, double const& immReward,
+                                    double const& futureReward) {
+        node->immediateReward = immReward;
+        backupDecisionNodeLeaf(node, futureReward);
     }
 
-    void wrapBackupDecisionNodeLeaf(BFSNode* node, double const& immReward,
-            double const& futureReward) {
-        backupDecisionNodeLeaf(node, immReward, futureReward);
+    void wrapBackupDecisionNode(THTSSearchNode* node, double const& immReward,
+                                double const& futureReward) {
+        node->immediateReward = immReward;
+        backupDecisionNode(node, futureReward);
     }
 
-    void wrapBackupDecisionNode(BFSNode* node, double const& immReward,
-            double const& futureReward) {
-        backupDecisionNode(node, immReward, futureReward);
-    }
-
-    void wrapBackupChanceNode(BFSNode* node, double const& futReward) {
+    void wrapBackupChanceNode(THTSSearchNode* node, double const& futReward) {
         backupChanceNode(node, futReward);
     }
 
-    int wrapSelectAction(BFSNode* node) {
+    int wrapSelectAction(THTSSearchNode* node) {
         return selectAction(node);
     }
 
@@ -60,10 +62,10 @@ protected:
 
         // Initialize other variables
         qValue = 10.0;
-        parent = new BFSNode();
-        childOne = new BFSNode();
-        childTwo = new BFSNode();
-        childThree = new BFSNode();
+        parent = new THTSSearchNode(1.0, 40);
+        childOne = new THTSSearchNode(1.0, 40);
+        childTwo = new THTSSearchNode(1.0, 40);
+        childThree = new THTSSearchNode(1.0, 40);
         srand(1);
     }
 
@@ -77,26 +79,11 @@ protected:
     map<string, int> stateVariableIndices;
     vector<vector<string> > stateVariableValues;
     double qValue;
-    BFSNode* parent;
-    BFSNode* childOne;
-    BFSNode* childTwo;
-    BFSNode* childThree;
+    THTSSearchNode* parent;
+    THTSSearchNode* childOne;
+    THTSSearchNode* childTwo;
+    THTSSearchNode* childThree;
 };
-
-// Tests the initialization of a decision node child
-TEST_F(BFSSearchTest, testBFSInitializeDecisionNodeChild) {
-    BFSTestSearch search;
-    parent->children.push_back(childOne);
-    parent->children.push_back(childTwo);
-    search.wrapInitializeDecisionNodeChild(parent, 0, 10);
-    search.wrapInitializeDecisionNodeChild(parent, 1, -10);
-    EXPECT_DOUBLE_EQ(400, parent->getExpectedFutureRewardEstimate());
-    EXPECT_DOUBLE_EQ(400, parent->children[0]->getExpectedFutureRewardEstimate());
-    EXPECT_DOUBLE_EQ(-400, parent->children[1]->getExpectedFutureRewardEstimate());
-    EXPECT_EQ(0, parent->getNumberOfVisits());
-    EXPECT_EQ(0, parent->children[0]->getNumberOfVisits());
-    EXPECT_EQ(0, parent->children[1]->getNumberOfVisits());
-}
 
 // Tests the outcome selection
 TEST_F(BFSSearchTest, testBFSSelectOutcome) {
@@ -109,7 +96,7 @@ TEST_F(BFSSearchTest, testBFSBackupDecisionNodeLeaf) {
     // Create a node with futReward 0 without accessing private members
     parent->children.push_back(childOne);
     search.wrapInitializeDecisionNodeChild(parent, 0, 0);
-    BFSNode* node = parent->children[0];
+    THTSSearchNode* node = parent->children[0];
     search.wrapBackupDecisionNodeLeaf(node, 10, 20);
     EXPECT_DOUBLE_EQ(20, node->getExpectedFutureRewardEstimate());
     EXPECT_DOUBLE_EQ(30, node->getExpectedRewardEstimate());
@@ -167,8 +154,8 @@ TEST_F(BFSSearchTest, testBFSSelectAction) {
     parent->children.push_back(childTwo);
     parent->children.push_back(childThree);
 
-    BFSNode* grandchildOne = new BFSNode();
-    BFSNode* grandchildTwo = new BFSNode();
+    THTSSearchNode* grandchildOne = new THTSSearchNode(1.0, 40);
+    THTSSearchNode* grandchildTwo = new THTSSearchNode(1.0, 40);
 
     childTwo->children.push_back(grandchildOne);
     childThree->children.push_back(grandchildTwo);
