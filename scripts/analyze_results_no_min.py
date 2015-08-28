@@ -1,8 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: latin-1 -*-
 
-# This scripts calculates IPPC scores for all planner configurations
-# in ${PROST_ROOT_DIR}/testbed/highscores and in resultDirs (if given)
+# This script creates an overview of results of different planner
+# configurations; IPPC scores are based only on all available planners (i.e.,
+# there is no min-algorithm). Careful, it is possible that all configuration
+# perform similar or that small result differences lead to huge IPPC score
+# differences.
 
 import os
 import sys
@@ -11,7 +14,6 @@ import summarize_results
 
 import xml.etree.ElementTree as ET
 
-highscoreDir = "../testbed/highscores/"
 printFatThreshold = 0.95
 totalScorePrintFatThreshold = 0.9
 
@@ -42,25 +44,26 @@ class Instance:
     def __init__(self, domain, name, minValue):
         self.domain = domain
         self.name = name
-        self.minValue = minValue
-        self.maxValue = None
+        self.minValue = float('inf')
+        self.maxValue = float('-inf')
         self.normFactor = None
         self.results = dict()
         self.confidence95 = dict()
         self.times = dict()
 
     def calcValue(self):
-        self.maxValue = self.minValue
         for planner in self.results:
             if self.results[planner] > self.maxValue:
                 self.maxValue = self.results[planner]
+            if self.results[planner] < self.minValue:
+                self.minValue = self.results[planner]
 
         self.normFactor = self.maxValue - self.minValue 
 
     def getIPPCScore(self, plannerName):
         assert plannerName in self.results
 
-        if self.results[plannerName] <= self.minValue:
+        if self.results[plannerName] < self.minValue:
             return 0.0
         elif self.normFactor == 0:
             return 1.0
@@ -73,14 +76,13 @@ class Instance:
             print planner + ": " +  str(self.results[planner])
 
 class Planner:
-    def __init__(self, name, totalTime, plannerType):
+    def __init__(self, name, totalTime):
         self.name = name
         self.totalTime = totalTime
         self.timesPerDomain = dict()
         self.rewards = dict()
         self.confidence95 = dict()
         self.times = dict()
-        self.plannerType = plannerType
 
 def initDomains(minDirName):
     assert os.path.isdir(minDirName)
@@ -113,7 +115,7 @@ def initDomains(minDirName):
 
     return domRes
 
-def readResults(dirName, domains, planners, plannerType):
+def readResults(dirName, domains, planners):
     if not os.path.isdir(dirName):
         return domains, planners
 
@@ -127,7 +129,7 @@ def readResults(dirName, domains, planners, plannerType):
     name = root.find('PlannerName').text
     totalTime = float(root.find('Time').text)
 
-    planner = Planner(name, totalTime, plannerType)
+    planner = Planner(name, totalTime)
     planners.append(planner)
 
     for domChild in root.findall('Domain'):
@@ -205,44 +207,21 @@ def addTotalTimeTable(doc, domains, planners):
     head.add_hline()
     head.add_hline()
     table.foot().add_hline()
-    hasOther = False
 
     for planner in planners:
-        if planner.plannerType is "MinMax":
-            table.add_cell(planner.name)
+        table.add_cell(planner.name)
 
-            numberOfInstances = 0
-            for domainName in domains:
-                if planner.timesPerDomain[domainName] < 0.0:
-                    table.add_cell("n/a", span=2, align="c")
-                else:
-                    table.add_cell(str(round(planner.timesPerDomain[domainName]/60.0,2)), span=2, align="c")
-            if planner.totalTime < 0.0:
+        numberOfInstances = 0
+        for domainName in domains:
+            if planner.timesPerDomain[domainName] < 0.0:
                 table.add_cell("n/a", span=2, align="c")
             else:
-                table.add_cell(str(round(planner.totalTime/60.0,2)), span=2, align="c")
-            table.add_row()
+                table.add_cell(str(round(planner.timesPerDomain[domainName]/60.0,2)), span=2, align="c")
+        if planner.totalTime < 0.0:
+            table.add_cell("n/a", span=2, align="c")
         else:
-            hasOther = True
-
-    if hasOther:
-        table.add_hline()
-
-    for planner in planners:
-        if planner.plannerType is "Other":
-            table.add_cell(planner.name)
-
-            numberOfInstances = 0
-            for domainName in domains:
-                if planner.timesPerDomain[domainName] < 0.0:
-                    table.add_cell("n/a", span=2, align="c")
-                else:
-                    table.add_cell(str(round(planner.timesPerDomain[domainName]/60.0,2)), span=2, align="c")
-            if planner.totalTime < 0.0:
-                table.add_cell("n/a", span=2, align="c")
-            else:
-                table.add_cell(str(round(planner.totalTime/60.0,2)), span=2, align="c")
-            table.add_row()
+            table.add_cell(str(round(planner.totalTime/60.0,2)), span=2, align="c")
+        table.add_row()
 
     doc.add(table, r"\bigskip") 
 
@@ -263,66 +242,33 @@ def addTotalIPPCScoreTable(doc, domains, planners):
     head.add_hline()
     table.foot().add_hline()
 
-    hasOther = False
-
     for planner in planners:
-        if planner.plannerType is "MinMax":
-            table.add_cell(planner.name)
+        table.add_cell(planner.name)
 
-            IPPCSum = float(0.0)
-            numberOfInstances = 0
-            for domainName in domains:
-                domainSum = float(0.0)
-                for instanceName in domains[domainName].instances:
-                    numberOfInstances += 1
-                    domainSum += domains[domainName].instances[instanceName].getIPPCScore(planner.name)
-                    IPPCSum += domains[domainName].instances[instanceName].getIPPCScore(planner.name)
-                domainSum = round(float(domainSum/float(len(domains[domainName].instances))),2)
-                if domainSum == 1.0:
-                    table.add_cell("\\textbf{\\textcolor{red}{"+str(domainSum)+"}}", span=2, align="c")
-                else:
-                    table.add_cell(str(domainSum), span=2, align="c")
-
-            IPPCSum = round(float(IPPCSum / (float(numberOfInstances))),2)
-            if IPPCSum >= 0.98:
-                table.add_cell("\\textbf{\\textcolor{red}{"+str(IPPCSum)+"}}", span=2, align="c")
+        IPPCSum = float(0.0)
+        numberOfInstances = 0
+        for domainName in domains:
+            domainSum = float(0.0)
+            for instanceName in domains[domainName].instances:
+                numberOfInstances += 1
+                domainSum += domains[domainName].instances[instanceName].getIPPCScore(planner.name)
+                IPPCSum += domains[domainName].instances[instanceName].getIPPCScore(planner.name)
+            domainSum = round(float(domainSum/float(len(domains[domainName].instances))),2)
+            if domainSum == 1.0:
+                table.add_cell("\\textbf{\\textcolor{red}{"+str(domainSum)+"}}", span=2, align="c")
+            elif domainSum > printFatThreshold:
+                table.add_cell("\\textbf{"+str(domainSum)+"}", span=2, align="c")
             else:
-                table.add_cell(str(IPPCSum), span=2, align="c")
-            table.add_row()
+                table.add_cell(str(domainSum), span=2, align="c")
+
+        IPPCSum = round(float(IPPCSum / (float(numberOfInstances))),2)
+        if IPPCSum >= 0.98:
+            table.add_cell("\\textbf{\\textcolor{red}{"+str(IPPCSum)+"}}", span=2, align="c")
+        elif IPPCSum > totalScorePrintFatThreshold:
+            table.add_cell("\\textbf{"+str(IPPCSum)+"}", span=2, align="c")
         else:
-            hasOther = True
-
-    if hasOther:
-        table.add_hline()
-
-    for planner in planners:
-        if planner.plannerType is "Other":
-            table.add_cell(planner.name)
-
-            IPPCSum = float(0.0)
-            numberOfInstances = 0
-            for domainName in domains:
-                domainSum = float(0.0)
-                for instanceName in domains[domainName].instances:
-                    numberOfInstances += 1
-                    domainSum += domains[domainName].instances[instanceName].getIPPCScore(planner.name)
-                    IPPCSum += domains[domainName].instances[instanceName].getIPPCScore(planner.name)
-                domainSum = round(float(domainSum/float(len(domains[domainName].instances))),2)
-                if domainSum == 1.0:
-                    table.add_cell("\\textbf{\\textcolor{red}{"+str(domainSum)+"}}", span=2, align="c")
-                elif domainSum > printFatThreshold:
-                    table.add_cell("\\textbf{"+str(domainSum)+"}", span=2, align="c")
-                else:
-                    table.add_cell(str(domainSum), span=2, align="c")
-
-            IPPCSum = round(float(IPPCSum / (float(numberOfInstances))),2)
-            if IPPCSum >= 0.98:
-                table.add_cell("\\textbf{\\textcolor{red}{"+str(IPPCSum)+"}}", span=2, align="c")
-            elif IPPCSum > totalScorePrintFatThreshold:
-                table.add_cell("\\textbf{"+str(IPPCSum)+"}", span=2, align="c")
-            else:
-                table.add_cell(str(IPPCSum), span=2, align="c")
-            table.add_row()
+            table.add_cell(str(IPPCSum), span=2, align="c")
+        table.add_row()
 
     doc.add(table, r"\bigskip")        
 
@@ -342,36 +288,17 @@ def addIPPCScoreTable(doc, domain, planners):
     head.add_hline()
     table.foot().add_hline()
 
-    hasOther = False
-
     for planner in planners:
-        if planner.plannerType is "MinMax":
-            table.add_cell(planner.name)
-            for instanceName in domain.instances:
-                score = domain.instances[instanceName].getIPPCScore(planner.name)
-                if score == 1.0:
-                    table.add_cell("\\textbf{\\textcolor{red}{"+str(score)+"}}", span=2, align="c")
-                else:
-                    table.add_cell(str(score), span=2, align="c")
-            table.add_row()
-        else:
-            hasOther = True
-
-    if hasOther:
-        table.add_hline()
-
-    for planner in planners:
-        if planner.plannerType is "Other":
-            table.add_cell(planner.name)
-            for instanceName in domain.instances:
-                score = domain.instances[instanceName].getIPPCScore(planner.name)
-                if score == 1.0:
-                    table.add_cell("\\textbf{\\textcolor{red}{"+str(score)+"}}", span=2, align="c")
-                elif score > printFatThreshold:
-                    table.add_cell("\\textbf{"+str(score)+"}", span=2, align="c")
-                else:
-                    table.add_cell(str(score), span=2, align="c")
-            table.add_row()
+        table.add_cell(planner.name)
+        for instanceName in domain.instances:
+            score = domain.instances[instanceName].getIPPCScore(planner.name)
+            if score == 1.0:
+                table.add_cell("\\textbf{\\textcolor{red}{"+str(score)+"}}", span=2, align="c")
+            elif score > printFatThreshold:
+                table.add_cell("\\textbf{"+str(score)+"}", span=2, align="c")
+            else:
+                table.add_cell(str(score), span=2, align="c")
+        table.add_row()
 
     doc.add(table, r"\bigskip")
 
@@ -391,57 +318,31 @@ def addRewardTable(doc, domain, planners):
     head.add_hline()
     table.foot().add_hline()
 
-    hasOther = False
-
     for planner in planners:
-        if planner.plannerType is "MinMax":
-            table.add_cell(planner.name)
-            for instanceName in domain.instances:
-                reward = domain.instances[instanceName].results[planner.name]
-                score = domain.instances[instanceName].getIPPCScore(planner.name)
-                conf95 = domain.instances[instanceName].confidence95[planner.name]
-                if score == 1.0:
-                    table.add_cell("\\textbf{\\textcolor{red}{"+str(reward)+"($\\pm$"+str(conf95)+")}}", span=2, align="c")
-                else:
-                    table.add_cell("$"+str(reward)+"(\\pm"+str(conf95)+")$", span=2, align="c")
-            table.add_row()
-        else:
-            hasOther = True
-
-    if hasOther:
-        table.add_hline()
-
-    for planner in planners:
-        if planner.plannerType is "Other":
-            table.add_cell(planner.name)
-            for instanceName in domain.instances:
-                reward = domain.instances[instanceName].results[planner.name]
-                score = domain.instances[instanceName].getIPPCScore(planner.name)
-                conf95 = domain.instances[instanceName].confidence95[planner.name]
-                if score == 1.0:
-                    table.add_cell("\\textbf{\\textcolor{red}{"+str(reward)+"($\pm$"+str(conf95)+")}}", span=2, align="c")
-                elif score > printFatThreshold:
-                    table.add_cell("\\textbf{$"+str(reward)+"(\\pm"+str(conf95)+")$}", span=2, align="c")
-                else:
-                    table.add_cell("$"+str(reward)+"(\\pm"+str(conf95)+")$", span=2, align="c")
-            table.add_row()
+        table.add_cell(planner.name)
+        for instanceName in domain.instances:
+            reward = domain.instances[instanceName].results[planner.name]
+            score = domain.instances[instanceName].getIPPCScore(planner.name)
+            conf95 = domain.instances[instanceName].confidence95[planner.name]
+            if score == 1.0:
+                table.add_cell("\\textbf{\\textcolor{red}{"+str(reward)+"($\pm$"+str(conf95)+")}}", span=2, align="c")
+            elif score > printFatThreshold:
+                table.add_cell("\\textbf{$"+str(reward)+"(\\pm"+str(conf95)+")$}", span=2, align="c")
+            else:
+                table.add_cell("$"+str(reward)+"(\\pm"+str(conf95)+")$", span=2, align="c")
+        table.add_row()
 
     doc.add(table, r"\bigskip")
 
 def analyzeResults(directory, outFile, compress):
-    summarize_results.summarizeResults(highscoreDir, compress)
-
-    domains = initDomains(highscoreDir+"/min")
     planners = list()
+    domains = initDomains(directory+"/min")
 
-    resultDirNames = os.listdir(highscoreDir)
-    for resultDirName in resultDirNames:
-        domains, plannerNames = readResults(highscoreDir+resultDirName, domains, planners, "MinMax")
-
-    summarize_results.summarizeResults(directory, compress)
+    #summarize_results.summarizeResults(directory, compress)
     resultDirNames = os.listdir(directory)
     for resultDirName in resultDirNames:
-        domains, plannerNames = readResults(directory+resultDirName, domains, planners, "Other")
+        print resultDirName
+        domains, plannerNames = readResults(directory+resultDirName, domains, planners)
 
     for d in domains:
         domains[d].calcValues()

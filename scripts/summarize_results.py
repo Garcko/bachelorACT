@@ -13,7 +13,7 @@ import statistics
 
 doCompress = True
 benchmarkSet = "IPPC2011"
-numberOfRuns = 30 #TODO: Derive this automatically!
+numberOfRuns = 100 #TODO: Derive this automatically!
 
 def summarizeResultsOfDir(dirName, plannerName):
     if not os.path.isdir(dirName):

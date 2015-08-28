@@ -8,19 +8,35 @@ using std::string;
 using std::map;
 using std::vector;
 
+
 class MCUCTTestSearch : public MCUCTSearch {
 public:
 
     // Wrapper functions to access protected functions
-    void wrapInitializeDecisionNodeChild(MCUCTNode* node,
-            unsigned int const& actionIndex,
-            double const& initialQValue) {
-        initializeDecisionNodeChild(node, actionIndex, initialQValue);
+    void wrapInitializeDecisionNode(THTSSearchNode* node,
+                                    std::vector<double> const& initialQValues) {
+        // This is mostly a copy of THTS::initializeDecisionNode
+        node->futureReward = -std::numeric_limits<double>::max();
+        assert(node->children.size() == initialQValues.size());
+
+        for (unsigned int index = 0; index < node->children.size(); ++index) {
+            node->children[index]->futureReward =
+                (double)node->remainingSteps * initialQValues[index];
+            node->children[index]->numberOfVisits = numberOfInitialVisits;
+
+            node->numberOfVisits += numberOfInitialVisits;
+            node->futureReward =
+                std::max(node->futureReward, node->children[index]->futureReward);
+        }
     }
 
-    void wrapBackupDecisionNode(MCUCTNode* node, double const& immReward,
-            double const& futureReward) {
-        backupDecisionNode(node, immReward, futureReward);
+    void wrapBackupDecisionNode(THTSSearchNode* node,
+                                double const& immReward,
+                                double const& futureReward) {
+        node->immediateReward = immReward;
+        std::cout << "1" << std::endl;
+        backupDecisionNode(node, futureReward);
+        std::cout << "3" << std::endl;
     }
 };
 
@@ -36,14 +52,13 @@ protected:
         string problemFileName = "../test/testdomains/elevators_inst_mdp__1";
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
-
         // Create Prost Planner
         string plannerDesc = "[PROST -se [MC-UCT]]";
         planner = new ProstPlanner(plannerDesc);
 
         // initialize other variables
         initVisits = 1;
-        qValue = 10.0;
+        qValues.push_back(10.0);
     }
 
     // virtual void TearDown() will be called after each test is run.
@@ -59,20 +74,19 @@ protected:
     map<string, int> stateVariableIndices;
     vector<vector<string> > stateVariableValues;
     int initVisits;
-    double qValue;
+    std::vector<double> qValues;
 };
 
-// tests the initialization of a decicion node child
+// Tests the initialization of a decicion node child
 TEST_F(MCUCTSearchTest, testMCUCTInitializeDecisionNodeChild) {
     MCUCTTestSearch uctSearch;
     uctSearch.setNumberOfInitialVisits(initVisits);
-    MCUCTNode* parent = new MCUCTNode();
-    MCUCTNode* child = new MCUCTNode();
+    THTSSearchNode* parent = new THTSSearchNode(1.0, 40);
+    THTSSearchNode* child = new THTSSearchNode(1.0, 40);
     parent->children.push_back(child);
-    uctSearch.wrapInitializeDecisionNodeChild(parent, 0, qValue);
+    uctSearch.wrapInitializeDecisionNode(parent, qValues);
     EXPECT_DOUBLE_EQ(400, parent->getExpectedFutureRewardEstimate());
     EXPECT_EQ(1, parent->getNumberOfVisits());
-
     delete parent;
     delete child;
 }
@@ -81,15 +95,15 @@ TEST_F(MCUCTSearchTest, testMCUCTInitializeDecisionNodeChild) {
 TEST_F(MCUCTSearchTest, testMCUCTBackupDecisionNode) {
     MCUCTTestSearch uctSearch;
     uctSearch.setNumberOfInitialVisits(initVisits);
-    MCUCTNode* parent = new MCUCTNode();
-    MCUCTNode* child = new MCUCTNode();
+     THTSSearchNode* parent = new THTSSearchNode(1.0, 40);
+    THTSSearchNode* child = new THTSSearchNode(1.0, 40);
     parent->children.push_back(child);
     // sets the future reward to 400 and the visits to 1
-    uctSearch.wrapInitializeDecisionNodeChild(parent, 0, qValue);
+    uctSearch.wrapInitializeDecisionNode(parent, qValues);
     // performs a backup with immediate and future rewards both 0
     uctSearch.wrapBackupDecisionNode(parent, 0, 0);
     EXPECT_EQ(2, parent->getNumberOfVisits());
-    EXPECT_DOUBLE_EQ(200, parent->getExpectedRewardEstimate());
+    EXPECT_DOUBLE_EQ(400, parent->getExpectedRewardEstimate());
     //performs another backup
     uctSearch.wrapBackupDecisionNode(parent, 20, 100);
     EXPECT_EQ(3, parent->getNumberOfVisits());

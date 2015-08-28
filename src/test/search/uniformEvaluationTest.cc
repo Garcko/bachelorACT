@@ -96,7 +96,7 @@ TEST(UniformEvaluationTest, testSetValueFromString) {
     value = "INFTY";
 
     // Dummies to simulate a rewardCPF
-    LogicalExpression* dummyExp = NULL;
+    LogicalExpression* dummyExp = nullptr;
     RewardFunction dummyCPF(dummyExp, 0, -2.0, 3.0, true);
     SearchEngine::rewardCPF = &dummyCPF;
     uniSearch.setValueFromString(param, value);
