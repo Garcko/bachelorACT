@@ -15,17 +15,17 @@
 using namespace std;
 
 ProstPlanner::ProstPlanner(string& plannerDesc) :
-    searchEngine(NULL),
+    searchEngine(nullptr),
     currentState(SearchEngine::initialState),
     currentRound(-1),
     currentStep(-1),
-    remainingSteps(SearchEngine::horizon),
+    stepsToGo(SearchEngine::horizon),
     numberOfRounds(-1),
     cachingEnabled(true),
     ramLimit(2097152),
     bitSize(sizeof(long) * 8),
     tmMethod(NONE) {
-    setSeed((int) time(NULL));
+    setSeed((int) time(nullptr));
 
     StringUtils::trim(plannerDesc);
     assert(plannerDesc[0] == '[' && plannerDesc[plannerDesc.size() - 1] == ']');
@@ -159,7 +159,7 @@ void ProstPlanner::finishSession(double& totalReward) {
 void ProstPlanner::initRound(long const& remainingTime) {
     ++currentRound;
     currentStep = -1;
-    remainingSteps = SearchEngine::horizon + 1;
+    stepsToGo = SearchEngine::horizon + 1;
 
     cout << "***********************************************" << endl
          << ">>> STARTING ROUND " << (currentRound + 1)
@@ -176,7 +176,7 @@ void ProstPlanner::finishRound(double const& roundReward) {
 
 void ProstPlanner::initStep(vector<double> const& nextStateVec, long const& remainingTime) {
     ++currentStep;
-    --remainingSteps;
+    --stepsToGo;
 
     cout << "***********************************************"
          << endl << "Planning step " << (currentStep + 1) << "/" 
@@ -187,7 +187,7 @@ void ProstPlanner::initStep(vector<double> const& nextStateVec, long const& rema
 
     assert(nextStateVec.size() == State::numberOfDeterministicStateFluents + State::numberOfProbabilisticStateFluents);
 
-    currentState = State(nextStateVec, remainingSteps);
+    currentState = State(nextStateVec, stepsToGo);
     State::calcStateFluentHashKeys(currentState);
     State::calcStateHashKey(currentState);
 

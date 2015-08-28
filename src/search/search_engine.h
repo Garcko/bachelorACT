@@ -79,8 +79,7 @@ public:
 protected:
     // Calculate the reward (since the reward must be deteriministic, this is
     // identical for probabilistic and deterministic search engines)
-    void calcReward(State const& current, int const& actionIndex,
-            double& reward) const {
+    void calcReward(State const& current, int const& actionIndex, double& reward) const {
         rewardCPF->evaluate(reward, current, actionStates[actionIndex]);
     }
 
@@ -338,7 +337,7 @@ protected:
                 for (size_t actionIndex = 0; actionIndex < numberOfActions; ++actionIndex) {
                     if (actionIsApplicable(actionStates[actionIndex], state)) {
                         // This action is applicable
-                        PDState nxt(state.remainingSteps() - 1);
+                        PDState nxt(state.stepsToGo() - 1);
                         calcSuccessorState(state, actionIndex, nxt);
 
                         if (childStates.find(nxt) == childStates.end()) {
