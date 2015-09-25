@@ -1,8 +1,9 @@
 #include "../gtest/gtest.h"
-#include "../../search/thts.h"
+
 #include "../../search/prost_planner.h"
+#include "../../search/thts.h"
 #include "../../search/parser.h"
-#include "../../search/mc_uct_search.h"
+
 using std::string;
 using std::vector;
 using std::map;

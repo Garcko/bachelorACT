@@ -1,7 +1,7 @@
 #include "../gtest/gtest.h"
-#include "../../search/uct_base.h"
-#include "../../search/mc_uct_search.h"
+
 #include "../../search/prost_planner.h"
+#include "../../search/thts.h"
 #include "../../search/parser.h"
 
 using std::string;
@@ -9,34 +9,32 @@ using std::map;
 using std::vector;
 
 
-class MCUCTTestSearch : public MCUCTSearch {
+class MCUCTTestSearch : public THTS {
 public:
-
-    // Wrapper functions to access protected functions
-    void wrapInitializeDecisionNode(THTSSearchNode* node,
-                                    std::vector<double> const& initialQValues) {
-        // This is mostly a copy of THTS::initializeDecisionNode
-        node->futureReward = -std::numeric_limits<double>::max();
-        assert(node->children.size() == initialQValues.size());
-
-        for (unsigned int index = 0; index < node->children.size(); ++index) {
-            node->children[index]->futureReward =
-                (double)node->remainingSteps * initialQValues[index];
-            node->children[index]->numberOfVisits = numberOfInitialVisits;
-
-            node->numberOfVisits += numberOfInitialVisits;
-            node->futureReward =
-                std::max(node->futureReward, node->children[index]->futureReward);
-        }
+    MCUCTTestSearch() :
+        THTS("MCUCTTestSearch") {
+        setActionSelection(new UCB1ActionSelection(this));
+        setOutcomeSelection(new MCOutcomeSelection(this));
+        setBackupFunction(new MCBackupFunction(this));
     }
 
-    void wrapBackupDecisionNode(THTSSearchNode* node,
-                                double const& immReward,
-                                double const& futureReward) {
+    // Wrapper functions to access protected functions
+    void wrapInitializeDecisionNodeChild(SearchNode* node,
+                                         unsigned int const& actionIndex,
+                                         double const& initialQValue) {
+        node->children[actionIndex] = getChanceNode(1.0);
+        node->children[actionIndex]->futureReward = initialQValue;
+        node->children[actionIndex]->numberOfVisits = 1;
+
+        node->numberOfVisits += numberOfInitialVisits;
+        node->futureReward =
+            std::max(node->futureReward, node->children[actionIndex]->futureReward);
+    }
+
+    void wrapBackupDecisionNode(SearchNode* node,
+                                double const& immReward) {
         node->immediateReward = immReward;
-        std::cout << "1" << std::endl;
-        backupDecisionNode(node, futureReward);
-        std::cout << "3" << std::endl;
+        backupFunction->backupDecisionNode(node);
     }
 };
 
@@ -49,16 +47,17 @@ protected:
     // Otherwise, this can be skipped.
     virtual void SetUp() {
         // Parse elevator task
+        stateVariableIndices.clear();
+        stateVariableValues.clear();
+
         string problemFileName = "../test/testdomains/elevators_inst_mdp__1";
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
         // Create Prost Planner
-        string plannerDesc = "[PROST -se [MC-UCT]]";
+        string plannerDesc = "[PROST -se [THTS -act [UCB1] -out [MC] -backup [MC] -i [Uniform]]]";
         planner = new ProstPlanner(plannerDesc);
-
         // initialize other variables
         initVisits = 1;
-        qValues.push_back(10.0);
     }
 
     // virtual void TearDown() will be called after each test is run.
@@ -74,43 +73,39 @@ protected:
     map<string, int> stateVariableIndices;
     vector<vector<string> > stateVariableValues;
     int initVisits;
-    std::vector<double> qValues;
 };
 
 // Tests the initialization of a decicion node child
 TEST_F(MCUCTSearchTest, testMCUCTInitializeDecisionNodeChild) {
     MCUCTTestSearch uctSearch;
     uctSearch.setNumberOfInitialVisits(initVisits);
-    THTSSearchNode* parent = new THTSSearchNode(1.0, 40);
-    THTSSearchNode* child = new THTSSearchNode(1.0, 40);
-    parent->children.push_back(child);
-    uctSearch.wrapInitializeDecisionNode(parent, qValues);
-    EXPECT_DOUBLE_EQ(400, parent->getExpectedFutureRewardEstimate());
-    EXPECT_EQ(1, parent->getNumberOfVisits());
+
+    SearchNode* parent = new SearchNode(1.0, 40);
+    parent->children.resize(1, nullptr);
+    uctSearch.wrapInitializeDecisionNodeChild(parent, 0, 10.0);
+
+    EXPECT_DOUBLE_EQ(10, parent->getExpectedFutureRewardEstimate());
+    EXPECT_EQ(1, parent->numberOfVisits);
     delete parent;
-    delete child;
 }
 
 // Tests the backup function for decision nodes
 TEST_F(MCUCTSearchTest, testMCUCTBackupDecisionNode) {
     MCUCTTestSearch uctSearch;
     uctSearch.setNumberOfInitialVisits(initVisits);
-     THTSSearchNode* parent = new THTSSearchNode(1.0, 40);
-    THTSSearchNode* child = new THTSSearchNode(1.0, 40);
-    parent->children.push_back(child);
-    // sets the future reward to 400 and the visits to 1
-    uctSearch.wrapInitializeDecisionNode(parent, qValues);
-    // performs a backup with immediate and future rewards both 0
-    uctSearch.wrapBackupDecisionNode(parent, 0, 0);
-    EXPECT_EQ(2, parent->getNumberOfVisits());
-    EXPECT_DOUBLE_EQ(400, parent->getExpectedRewardEstimate());
-    //performs another backup
-    uctSearch.wrapBackupDecisionNode(parent, 20, 100);
-    EXPECT_EQ(3, parent->getNumberOfVisits());
-    double res = 520.0 / 3.0;
-    EXPECT_DOUBLE_EQ(res, parent->getExpectedRewardEstimate());
-    res = 500.0 / 3.0;
-    EXPECT_DOUBLE_EQ(res, parent->getExpectedFutureRewardEstimate());
+
+    SearchNode* parent = new SearchNode(1.0, 40);
+    parent->children.resize(1, nullptr);
+    uctSearch.wrapInitializeDecisionNodeChild(parent, 0, 10.0);
+
+    uctSearch.wrapBackupDecisionNode(parent, 0);
+    EXPECT_EQ(2, parent->numberOfVisits);
+    EXPECT_DOUBLE_EQ(10, parent->getExpectedRewardEstimate());
+
+    // Performs another backup
+    uctSearch.wrapBackupDecisionNode(parent, 20);
+    EXPECT_EQ(3, parent->numberOfVisits);
+    EXPECT_DOUBLE_EQ(30, parent->getExpectedRewardEstimate());
+    EXPECT_DOUBLE_EQ(10, parent->getExpectedFutureRewardEstimate());
     delete parent;
-    delete child;
 }

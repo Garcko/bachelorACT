@@ -1,29 +1,36 @@
 #include "../gtest/gtest.h"
-#include "../../search/thts.h"
+
 #include "../../search/prost_planner.h"
+#include "../../search/thts.h"
 #include "../../search/parser.h"
-#include "../../search/mc_uct_search.h"
 
 using std::string;
 using std::vector;
 using std::map;
 
-class THTSTestSearch : public MCUCTSearch {
+class THTSTestSearch : public THTS {
 public:
+    THTSTestSearch() :
+        THTS("THTSTestSearch") {
+        setActionSelection(new UCB1ActionSelection(this));
+        setOutcomeSelection(new MCOutcomeSelection(this));
+        setBackupFunction(new MCBackupFunction(this));
+    }
+    
     // Wrapper functions to access protected functions
     void wrapInitStep(State const& _rootState) {
         initStep(_rootState);
     }
 
-    void wrapInitializeDecisionNode(THTSSearchNode* node) {
+    void wrapInitializeDecisionNode(SearchNode* node) {
         initializeDecisionNode(node);
     }
 
-    void wrapVisitDecisionNode(THTSSearchNode* node) {
+    void wrapVisitDecisionNode(SearchNode* node) {
         visitDecisionNode(node);
     }
 
-    THTSSearchNode* wrapGetRootNode() {
+    SearchNode* wrapGetRootNode() {
         return getRootNode();
     }
 
@@ -48,7 +55,7 @@ protected:
         parser.parseTask(stateVariableIndices, stateVariableValues);
 
         // Create Prost Planner
-        string plannerDesc = "[PROST -se [MC-UCT -i [Uniform]]]";
+        string plannerDesc = "[PROST -se [THTS -act [UCB1] -out [MC] -backup [MC] -i [Uniform]]]";
         planner = new ProstPlanner(plannerDesc);
 
     }
@@ -78,7 +85,7 @@ protected:
         // Simulate that the search is already deeper in the tree
         search.stepsToGoInCurrentState = 25;
         search.states[search.stepsToGoInCurrentState] = lowDepthState;
-        THTSSearchNode* node = search.wrapGetRootNode();
+        SearchNode* node = search.wrapGetRootNode();
         search.wrapInitializeDecisionNode(node);
         ASSERT_EQ(25, search.getMaxLockDepth());
 
@@ -94,25 +101,6 @@ protected:
         search.states[search.stepsToGoInCurrentState] = nextDepthState;
         search.wrapInitializeDecisionNode(node);
         ASSERT_EQ(25, search.getMaxLockDepth());
-
-    }
-
-    void testCorrectNumberOfInitializedDecisionNodes() {
-        THTSTestSearch search;
-        UniformEvaluationSearch* _initializer = new UniformEvaluationSearch();
-        search.setInitializer(_initializer);
-        // Set the actual state and index to the intial state and initialize the
-        // node
-        search.wrapInitStep(SearchEngine::initialState);
-        THTSSearchNode* node = search.wrapGetRootNode();
-        // Note that this node is not the same as the current root node 
-        search.wrapInitializeDecisionNode(node);
-        // Thus we should get one more initialized decision node
-        ASSERT_EQ(1, search.initializedDecisionNodes);
-        // Now we call the method on the correct root node, thus nothing should
-        // change
-        search.wrapInitializeDecisionNode(search.currentRootNode);
-        ASSERT_EQ(1, search.initializedDecisionNodes);
 
     }
 
@@ -136,7 +124,7 @@ TEST_F(THTSTest, testInitializeDecisionNodeCorrectApplicableActions) {
     // Set the actual state and index to the intial state and initialize the
     // node
     search.wrapInitStep(SearchEngine::initialState);
-    THTSSearchNode* node = search.wrapGetRootNode();
+    SearchNode* node = search.wrapGetRootNode();
     search.wrapInitializeDecisionNode(node);
     // For crossing traffic there should be initially 
     // 2 applicable actions (since we start in a corner) + noop
@@ -149,8 +137,4 @@ TEST_F(THTSTest, testInitializeDecisionNodeCorrectApplicableActions) {
     ASSERT_EQ(3, initializedActions); 
 }
 
-// A simple test to assure that the number of initialized nodes is tracked
-TEST_F(THTSTest, testCorrectNumberOfInitializedDecisionNodes) {
-    testCorrectNumberOfInitializedDecisionNodes();
-}
 

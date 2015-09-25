@@ -17,12 +17,8 @@ TEST(UniformEvaluationTest, estimateQValuesStandard) {
     // Actions with index = i are applicable, actions with index = -1 are not
     // applicable, otherwise an action is unreasonable, see
     // SearchEngine::getApplicableActions()
-    int actionIndices[] = {
-        -1, 1, 2, 1, 4, -1, -1, 7, 8, 7, 10
-    };
-    vector<int> const actionsToExpand(actionIndices, actionIndices +
-            sizeof(actionIndices) / sizeof(int));
-    vector<double> qValues(sizeof(actionIndices), -1);
+    vector<int> const actionsToExpand{-1, 1, 2, 1, 4, -1, -1, 7, 8, 7, 10};
+    vector<double> qValues(actionsToExpand.size(), -1);
     UniformEvaluationSearch uniSearch;
     uniSearch.estimateQValues(dummyState, actionsToExpand, qValues);
     // Reasonable actions should be initialized with  0.0, since that is the
@@ -43,12 +39,8 @@ TEST(UniformEvaluationTest, estimateQValuesStandard) {
 // Tests Q-value estimation with a set initial Q-value.
 TEST(UniformEvaluationTest, estimateQValuesWithSetValue) {
     State dummyState;
-    int actionIndices[] = {
-        -1, 1, 2, 1, 4, -1, -1, 7, 8, 7, 10
-    };
-    vector<int> const actionsToExpand(actionIndices, actionIndices +
-            sizeof(actionIndices) / sizeof(int));
-    vector<double> qValues(sizeof(actionIndices), -1);
+    vector<int> const actionsToExpand{-1, 1, 2, 1, 4, -1, -1, 7, 8, 7, 10};
+    vector<double> qValues(actionsToExpand.size(), -1);
     UniformEvaluationSearch uniSearch;
     uniSearch.setInitialValue(-2.5);
     uniSearch.estimateQValues(dummyState, actionsToExpand, qValues);
