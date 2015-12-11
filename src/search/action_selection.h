@@ -9,6 +9,8 @@ class SearchNode;
 
 class ActionSelection {
 public:
+    virtual ~ActionSelection() {}
+
     // Create an action selection component
     static ActionSelection* fromString(std::string& desc, THTS* thts);
 
@@ -23,6 +25,12 @@ public:
     virtual void setMaxVisitDiff(int _maxVisitDiff) {
         maxVisitDiff = _maxVisitDiff;
     }
+
+    // Learns parameter values from a random training set
+    virtual void learn() {}
+
+    // This is called when caching is disabled because memory becomes sparse
+    virtual void disableCaching() {}
 
     virtual void initRound() {
         exploreInRoot = 0;
@@ -72,7 +80,7 @@ public:
         ActionSelection(_thts) {}
 
     // Action selection
-    virtual void _selectAction(SearchNode* node) {
+    void _selectAction(SearchNode* node) override {
         return selectLeastVisitedAction(node);
     }
 };
@@ -105,7 +113,7 @@ public:
     }
 
     // Action selection
-    virtual void _selectAction(SearchNode* node);
+    void _selectAction(SearchNode* node) override;
 
 protected:
     // Parameter
