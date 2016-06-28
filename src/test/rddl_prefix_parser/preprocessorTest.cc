@@ -1,9 +1,9 @@
 #include "../gtest/gtest.h"
-#include "../../rddl_parser/rddl_parser.h"
-#include "../../rddl_parser/instantiator.h"
-#include "../../rddl_parser/preprocessor.h"
-#include "../../rddl_parser/planning_task.h"
-#include "../../rddl_parser/evaluatables.h"
+#include "../../rddl_prefix_parser/rddl_parser.h"
+#include "../../rddl_prefix_parser/instantiator.h"
+#include "../../rddl_prefix_parser/preprocessor.h"
+#include "../../rddl_prefix_parser/planning_task.h"
+#include "../../rddl_prefix_parser/evaluatables.h"
 using std::string;
 using std::vector;
 using std::map;
