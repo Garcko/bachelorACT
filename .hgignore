@@ -11,6 +11,13 @@ src/rddl_prefix_parser/rddl-parser
 src/rddl_prefix_parser/rddl-parser-debug
 src/rddl_prefix_parser/runTests
 src/rddl_prefix_parser/.obj/*
+src/rddl_parser/Makefile.depend
+src/rddl_parser/rddl-parser
+src/rddl_parser/rddl-parser-debug
+src/rddl_parser/lex.yy.c
+src/rddl_parser/parser.tab.cc
+src/rddl_parser/parser.tab.hh
+src/rddl_parser/.obj/*
 src/search/Makefile.depend
 src/search/prost
 src/search/prost-debug
