@@ -1,0 +1,144 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from Cheetah.Template import Template
+import os
+import sys
+
+# defines the benchmark that is used for the experiment (must be the name of a
+# folder in testbed/benchmarks)
+benchmark="ippc-all"
+
+# defines which queue to use for one task. Possible values are
+# "athlon.q" and "athlon_core.q". The former value configures the use
+# of a whole cpu, while the latter option configures the use of a
+# single cpu core.
+queue = "all.q@ase*"
+
+# defines the priority of the task. Possible values are [-1023,0], but the
+# maximum of 0 should only be used for very urgent jobs.
+priority = 0
+
+# defines the timeout for one taks. The time format is
+# "hours:minutes:seconds", eg, a value of "0:30:00" sets the timeout
+# to 30 minutes. If timout is set to None, then there is no timeout.
+timeout = None
+
+# defines the maximum amount of available memory for one task. The
+# value's format is either "<mem>M" or "<mem>G", where <mem> is an
+# integer number, M stands for MByte and G for GByte. If memout is
+# None, then there is no memory bound.
+memout = None
+
+revision = "rev157"
+
+configs = [
+    "[IPPC2011]",
+    "[IPPC2014]",
+
+    "[UCTStar -init [Expand -h [IDS]]]",
+    "[UCTStar -init [Expand -h [MLS]]]",
+    "[UCTStar -init [Expand -h [Uniform]]]",
+    "[UCTStar -init [Expand -h [RandomWalk]]]",
+
+    "[DP-UCT -init [Expand -h [IDS]]]",
+    "[DP-UCT -init [Expand -h [MLS]]]",
+    "[DP-UCT -init [Expand -h [Uniform]]]",
+    "[DP-UCT -init [Expand -h [RandomWalk]]]",
+
+    "[UCT -init [Expand -h [IDS]]]",
+    "[UCT -init [Expand -h [MLS]]]",
+    "[UCT -init [Expand -h [Uniform]]]",
+    "[UCT -init [Expand -h [RandomWalk]]]",
+
+    "[UCT -init [Expand -h [IDS]] -rec [MPA]]",
+    "[UCT -init [Expand -h [MLS]] -rec [MPA]]",
+    "[UCT -init [Expand -h [Uniform]] -rec [MPA]]",
+    "[UCT -init [Expand -h [RandomWalk]] -rec [MPA]]",
+
+    "[MaxUCT -init [Expand -h [IDS]]]",
+    "[MaxUCT -init [Expand -h [MLS]]]",
+    "[MaxUCT -init [Expand -h [Uniform]]]",
+    "[MaxUCT -init [Expand -h [RandomWalk]]]",
+
+    "[MaxUCT -init [Expand -h [IDS]] -rec [MPA]]",
+    "[MaxUCT -init [Expand -h [MLS]] -rec [MPA]]",
+    "[MaxUCT -init [Expand -h [Uniform]] -rec [MPA]]",
+    "[MaxUCT -init [Expand -h [RandomWalk]] -rec [MPA]]",
+
+    "[UCTStar -init [Single -h [IDS]]]",
+    "[UCTStar -init [Single -h [MLS]]]",
+    "[UCTStar -init [Single -h [Uniform]]]",
+    "[UCTStar -init [Single -h [RandomWalk]]]",
+
+    "[DP-UCT -init [Single -h [IDS]]]",
+    "[DP-UCT -init [Single -h [MLS]]]",
+    "[DP-UCT -init [Single -h [Uniform]]]",
+    "[DP-UCT -init [Single -h [RandomWalk]]]",
+
+    "[UCT -init [Single -h [IDS]]]",
+    "[UCT -init [Single -h [MLS]]]",
+    "[UCT -init [Single -h [Uniform]]]",
+    "[UCT -init [Single -h [RandomWalk]]]",
+
+    "[UCT -init [Single -h [IDS]] -rec [MPA]]",
+    "[UCT -init [Single -h [MLS]] -rec [MPA]]",
+    "[UCT -init [Single -h [Uniform]] -rec [MPA]]",
+    "[UCT -init [Single -h [RandomWalk]] -rec [MPA]]",
+
+    "[MaxUCT -init [Single -h [IDS]]]",
+    "[MaxUCT -init [Single -h [MLS]]]",
+    "[MaxUCT -init [Single -h [Uniform]]]",
+    "[MaxUCT -init [Single -h [RandomWalk]]]",
+
+    "[MaxUCT -init [Single -h [IDS]] -rec [MPA]]",
+    "[MaxUCT -init [Single -h [MLS]] -rec [MPA]]",
+    "[MaxUCT -init [Single -h [Uniform]] -rec [MPA]]",
+    "[MaxUCT -init [Single -h [RandomWalk]] -rec [MPA]]",
+]
+
+host = "localhost"
+resultsDir = "results/"+revision+"/"+revision+"_"
+numRuns = "100"
+
+TASK_TEMPLATE = "export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH && " \
+"mkdir -p %(resultsDir)s && " \
+"./run-server benchmarks/%(benchmark)s/ %(port)s %(numRuns)s > %(resultsDir)s/%(instance)s_server.log 2> %(resultsDir)s/%(instance)s_server.err &" \
+" sleep 45 &&" \
+" ./prost benchmarks/%(benchmark)s/prost/%(instance)s -p %(port)s [PROST -s 1 -se %(config)s] > %(resultsDir)s/%(instance)s.log 2> %(resultsDir)s/%(instance)s.err"
+
+def isInstanceName(fileName):
+    return fileName.count("inst") > 0
+
+def create_tasks(filename, instances):
+    port = 2000
+    tasks = []
+
+    print len(instances)
+    print instances
+    
+    for config in configs:
+        for instance in sorted(instances):
+            task = TASK_TEMPLATE % dict(config=config, benchmark = benchmark, instance=instance, host=host,
+                                        port=port, numRuns = numRuns, resultsDir=resultsDir+config.replace(" ","_"))
+            tasks.append(task)
+            port = port + 1
+
+
+    template = Template(file='job.tmpl',
+                        searchList=[{'tasks'    : tasks,
+                                     'queue'    : queue,
+                                     'timeout'  : timeout,
+                                     'memout'   : memout,
+                                     'priority' : priority}])    
+    f = file(filename, 'w')
+    f.write(str(template))
+    f.close()
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        print >> sys.stderr, "Usage: create-jobs.py"
+        exit()
+    instances = filter(isInstanceName, os.listdir("../testbed/benchmarks/"+benchmark+"/rddl/"))
+    instances = [instance.split(".")[0] for instance in instances]
+    create_tasks("../testbed/prost.q", instances)
