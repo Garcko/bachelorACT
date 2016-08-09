@@ -40,7 +40,7 @@ TEST(PDTest, testDiracSample) {
     pd.assignDiracDelta(5.0);
     // Sampling should always return 5.0
     for (int i = 0; i < 1000; ++i) {
-        ASSERT_DOUBLE_EQ(5.0, pd.sample());
+        ASSERT_DOUBLE_EQ(5.0, pd.sample().first);
     }
 }
 
@@ -58,9 +58,9 @@ TEST(PDTest, testDiscretePDSample) {
     map<double, double> valueProbPairs = {{1.0, 0.2}, {2.0, 0.2}, {3.0, 0.6}};
     pd.assignDiscrete(valueProbPairs);
     // First random number is 0.2, therefore we should return the first value
-    ASSERT_DOUBLE_EQ(1.0, pd.sample());
+    ASSERT_DOUBLE_EQ(1.0, pd.sample().first);
     // Second random number is 0.4, therefore we should return 3.0
-    ASSERT_DOUBLE_EQ(2.0, pd.sample());
+    ASSERT_DOUBLE_EQ(2.0, pd.sample().first);
 }
 
 TEST(PDTest, testDiscretePDSampleBlacklist) {
@@ -72,7 +72,7 @@ TEST(PDTest, testDiscretePDSampleBlacklist) {
     vector<int> blacklist = {1};
     pd.assignDiscrete(valueProbPairs);
     // First random number is 0.2, therefore we should return the first value
-    ASSERT_DOUBLE_EQ(1.0, pd.sample(blacklist));
+    ASSERT_DOUBLE_EQ(1.0, pd.sample(blacklist).first);
     // Second random number is 0.4, therefore we should return 3.0
-    ASSERT_DOUBLE_EQ(3.0, pd.sample(blacklist));
+    ASSERT_DOUBLE_EQ(3.0, pd.sample(blacklist).first);
 }
