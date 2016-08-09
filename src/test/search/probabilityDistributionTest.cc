@@ -1,12 +1,14 @@
 #include "../gtest/gtest.h"
-
 #include "../../search/probability_distribution.h"
+
+#include <memory>
 
 using std::vector;
 using std::map;
 
 // Class to fake generation of random numbers
-class RandomFake : Random {
+class RandomFake : public Random {
+public:
     RandomFake() : counter(0) {}
 
     int genInt(int min, int) override {
@@ -27,6 +29,8 @@ class RandomFake : Random {
         return 0.0;
     }
 
+    void seed(int){};
+
     int counter;
 };
 
@@ -38,12 +42,18 @@ TEST(PDTest, testDiracSample) {
     for (int i = 0; i < 1000; ++i) {
         ASSERT_DOUBLE_EQ(5.0, pd.sample());
     }
+}
+
+TEST(PDTest, testDiracSampleImpossible) {
+    DiscretePD pd;
+    pd.assignDiracDelta(5.0);
     // First and only value is blacklisted, resulting in an assertion error
     vector<int> blacklist{0};
     ASSERT_DEATH(pd.sample(blacklist), "");
 }
 
 TEST(PDTest, testDiscretePDSample) {
+    MathUtils::rnd = std::unique_ptr<Random>(new RandomFake());
     DiscretePD pd;
     map<double, double> valueProbPairs = {{1.0, 0.2}, {2.0, 0.2}, {3.0, 0.6}};
     pd.assignDiscrete(valueProbPairs);
@@ -54,6 +64,7 @@ TEST(PDTest, testDiscretePDSample) {
 }
 
 TEST(PDTest, testDiscretePDSampleBlacklist) {
+    MathUtils::rnd = std::unique_ptr<Random>(new RandomFake());
     DiscretePD pd;
     map<double, double> valueProbPairs = {{1.0, 0.2}, {2.0, 0.2}, {3.0, 0.6}};
     // We blacklist value 2.0, therefore the new distribution is equal to
