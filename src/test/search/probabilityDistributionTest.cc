@@ -7,7 +7,7 @@ using std::vector;
 using std::map;
 
 // Class to fake generation of random numbers
-class RandomFake : public Random {
+class RandomFake : public Random<std::mt19937> {
 public:
     RandomFake() : counter(0) {}
 
@@ -53,7 +53,7 @@ TEST(PDTest, testDiracSampleImpossible) {
 }
 
 TEST(PDTest, testDiscretePDSample) {
-    MathUtils::rnd = std::unique_ptr<Random>(new RandomFake());
+    MathUtils::rnd = std::unique_ptr<Random<>>(new RandomFake());
     DiscretePD pd;
     map<double, double> valueProbPairs = {{1.0, 0.2}, {2.0, 0.2}, {3.0, 0.6}};
     pd.assignDiscrete(valueProbPairs);
@@ -64,7 +64,7 @@ TEST(PDTest, testDiscretePDSample) {
 }
 
 TEST(PDTest, testDiscretePDSampleBlacklist) {
-    MathUtils::rnd = std::unique_ptr<Random>(new RandomFake());
+    MathUtils::rnd = std::unique_ptr<Random<>>(new RandomFake());
     DiscretePD pd;
     map<double, double> valueProbPairs = {{1.0, 0.2}, {2.0, 0.2}, {3.0, 0.6}};
     // We blacklist value 2.0, therefore the new distribution is equal to
