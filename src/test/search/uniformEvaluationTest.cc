@@ -1,10 +1,10 @@
-#include <vector>
-#include <map>
-#include <string>
-#include "../gtest/gtest.h"
-#include "../../search/uniform_evaluation_search.h"
 #include "../../search/parser.h"
 #include "../../search/prost_planner.h"
+#include "../../search/uniform_evaluation_search.h"
+#include "../gtest/gtest.h"
+#include <map>
+#include <string>
+#include <vector>
 
 using std::vector;
 using std::map;
@@ -73,7 +73,6 @@ TEST(UniformEvaluationTest, estimateStateValue) {
     uniSearch.estimateStateValue(dummyState, stateValue);
     ASSERT_DOUBLE_EQ(1.0, stateValue);
 }
-
 
 // Tests the different string parameters.
 TEST(UniformEvaluationTest, testSetValueFromString) {

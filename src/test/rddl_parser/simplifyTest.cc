@@ -1,6 +1,6 @@
-#include "../gtest/gtest.h"
-#include "../../rddl_parser/rddl_parser.h"
 #include "../../rddl_parser/logical_expressions.h"
+#include "../../rddl_parser/rddl_parser.h"
+#include "../gtest/gtest.h"
 
 using std::string;
 using std::vector;
@@ -17,11 +17,13 @@ protected:
 
         RDDLParser parser;
         parser.parse(domainFileName, problemFileName);
-        string formula = "(if (a) then (if (b) then (c)"
+        string formula =
+            "(if (a) then (if (b) then (c)"
             " else (if (d) then (e) else (f)))"
             " else (if (d) then (b) else (g)))";
 
-        string expected = "switch( (and(a b) : c)" 
+        string expected =
+            "switch( (and(a b) : c)"
             " (and(a d) : e)"
             " (a : f)"
             " (d : b)"
@@ -34,7 +36,6 @@ protected:
         expr->print(ss);
         ASSERT_EQ(expected, ss.str());
     }
-
 };
 
 TEST_F(SimplifyTest, testNestedIfThenElseSimplification) {

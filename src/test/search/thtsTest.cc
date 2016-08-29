@@ -1,8 +1,8 @@
 #include "../gtest/gtest.h"
 
+#include "../../search/parser.h"
 #include "../../search/prost_planner.h"
 #include "../../search/thts.h"
-#include "../../search/parser.h"
 
 using std::string;
 using std::vector;
@@ -10,13 +10,12 @@ using std::map;
 
 class THTSTestSearch : public THTS {
 public:
-    THTSTestSearch() :
-        THTS("THTSTestSearch") {
+    THTSTestSearch() : THTS("THTSTestSearch") {
         setActionSelection(new UCB1ActionSelection(this));
         setOutcomeSelection(new MCOutcomeSelection(this));
         setBackupFunction(new MCBackupFunction(this));
     }
-    
+
     // Wrapper functions to access protected functions
     void wrapInitStep(State const& _rootState) {
         initStep(_rootState);
@@ -41,12 +40,10 @@ public:
     void setMaxLockDepth(int _depth) {
         maxLockDepth = _depth;
     }
-
 };
 
 class THTSTest : public testing::Test {
 protected:
-
     THTSTest() {
         string domainName = "crossing_traffic";
         string problemFileName =
@@ -55,9 +52,10 @@ protected:
         parser.parseTask(stateVariableIndices, stateVariableValues);
 
         // Create Prost Planner
-        string plannerDesc = "[PROST -se [THTS -act [UCB1] -out [MC] -backup [MC] -i [Uniform]]]";
+        string plannerDesc =
+            "[PROST -se [THTS -act [UCB1] -out [MC] -backup [MC] -i "
+            "[Uniform]]]";
         planner = new ProstPlanner(plannerDesc);
-
     }
 
     // Tests accessing private members
@@ -101,13 +99,12 @@ protected:
         search.states[search.stepsToGoInCurrentState] = nextDepthState;
         search.wrapInitializeDecisionNode(node);
         ASSERT_EQ(25, search.getMaxLockDepth());
-
     }
 
     // Declares the variables your tests want to use.
     ProstPlanner* planner;
     map<string, int> stateVariableIndices;
-    vector<vector<string> > stateVariableValues;
+    vector<vector<string>> stateVariableValues;
 };
 
 // - If the maximum backupLock depth is still the same as the max search depth,
@@ -126,15 +123,13 @@ TEST_F(THTSTest, testInitializeDecisionNodeCorrectApplicableActions) {
     search.wrapInitStep(SearchEngine::initialState);
     SearchNode* node = search.wrapGetRootNode();
     search.wrapInitializeDecisionNode(node);
-    // For crossing traffic there should be initially 
+    // For crossing traffic there should be initially
     // 2 applicable actions (since we start in a corner) + noop
     int initializedActions = 0;
     for (int childIndex = 0; childIndex < node->children.size(); childIndex++) {
-        if(node->children[childIndex]) {
+        if (node->children[childIndex]) {
             initializedActions++;
         }
     }
-    ASSERT_EQ(3, initializedActions); 
+    ASSERT_EQ(3, initializedActions);
 }
-
-

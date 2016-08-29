@@ -1,18 +1,16 @@
 #include "../gtest/gtest.h"
 
+#include "../../search/parser.h"
 #include "../../search/prost_planner.h"
 #include "../../search/thts.h"
-#include "../../search/parser.h"
 
 using std::string;
 using std::map;
 using std::vector;
 
-
 class MCUCTTestSearch : public THTS {
 public:
-    MCUCTTestSearch() :
-        THTS("MCUCTTestSearch") {
+    MCUCTTestSearch() : THTS("MCUCTTestSearch") {
         setActionSelection(new UCB1ActionSelection(this));
         setOutcomeSelection(new MCOutcomeSelection(this));
         setBackupFunction(new MCBackupFunction(this));
@@ -27,12 +25,11 @@ public:
         node->children[actionIndex]->numberOfVisits = 1;
 
         node->numberOfVisits += numberOfInitialVisits;
-        node->futureReward =
-            std::max(node->futureReward, node->children[actionIndex]->futureReward);
+        node->futureReward = std::max(
+            node->futureReward, node->children[actionIndex]->futureReward);
     }
 
-    void wrapBackupDecisionNode(SearchNode* node,
-                                double const& immReward) {
+    void wrapBackupDecisionNode(SearchNode* node, double const& immReward) {
         node->immediateReward = immReward;
         backupFunction->backupDecisionNode(node);
     }
@@ -54,7 +51,9 @@ protected:
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
         // Create Prost Planner
-        string plannerDesc = "[PROST -se [THTS -act [UCB1] -out [MC] -backup [MC] -i [Uniform]]]";
+        string plannerDesc =
+            "[PROST -se [THTS -act [UCB1] -out [MC] -backup [MC] -i "
+            "[Uniform]]]";
         planner = new ProstPlanner(plannerDesc);
         // initialize other variables
         initVisits = 1;
@@ -71,7 +70,7 @@ protected:
     // Declares the variables your tests want to use.
     ProstPlanner* planner;
     map<string, int> stateVariableIndices;
-    vector<vector<string> > stateVariableValues;
+    vector<vector<string>> stateVariableValues;
     int initVisits;
 };
 
