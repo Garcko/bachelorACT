@@ -35,7 +35,7 @@ public:
 };
 
 // Probability distribution only has a single value
-TEST(PDTest, testDiracSample) {
+TEST(SampleTest, testDiracSample) {
     DiscretePD pd;
     pd.assignDiracDelta(5.0);
     // Sampling should always return 5.0
@@ -44,7 +44,7 @@ TEST(PDTest, testDiracSample) {
     }
 }
 
-TEST(PDTest, testDiracSampleImpossible) {
+TEST(SampleTest, testDiracSampleImpossible) {
     DiscretePD pd;
     pd.assignDiracDelta(5.0);
     // First and only value is blacklisted, resulting in an assertion error
@@ -52,7 +52,7 @@ TEST(PDTest, testDiracSampleImpossible) {
     ASSERT_DEATH(pd.sample(blacklist), "");
 }
 
-TEST(PDTest, testDiscretePDSample) {
+TEST(SampleTest, testDiscretePDSample) {
     MathUtils::rnd = std::unique_ptr<Random<>>(new RandomFake());
     DiscretePD pd;
     map<double, double> valueProbPairs = {{1.0, 0.2}, {2.0, 0.2}, {3.0, 0.6}};
@@ -63,7 +63,7 @@ TEST(PDTest, testDiscretePDSample) {
     ASSERT_DOUBLE_EQ(2.0, pd.sample().first);
 }
 
-TEST(PDTest, testDiscretePDSampleBlacklist) {
+TEST(SampleTest, testDiscretePDSampleBlacklist) {
     MathUtils::rnd = std::unique_ptr<Random<>>(new RandomFake());
     DiscretePD pd;
     map<double, double> valueProbPairs = {{1.0, 0.2}, {2.0, 0.2}, {3.0, 0.6}};
