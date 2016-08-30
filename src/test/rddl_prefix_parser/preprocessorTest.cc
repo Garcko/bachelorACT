@@ -1,9 +1,9 @@
-#include "../gtest/gtest.h"
-#include "../../rddl_prefix_parser/rddl_parser.h"
-#include "../../rddl_prefix_parser/instantiator.h"
 #include "../../rddl_prefix_parser/preprocessor.h"
-#include "../../rddl_prefix_parser/planning_task.h"
 #include "../../rddl_prefix_parser/evaluatables.h"
+#include "../../rddl_prefix_parser/instantiator.h"
+#include "../../rddl_prefix_parser/planning_task.h"
+#include "../../rddl_prefix_parser/rddl_parser.h"
+#include "../gtest/gtest.h"
 using std::string;
 using std::vector;
 using std::map;
@@ -71,6 +71,6 @@ TEST(PreprocessorTest, calculateMinMaxRewardWithoutVectorCachingExists) {
     double minValue = *(task->rewardCPF->domain.begin());
     double maxValue = *(task->rewardCPF->domain.rbegin());
 
-    ASSERT_NEAR( -0.7311116, minValue, 0.0001);
+    ASSERT_NEAR(-0.7311116, minValue, 0.0001);
     ASSERT_NEAR(0.18377236, maxValue, 0.0001);
 }

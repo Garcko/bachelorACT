@@ -1,8 +1,8 @@
 #include "../gtest/gtest.h"
 
+#include "../../search/parser.h"
 #include "../../search/prost_planner.h"
 #include "../../search/thts.h"
-#include "../../search/parser.h"
 
 using std::string;
 using std::map;
@@ -10,13 +10,11 @@ using std::vector;
 
 class BFSTestSearch : public THTS {
 public:
-    BFSTestSearch() :
-        THTS("BFSTest") {
+    BFSTestSearch() : THTS("BFSTest") {
         setActionSelection(new BFSActionSelection(this));
         setOutcomeSelection(new UnsolvedMCOutcomeSelection(this));
         setBackupFunction(new PBBackupFunction(this));
     }
-    
 
     // Wrapper functions to access protected functions
     void wrapInitializeDecisionNodeChild(SearchNode* node,
@@ -27,10 +25,10 @@ public:
         node->children[actionIndex]->numberOfVisits = 1;
 
         node->numberOfVisits += numberOfInitialVisits;
-        node->futureReward =
-            std::max(node->futureReward, node->children[actionIndex]->futureReward);
+        node->futureReward = std::max(
+            node->futureReward, node->children[actionIndex]->futureReward);
     }
-    
+
     void wrapBackupDecisionNodeLeaf(SearchNode* node, double const& immReward,
                                     double const& futureReward) {
         node->immediateReward = immReward;
@@ -70,7 +68,8 @@ protected:
         parser.parseTask(stateVariableIndices, stateVariableValues);
 
         // Create Prost Planner
-        string plannerDesc = "[PROST -se [THTS -act [UCB1] -out [MC] -backup [MC]]]";
+        string plannerDesc =
+            "[PROST -se [THTS -act [UCB1] -out [MC] -backup [MC]]]";
         planner = new ProstPlanner(plannerDesc);
 
         // Initialize other variables
@@ -85,7 +84,7 @@ protected:
     // Declares the variables your tests want to use.
     ProstPlanner* planner;
     map<string, int> stateVariableIndices;
-    vector<vector<string> > stateVariableValues;
+    vector<vector<string>> stateVariableValues;
     double qValue;
 };
 

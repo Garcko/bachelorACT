@@ -1,8 +1,8 @@
 #include "../gtest/gtest.h"
 
+#include "../../search/parser.h"
 #include "../../search/prost_planner.h"
 #include "../../search/thts.h"
-#include "../../search/parser.h"
 
 using std::string;
 using std::vector;
@@ -14,14 +14,16 @@ class EvaluateToKleeneTest : public testing::Test {
 protected:
     EvaluateToKleeneTest() {
         string domainName = "crossing_traffic";
-        string problemFileName = "../test/testdomains/"+domainName+"_inst_mdp__1";
+        string problemFileName =
+            "../test/testdomains/" + domainName + "_inst_mdp__1";
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
         // Create an Action State dummy, since we don't need one
         vector<int> vecDummy;
         vector<ActionFluent*> scheduledActionFluents;
         vector<DeterministicEvaluatable*> actionPreconditions;
-        ActionState tmp(0, vecDummy, scheduledActionFluents, actionPreconditions);
+        ActionState tmp(0, vecDummy, scheduledActionFluents,
+                        actionPreconditions);
         actionDummy = &tmp;
 
         // Create two kleene states which we often use to test kleene states
@@ -57,7 +59,7 @@ protected:
         for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
             if (SearchEngine::stateFluents[i]->name == fluentName) {
                 stateIndex = i;
-                break;   
+                break;
             }
         }
     }
@@ -69,7 +71,7 @@ protected:
 
     ProstPlanner* planner;
     map<string, int> stateVariableIndices;
-    vector<vector<string> > stateVariableValues;
+    vector<vector<string>> stateVariableValues;
     KleeneState dummyState;
     ActionState* actionDummy;
     KleeneState kleeneT;
@@ -94,7 +96,7 @@ TEST_F(EvaluateToKleeneTest, testEvalBooleanDeterministicStateFluent) {
     ASSERT_DOUBLE_EQ(0.0, *(result.begin()));
     result.clear();
     // Test evaluation with values 0 and 1
-    fluent->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    fluent->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0.0) != result.end());
     ASSERT_TRUE(result.find(1.0) != result.end());
@@ -135,7 +137,7 @@ TEST_F(EvaluateToKleeneTest, testEvalBooleanProbabilisticStateFluent) {
     for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
         if (SearchEngine::stateFluents[i]->name == fluentName) {
             fluent = SearchEngine::stateFluents[i];
-            break;   
+            break;
         }
     }
 
@@ -150,7 +152,7 @@ TEST_F(EvaluateToKleeneTest, testEvalBooleanProbabilisticStateFluent) {
     ASSERT_DOUBLE_EQ(0.0, *(result.begin()));
     result.clear();
     // Test evaluation with values 0 and 1
-    fluent->evaluateToKleene(result, kleene1||kleene2, *actionDummy);
+    fluent->evaluateToKleene(result, kleene1 || kleene2, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0.0) != result.end());
     ASSERT_TRUE(result.find(1.0) != result.end());
@@ -160,13 +162,13 @@ TEST_F(EvaluateToKleeneTest, testEvalBooleanProbabilisticStateFluent) {
 // Tests the evaluation of an action fluent when there are no
 // concurrent actions
 TEST_F(EvaluateToKleeneTest, testEvalActionFluentSingleAction) {
-    // Get corresponding action state 
+    // Get corresponding action state
     fluentName = "move-west";
     ActionState* actionState;
-    for (size_t i = 0; i < SearchEngine::actionStates.size();i++) {
+    for (size_t i = 0; i < SearchEngine::actionStates.size(); i++) {
         if (SearchEngine::actionStates[i].scheduledActionFluents.size() == 1 &&
-                SearchEngine::actionStates[i].scheduledActionFluents[0]->name 
-                == fluentName) {
+            SearchEngine::actionStates[i].scheduledActionFluents[0]->name ==
+                fluentName) {
             actionState = &SearchEngine::actionStates[i];
         }
     }
@@ -176,7 +178,7 @@ TEST_F(EvaluateToKleeneTest, testEvalActionFluentSingleAction) {
     for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
         if (SearchEngine::actionFluents[i]->name == fluentName) {
             fluent = SearchEngine::actionFluents[i];
-            break;   
+            break;
         }
     }
 
@@ -191,7 +193,7 @@ TEST_F(EvaluateToKleeneTest, testEvalActionFluentSingleAction) {
     for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
         if (SearchEngine::actionFluents[i]->name == fluentName) {
             fluent = SearchEngine::actionFluents[i];
-            break;   
+            break;
         }
     }
     // Move east is not in the action state, therefore it should evaluate to 0
@@ -200,23 +202,21 @@ TEST_F(EvaluateToKleeneTest, testEvalActionFluentSingleAction) {
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0.0) != result.end());
     result.clear();
-
 }
 
 // Tests the evaluation of an action fluent with concurrent actions
 TEST_F(EvaluateToKleeneTest, testEvalActionFluentConcurrentActions) {
     string domainName = "earth_observation";
-    string problemFileName = "../test/testdomains/" + 
-        domainName + "_inst_mdp__03";
+    string problemFileName =
+        "../test/testdomains/" + domainName + "_inst_mdp__03";
     Parser parser(problemFileName);
     parser.parseTask(stateVariableIndices, stateVariableValues);
 
-    // Get action state where slew(east) and take-image is possible, 
+    // Get action state where slew(east) and take-image is possible,
     // which is the only one with two scheduledActionFluents
     ActionState* actionState;
-    for (size_t i = 0; i < SearchEngine::actionStates.size();i++) {
-        if (SearchEngine::actionStates[i].scheduledActionFluents.size() 
-                == 2) {
+    for (size_t i = 0; i < SearchEngine::actionStates.size(); i++) {
+        if (SearchEngine::actionStates[i].scheduledActionFluents.size() == 2) {
             actionState = &SearchEngine::actionStates[i];
         }
     }
@@ -227,7 +227,7 @@ TEST_F(EvaluateToKleeneTest, testEvalActionFluentConcurrentActions) {
     for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
         if (SearchEngine::actionFluents[i]->name == fluentName) {
             fluent = SearchEngine::actionFluents[i];
-            break;   
+            break;
         }
     }
     // Since the actionFluent corresponds to the action state it should evaluate
@@ -242,7 +242,7 @@ TEST_F(EvaluateToKleeneTest, testEvalActionFluentConcurrentActions) {
     for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
         if (SearchEngine::actionFluents[i]->name == fluentName) {
             fluent = SearchEngine::actionFluents[i];
-            break;   
+            break;
         }
     }
     // This action is not in the action state
@@ -325,42 +325,42 @@ TEST_F(EvaluateToKleeneTest, testEvalConjunctionWithSingleResult) {
 TEST_F(EvaluateToKleeneTest, testEvalConjunctionWithMultiResult) {
     // AND({0,1}, 0] = 0
     std::stringstream ss;
-    ss <<"and($s(" << stateIndex << ")  $c(0))";
+    ss << "and($s(" << stateIndex << ")  $c(0))";
     string s = ss.str();
     LogicalExpression* conjunct = LogicalExpression::createFromString(s);
 
-    conjunct->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    conjunct->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // Reverse order test
     ss.str("");
-    ss <<"and($c(0) $s(" << stateIndex << "))";
+    ss << "and($c(0) $s(" << stateIndex << "))";
     s = ss.str();
     conjunct = LogicalExpression::createFromString(s);
     result.clear();
-    conjunct->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    conjunct->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // AND({0,1}, 1) = {0,1}
     ss.str("");
-    ss <<"and($s(" << stateIndex << ")  $c(1))";
+    ss << "and($s(" << stateIndex << ")  $c(1))";
     s = ss.str();
     conjunct = LogicalExpression::createFromString(s);
     result.clear();
-    conjunct->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    conjunct->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // Reverse order test
     ss.str("");
-    ss <<"and($c(1) $s(" << stateIndex << "))";
+    ss << "and($c(1) $s(" << stateIndex << "))";
     s = ss.str();
     conjunct = LogicalExpression::createFromString(s);
     result.clear();
-    conjunct->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    conjunct->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
@@ -422,43 +422,43 @@ TEST_F(EvaluateToKleeneTest, testEvalDisjunctionWithSingleResult) {
 TEST_F(EvaluateToKleeneTest, testEvalDisjunctionWithMultiResult) {
     // OR({0,1}, 0] = {0,1}
     std::stringstream ss;
-    ss <<"or($s(" << stateIndex << ")  $c(0))";
+    ss << "or($s(" << stateIndex << ")  $c(0))";
     string s = ss.str();
     LogicalExpression* disjunct = LogicalExpression::createFromString(s);
 
-    disjunct->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    disjunct->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // Reverse order test
     ss.str("");
-    ss <<"or($c(0) $s(" << stateIndex << "))";
+    ss << "or($c(0) $s(" << stateIndex << "))";
     s = ss.str();
     disjunct = LogicalExpression::createFromString(s);
     result.clear();
-    disjunct->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    disjunct->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // OR({0,1}, 1) = 1
     ss.str("");
-    ss <<"or($s(" << stateIndex << ")  $c(1))";
+    ss << "or($s(" << stateIndex << ")  $c(1))";
     s = ss.str();
     disjunct = LogicalExpression::createFromString(s);
     result.clear();
-    disjunct->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    disjunct->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // Reverse order test
     ss.str("");
-    ss <<"or($c(1) $s(" << stateIndex << "))";
+    ss << "or($c(1) $s(" << stateIndex << "))";
     s = ss.str();
     disjunct = LogicalExpression::createFromString(s);
     result.clear();
-    disjunct->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    disjunct->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 }
@@ -506,56 +506,55 @@ TEST_F(EvaluateToKleeneTest, testEvalEqualsWithSingleResult) {
 TEST_F(EvaluateToKleeneTest, testEvalEqualsMultiResult) {
     // {0,1} == 0 = {0,1}
     std::stringstream ss;
-    ss <<"==($s(" << stateIndex << ")  $c(0))";
+    ss << "==($s(" << stateIndex << ")  $c(0))";
     string s = ss.str();
     LogicalExpression* equals = LogicalExpression::createFromString(s);
 
-    equals->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    equals->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // Reverse order test
     ss.str("");
-    ss <<"==($c(0) $s(" << stateIndex << "))";
+    ss << "==($c(0) $s(" << stateIndex << "))";
     s = ss.str();
     equals = LogicalExpression::createFromString(s);
     result.clear();
-    equals->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    equals->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // {0,1} == 1 = {0,1}
     ss.str("");
-    ss <<"==($s(" << stateIndex << ")  $c(1))";
+    ss << "==($s(" << stateIndex << ")  $c(1))";
     s = ss.str();
     equals = LogicalExpression::createFromString(s);
     result.clear();
-    equals->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    equals->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // Reverse order test
     ss.str("");
-    ss <<"==($c(1) $s(" << stateIndex << "))";
+    ss << "==($c(1) $s(" << stateIndex << "))";
     s = ss.str();
     equals = LogicalExpression::createFromString(s);
     result.clear();
-    equals->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    equals->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
     ASSERT_TRUE(result.find(0) != result.end());
 
-
     // {0,1} == 2 = 0
     ss.str("");
-    ss <<"==($s(" << stateIndex << ")  $c(2))";
+    ss << "==($s(" << stateIndex << ")  $c(2))";
     s = ss.str();
     equals = LogicalExpression::createFromString(s);
     result.clear();
-    equals->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    equals->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 }
@@ -610,64 +609,63 @@ TEST_F(EvaluateToKleeneTest, testEvalGreaterWithSingleResult) {
 TEST_F(EvaluateToKleeneTest, testEvalGreaterMultiResult) {
     // {0,1} > 0 = {0,1}
     std::stringstream ss;
-    ss <<">($s(" << stateIndex << ")  $c(0))";
+    ss << ">($s(" << stateIndex << ")  $c(0))";
     string s = ss.str();
     LogicalExpression* greater = LogicalExpression::createFromString(s);
 
-    greater->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    greater->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // 0 > {0,1} = 0
     ss.str("");
-    ss <<">($c(0) $s(" << stateIndex << "))";
+    ss << ">($c(0) $s(" << stateIndex << "))";
     s = ss.str();
     greater = LogicalExpression::createFromString(s);
     result.clear();
-    greater->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    greater->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // {0,1} > 1 = 0
     ss.str("");
-    ss <<">($s(" << stateIndex << ")  $c(1))";
+    ss << ">($s(" << stateIndex << ")  $c(1))";
     s = ss.str();
     greater = LogicalExpression::createFromString(s);
     result.clear();
-    greater->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    greater->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // 1 > {0,1} = {0,1}
     ss.str("");
-    ss <<">($c(1) $s(" << stateIndex << "))";
+    ss << ">($c(1) $s(" << stateIndex << "))";
     s = ss.str();
     greater = LogicalExpression::createFromString(s);
     result.clear();
-    greater->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    greater->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
-
     // {0,1} > 2 = 0
     ss.str("");
-    ss <<">($s(" << stateIndex << ")  $c(2))";
+    ss << ">($s(" << stateIndex << ")  $c(2))";
     s = ss.str();
     greater = LogicalExpression::createFromString(s);
     result.clear();
-    greater->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    greater->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // 2 > {0,1} = 1
     ss.str("");
-    ss <<">($c(2) $s(" << stateIndex << "))";
+    ss << ">($c(2) $s(" << stateIndex << "))";
     s = ss.str();
     greater = LogicalExpression::createFromString(s);
     result.clear();
-    greater->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    greater->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 }
@@ -722,64 +720,63 @@ TEST_F(EvaluateToKleeneTest, testEvalLowerWithSingleResult) {
 TEST_F(EvaluateToKleeneTest, testEvalLowerMultiResult) {
     // {0,1} < 0 = 0
     std::stringstream ss;
-    ss <<"<($s(" << stateIndex << ")  $c(0))";
+    ss << "<($s(" << stateIndex << ")  $c(0))";
     string s = ss.str();
     LogicalExpression* lower = LogicalExpression::createFromString(s);
 
-    lower->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lower->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // 0 < {0,1} = {0,1}
     ss.str("");
-    ss <<"<($c(0) $s(" << stateIndex << "))";
+    ss << "<($c(0) $s(" << stateIndex << "))";
     s = ss.str();
     lower = LogicalExpression::createFromString(s);
     result.clear();
-    lower->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lower->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // {0,1} < 1 = {0,1}
     ss.str("");
-    ss <<"<($s(" << stateIndex << ")  $c(1))";
+    ss << "<($s(" << stateIndex << ")  $c(1))";
     s = ss.str();
     lower = LogicalExpression::createFromString(s);
     result.clear();
-    lower->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lower->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // 1 < {0,1} = 0
     ss.str("");
-    ss <<"<($c(1) $s(" << stateIndex << "))";
+    ss << "<($c(1) $s(" << stateIndex << "))";
     s = ss.str();
     lower = LogicalExpression::createFromString(s);
     result.clear();
-    lower->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lower->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
-
     // {0,1} < 2 = 1
     ss.str("");
-    ss <<"<($s(" << stateIndex << ")  $c(2))";
+    ss << "<($s(" << stateIndex << ")  $c(2))";
     s = ss.str();
     lower = LogicalExpression::createFromString(s);
     result.clear();
-    lower->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lower->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // 2 < {0,1} = 0
     ss.str("");
-    ss <<"<($c(2) $s(" << stateIndex << "))";
+    ss << "<($c(2) $s(" << stateIndex << "))";
     s = ss.str();
     lower = LogicalExpression::createFromString(s);
     result.clear();
-    lower->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lower->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 }
@@ -834,64 +831,63 @@ TEST_F(EvaluateToKleeneTest, testEvalGreaterEqualWithSingleResult) {
 TEST_F(EvaluateToKleeneTest, testEvalGreaterEqualMultiResult) {
     // {0,1} >= 0 = 1
     std::stringstream ss;
-    ss <<">=($s(" << stateIndex << ")  $c(0))";
+    ss << ">=($s(" << stateIndex << ")  $c(0))";
     string s = ss.str();
     LogicalExpression* lowerEqual = LogicalExpression::createFromString(s);
 
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // 0 >= {0,1} = {0,1}
     ss.str("");
-    ss <<">=($c(0) $s(" << stateIndex << "))";
+    ss << ">=($c(0) $s(" << stateIndex << "))";
     s = ss.str();
     lowerEqual = LogicalExpression::createFromString(s);
     result.clear();
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // {0,1} >= 1 = {0,1}
     ss.str("");
-    ss <<">=($s(" << stateIndex << ")  $c(1))";
+    ss << ">=($s(" << stateIndex << ")  $c(1))";
     s = ss.str();
     lowerEqual = LogicalExpression::createFromString(s);
     result.clear();
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // 1 >= {0,1} = 1
     ss.str("");
-    ss <<">=($c(1) $s(" << stateIndex << "))";
+    ss << ">=($c(1) $s(" << stateIndex << "))";
     s = ss.str();
     lowerEqual = LogicalExpression::createFromString(s);
     result.clear();
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 
-
     // {0,1} >= 2 = 0
     ss.str("");
-    ss <<">=($s(" << stateIndex << ")  $c(2))";
+    ss << ">=($s(" << stateIndex << ")  $c(2))";
     s = ss.str();
     lowerEqual = LogicalExpression::createFromString(s);
     result.clear();
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // 2 >= {0,1} = 1
     ss.str("");
-    ss <<">=($c(2) $s(" << stateIndex << "))";
+    ss << ">=($c(2) $s(" << stateIndex << "))";
     s = ss.str();
     lowerEqual = LogicalExpression::createFromString(s);
     result.clear();
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 }
@@ -946,64 +942,63 @@ TEST_F(EvaluateToKleeneTest, testEvalLowerEqualWithSingleResult) {
 TEST_F(EvaluateToKleeneTest, testEvalLowerEqualMultiResult) {
     // {0,1} <= 0 = {0,1}
     std::stringstream ss;
-    ss <<"<=($s(" << stateIndex << ")  $c(0))";
+    ss << "<=($s(" << stateIndex << ")  $c(0))";
     string s = ss.str();
     LogicalExpression* lowerEqual = LogicalExpression::createFromString(s);
 
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // 0 <= {0,1} = 1
     ss.str("");
-    ss <<"<=($c(0) $s(" << stateIndex << "))";
+    ss << "<=($c(0) $s(" << stateIndex << "))";
     s = ss.str();
     lowerEqual = LogicalExpression::createFromString(s);
     result.clear();
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // {0,1} <= 1 = 1
     ss.str("");
-    ss <<"<=($s(" << stateIndex << ")  $c(1))";
+    ss << "<=($s(" << stateIndex << ")  $c(1))";
     s = ss.str();
     lowerEqual = LogicalExpression::createFromString(s);
     result.clear();
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // 1 <= {0,1} = {0,1}
     ss.str("");
-    ss <<"<=($c(1) $s(" << stateIndex << "))";
+    ss << "<=($c(1) $s(" << stateIndex << "))";
     s = ss.str();
     lowerEqual = LogicalExpression::createFromString(s);
     result.clear();
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
-
     // {0,1} <= 2 = 1
     ss.str("");
-    ss <<"<=($s(" << stateIndex << ")  $c(2))";
+    ss << "<=($s(" << stateIndex << ")  $c(2))";
     s = ss.str();
     lowerEqual = LogicalExpression::createFromString(s);
     result.clear();
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // 2 <= {0,1} = 0
     ss.str("");
-    ss <<"<=($c(2) $s(" << stateIndex << "))";
+    ss << "<=($c(2) $s(" << stateIndex << "))";
     s = ss.str();
     lowerEqual = LogicalExpression::createFromString(s);
     result.clear();
-    lowerEqual->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    lowerEqual->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 }
@@ -1090,67 +1085,66 @@ TEST_F(EvaluateToKleeneTest, testEvalAdditionWithSingleResult) {
 TEST_F(EvaluateToKleeneTest, testEvalAdditionWithOneMultiState) {
     // {0,1} + 0 = {0,1}
     std::stringstream ss;
-    ss <<"+($s(" << stateIndex << ")  $c(0))";
+    ss << "+($s(" << stateIndex << ")  $c(0))";
     string s = ss.str();
     LogicalExpression* addition = LogicalExpression::createFromString(s);
 
-    addition->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    addition->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // Reverse order test
     ss.str("");
-    ss <<"+($c(0) $s(" << stateIndex << "))";
+    ss << "+($c(0) $s(" << stateIndex << "))";
     s = ss.str();
     addition = LogicalExpression::createFromString(s);
     result.clear();
-    addition->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    addition->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
-
     // {0,1} + 1) = {1,2}
     ss.str("");
-    ss <<"+($s(" << stateIndex << ")  $c(1))";
+    ss << "+($s(" << stateIndex << ")  $c(1))";
     s = ss.str();
     addition = LogicalExpression::createFromString(s);
     result.clear();
-    addition->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    addition->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
     ASSERT_TRUE(result.find(2) != result.end());
 
     // Reverse order test
     ss.str("");
-    ss <<"+($c(1) $s(" << stateIndex << "))";
+    ss << "+($c(1) $s(" << stateIndex << "))";
     s = ss.str();
     addition = LogicalExpression::createFromString(s);
     result.clear();
-    addition->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    addition->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
     ASSERT_TRUE(result.find(2) != result.end());
 
     // {0,1} + 2 = {2,3}
     ss.str("");
-    ss <<"+($s(" << stateIndex << ")  $c(2))";
+    ss << "+($s(" << stateIndex << ")  $c(2))";
     s = ss.str();
     addition = LogicalExpression::createFromString(s);
     result.clear();
-    addition->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    addition->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(2) != result.end());
     ASSERT_TRUE(result.find(3) != result.end());
 
     // 2 + {0,1} = {2,3}
     ss.str("");
-    ss <<"+($c(2) $s(" << stateIndex << "))";
+    ss << "+($c(2) $s(" << stateIndex << "))";
     s = ss.str();
     addition = LogicalExpression::createFromString(s);
     result.clear();
-    addition->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    addition->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(2) != result.end());
     ASSERT_TRUE(result.find(3) != result.end());
@@ -1160,11 +1154,11 @@ TEST_F(EvaluateToKleeneTest, testEvalAdditionWithOneMultiState) {
 TEST_F(EvaluateToKleeneTest, testEvalAdditionWithMultiStates) {
     // {0,1} + {0,1} = {0,1,2}
     std::stringstream ss;
-    ss <<"+($s(" << stateIndex << ")  $s(" << stateIndex << "))";
+    ss << "+($s(" << stateIndex << ")  $s(" << stateIndex << "))";
     string s = ss.str();
     LogicalExpression* addition = LogicalExpression::createFromString(s);
 
-    addition->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    addition->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(3, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
@@ -1172,27 +1166,27 @@ TEST_F(EvaluateToKleeneTest, testEvalAdditionWithMultiStates) {
 
     // 3 + {0,1} + {0,1} = {3,4,5}
     ss.str("");
-    ss <<"+($c(3) $s(" << stateIndex << ")  $s(" << stateIndex << "))";
+    ss << "+($c(3) $s(" << stateIndex << ")  $s(" << stateIndex << "))";
     s = ss.str();
     addition = LogicalExpression::createFromString(s);
 
     result.clear();
-    addition->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    addition->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(3, result.size());
     ASSERT_TRUE(result.find(3) != result.end());
     ASSERT_TRUE(result.find(4) != result.end());
     ASSERT_TRUE(result.find(5) != result.end());
 
-    // +($s(1) $s(1) $s(1)) equals to 
+    // +($s(1) $s(1) $s(1)) equals to
     // {0,1} + {0,1} + {0,1} = {0,1,2,3}
     ss.str("");
-    ss <<"+($s(" << stateIndex <<") $s(" 
-        << stateIndex << ")  $s(" << stateIndex << "))";
+    ss << "+($s(" << stateIndex << ") $s(" << stateIndex << ")  $s("
+       << stateIndex << "))";
     s = ss.str();
     addition = LogicalExpression::createFromString(s);
 
     result.clear();
-    addition->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    addition->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(4, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
@@ -1200,7 +1194,7 @@ TEST_F(EvaluateToKleeneTest, testEvalAdditionWithMultiStates) {
     ASSERT_TRUE(result.find(3) != result.end());
 }
 
-// Tests kleene evaluation of simple subtractions. Note that subtractions 
+// Tests kleene evaluation of simple subtractions. Note that subtractions
 // are only defined for two expressions
 TEST_F(EvaluateToKleeneTest, testEvalSubtractionWithSingleResult) {
     string s = "-($c(0) $c(1))";
@@ -1215,7 +1209,6 @@ TEST_F(EvaluateToKleeneTest, testEvalSubtractionWithSingleResult) {
     subtraction->evaluateToKleene(result, dummyState, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
-
 
     s = "-($c(0) $c(0))";
     subtraction = LogicalExpression::createFromString(s);
@@ -1257,67 +1250,66 @@ TEST_F(EvaluateToKleeneTest, testEvalSubtractionWithSingleResult) {
 TEST_F(EvaluateToKleeneTest, testEvalSubtractionWithOneMultiState) {
     // {0,1} - 0 = {0,1}
     std::stringstream ss;
-    ss <<"-($s(" << stateIndex << ")  $c(0))";
+    ss << "-($s(" << stateIndex << ")  $c(0))";
     string s = ss.str();
     LogicalExpression* subtraction = LogicalExpression::createFromString(s);
 
-    subtraction->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    subtraction->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // 0 - {0,1} = {0,-1}
     ss.str("");
-    ss <<"-($c(0) $s(" << stateIndex << "))";
+    ss << "-($c(0) $s(" << stateIndex << "))";
     s = ss.str();
     subtraction = LogicalExpression::createFromString(s);
     result.clear();
-    subtraction->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    subtraction->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(-1) != result.end());
 
-
     // {0,1} - 1) = {-1,0}
     ss.str("");
-    ss <<"-($s(" << stateIndex << ")  $c(1))";
+    ss << "-($s(" << stateIndex << ")  $c(1))";
     s = ss.str();
     subtraction = LogicalExpression::createFromString(s);
     result.clear();
-    subtraction->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    subtraction->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(-1) != result.end());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // 1 - {0,1) = {1,0}
     ss.str("");
-    ss <<"-($c(1) $s(" << stateIndex << "))";
+    ss << "-($c(1) $s(" << stateIndex << "))";
     s = ss.str();
     subtraction = LogicalExpression::createFromString(s);
     result.clear();
-    subtraction->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    subtraction->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // {0,1} - 2 = {-2,-1}
     ss.str("");
-    ss <<"-($s(" << stateIndex << ")  $c(2))";
+    ss << "-($s(" << stateIndex << ")  $c(2))";
     s = ss.str();
     subtraction = LogicalExpression::createFromString(s);
     result.clear();
-    subtraction->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    subtraction->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(-2) != result.end());
     ASSERT_TRUE(result.find(-1) != result.end());
 
     // 2 - {0,1} = {2,1}
     ss.str("");
-    ss <<"-($c(2) $s(" << stateIndex << "))";
+    ss << "-($c(2) $s(" << stateIndex << "))";
     s = ss.str();
     subtraction = LogicalExpression::createFromString(s);
     result.clear();
-    subtraction->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    subtraction->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(2) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
@@ -1327,18 +1319,18 @@ TEST_F(EvaluateToKleeneTest, testEvalSubtractionWithOneMultiState) {
 TEST_F(EvaluateToKleeneTest, testEvalSubtractionWithMultiStates) {
     // {0,1} - {0,1} = {0,-1,1}
     std::stringstream ss;
-    ss <<"-($s(" << stateIndex << ")  $s(" << stateIndex << "))";
+    ss << "-($s(" << stateIndex << ")  $s(" << stateIndex << "))";
     string s = ss.str();
     LogicalExpression* subtraction = LogicalExpression::createFromString(s);
 
-    subtraction->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    subtraction->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(3, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
     ASSERT_TRUE(result.find(-1) != result.end());
 }
 
-// Tests kleene evaluation of simple multiplications. Note that multiplications 
+// Tests kleene evaluation of simple multiplications. Note that multiplications
 // are only defined for two expressions
 TEST_F(EvaluateToKleeneTest, testEvalMultiplicationWithSingleResult) {
     string s = "*($c(0) $c(1))";
@@ -1353,7 +1345,6 @@ TEST_F(EvaluateToKleeneTest, testEvalMultiplicationWithSingleResult) {
     multiplication->evaluateToKleene(result, dummyState, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
-
 
     s = "*($c(0) $c(0))";
     multiplication = LogicalExpression::createFromString(s);
@@ -1395,65 +1386,64 @@ TEST_F(EvaluateToKleeneTest, testEvalMultiplicationWithSingleResult) {
 TEST_F(EvaluateToKleeneTest, testEvalMultiplicationWithOneMultiState) {
     // {0,1} * 0 = {0,1}
     std::stringstream ss;
-    ss <<"*($s(" << stateIndex << ")  $c(0))";
+    ss << "*($s(" << stateIndex << ")  $c(0))";
     string s = ss.str();
     LogicalExpression* multiplication = LogicalExpression::createFromString(s);
 
-    multiplication->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    multiplication->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // 0 * {0,1} = {0,-1}
     ss.str("");
-    ss <<"*($c(0) $s(" << stateIndex << "))";
+    ss << "*($c(0) $s(" << stateIndex << "))";
     s = ss.str();
     multiplication = LogicalExpression::createFromString(s);
     result.clear();
-    multiplication->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    multiplication->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
-
     // {0,1} * 1) = {1,0}
     ss.str("");
-    ss <<"*($s(" << stateIndex << ")  $c(1))";
+    ss << "*($s(" << stateIndex << ")  $c(1))";
     s = ss.str();
     multiplication = LogicalExpression::createFromString(s);
     result.clear();
-    multiplication->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    multiplication->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // 1 * {0,1) = {1,0}
     ss.str("");
-    ss <<"*($c(1) $s(" << stateIndex << "))";
+    ss << "*($c(1) $s(" << stateIndex << "))";
     s = ss.str();
     multiplication = LogicalExpression::createFromString(s);
     result.clear();
-    multiplication->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    multiplication->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // {0,1} * 2 = {2,0}
     ss.str("");
-    ss <<"*($s(" << stateIndex << ")  $c(2))";
+    ss << "*($s(" << stateIndex << ")  $c(2))";
     s = ss.str();
     multiplication = LogicalExpression::createFromString(s);
     result.clear();
-    multiplication->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    multiplication->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(2) != result.end());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // 2 * {0,1} = {2,0}
     ss.str("");
-    ss <<"*($c(2) $s(" << stateIndex << "))";
+    ss << "*($c(2) $s(" << stateIndex << "))";
     s = ss.str();
     multiplication = LogicalExpression::createFromString(s);
     result.clear();
-    multiplication->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    multiplication->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(2) != result.end());
     ASSERT_TRUE(result.find(0) != result.end());
@@ -1463,17 +1453,17 @@ TEST_F(EvaluateToKleeneTest, testEvalMultiplicationWithOneMultiState) {
 TEST_F(EvaluateToKleeneTest, testEvalMultiplicationWithMultiStates) {
     // {0,1} * {0,1} = {0,1}
     std::stringstream ss;
-    ss <<"*($s(" << stateIndex << ")  $s(" << stateIndex << "))";
+    ss << "*($s(" << stateIndex << ")  $s(" << stateIndex << "))";
     string s = ss.str();
     LogicalExpression* multiplication = LogicalExpression::createFromString(s);
 
-    multiplication->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    multiplication->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 }
 
-// Tests kleene evaluation of simple divisions. Note that divisions 
+// Tests kleene evaluation of simple divisions. Note that divisions
 // are only defined for two expressions
 TEST_F(EvaluateToKleeneTest, testEvalDivisionWithSingleResult) {
     string s = "/($c(0) $c(1))";
@@ -1488,7 +1478,6 @@ TEST_F(EvaluateToKleeneTest, testEvalDivisionWithSingleResult) {
     division->evaluateToKleene(result, dummyState, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
-
 
     s = "/($c(-1) $c(1))";
     division = LogicalExpression::createFromString(s);
@@ -1530,22 +1519,21 @@ TEST_F(EvaluateToKleeneTest, testEvalDivisionWithSingleResult) {
 TEST_F(EvaluateToKleeneTest, testEvalDivisionWithOneMultiState) {
     // {0,1} / 1) = {1,0}
     std::stringstream ss;
-    ss <<"/($s(" << stateIndex << ")  $c(1))";
+    ss << "/($s(" << stateIndex << ")  $c(1))";
     string s = ss.str();
     LogicalExpression* division = LogicalExpression::createFromString(s);
-    division->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    division->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
     ASSERT_TRUE(result.find(0) != result.end());
 
-
     // {0,1} / 2 = {2,0}
     ss.str("");
-    ss <<"/($s(" << stateIndex << ")  $c(2))";
+    ss << "/($s(" << stateIndex << ")  $c(2))";
     s = ss.str();
     division = LogicalExpression::createFromString(s);
     result.clear();
-    division->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    division->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0.5) != result.end());
     ASSERT_TRUE(result.find(0) != result.end());
@@ -1555,32 +1543,32 @@ TEST_F(EvaluateToKleeneTest, testEvalDivisionWithOneMultiState) {
 TEST_F(EvaluateToKleeneTest, testEvalNegation) {
     // ~{0,1} = {0,1}
     std::stringstream ss;
-    ss <<"~($s(" << stateIndex << ")  $s(" << stateIndex << "))";
+    ss << "~($s(" << stateIndex << ")  $s(" << stateIndex << "))";
     string s = ss.str();
     LogicalExpression* negation = LogicalExpression::createFromString(s);
 
-    negation->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    negation->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // ~1 = 0
     ss.str("");
-    ss <<"~($c(1))";
+    ss << "~($c(1))";
     s = ss.str();
     negation = LogicalExpression::createFromString(s);
     result.clear();
-    negation->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    negation->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // ~0 = 1
     ss.str("");
-    ss <<"~($c(0))";
+    ss << "~($c(0))";
     s = ss.str();
     negation = LogicalExpression::createFromString(s);
     result.clear();
-    negation->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    negation->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 }
@@ -1589,62 +1577,62 @@ TEST_F(EvaluateToKleeneTest, testEvalNegation) {
 TEST_F(EvaluateToKleeneTest, testEvalBernoulli) {
     // Bernoulli(1) = 1
     std::stringstream ss;
-    ss <<"Bernoulli($c(1))";
+    ss << "Bernoulli($c(1))";
     string s = ss.str();
     LogicalExpression* bernoulli = LogicalExpression::createFromString(s);
-    bernoulli->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    bernoulli->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // Bernoulli(0) = 0
     ss.str("");
-    ss <<"Bernoulli($c(0))";
+    ss << "Bernoulli($c(0))";
     s = ss.str();
     result.clear();
     bernoulli = LogicalExpression::createFromString(s);
-    bernoulli->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    bernoulli->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
 
     // Bernoulli(-5) = 1
     ss.str("");
-    ss <<"Bernoulli($c(-5))";
+    ss << "Bernoulli($c(-5))";
     s = ss.str();
     result.clear();
     bernoulli = LogicalExpression::createFromString(s);
-    bernoulli->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    bernoulli->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // Bernoulli(5) = 1
     ss.str("");
-    ss <<"Bernoulli($c(5))";
+    ss << "Bernoulli($c(5))";
     s = ss.str();
     result.clear();
     bernoulli = LogicalExpression::createFromString(s);
-    bernoulli->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    bernoulli->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // Bernoulli(0.5) = {0,1}
     ss.str("");
-    ss <<"Bernoulli($c(0.5))";
+    ss << "Bernoulli($c(0.5))";
     s = ss.str();
     result.clear();
     bernoulli = LogicalExpression::createFromString(s);
-    bernoulli->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    bernoulli->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
 
     // Bernoulli( {0,1}) = {0,1}
     ss.str("");
-    ss <<"Bernoulli($s(" << stateIndex << "))";
+    ss << "Bernoulli($s(" << stateIndex << "))";
     s = ss.str();
     bernoulli = LogicalExpression::createFromString(s);
 
     result.clear();
-    bernoulli->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    bernoulli->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0) != result.end());
     ASSERT_TRUE(result.find(1) != result.end());
@@ -1654,10 +1642,10 @@ TEST_F(EvaluateToKleeneTest, testEvalBernoulli) {
 TEST_F(EvaluateToKleeneTest, testEvalDiscrete) {
     // Discrete(1 : 0.4, 2 : 0.4, 3 : 0.2) = {1,2,3}
     std::stringstream ss;
-    ss <<"Discrete(($c(1) : $c(0.4)) ($c(2) : $c(0.4)) ($c(3) : $c(0.2)))";
+    ss << "Discrete(($c(1) : $c(0.4)) ($c(2) : $c(0.4)) ($c(3) : $c(0.2)))";
     string s = ss.str();
     LogicalExpression* discrete = LogicalExpression::createFromString(s);
-    discrete->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    discrete->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(3, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
     ASSERT_TRUE(result.find(2) != result.end());
@@ -1665,23 +1653,24 @@ TEST_F(EvaluateToKleeneTest, testEvalDiscrete) {
 
     // Discrete(1 : 0.4, 2 : 0.4, 3 : 0.2) = {2,3}
     ss.str("");
-    ss <<"Discrete(($c(1) : $c(0)) ($c(2) : $c(0.4)) ($c(3) : $c(0.6)))";
+    ss << "Discrete(($c(1) : $c(0)) ($c(2) : $c(0.4)) ($c(3) : $c(0.6)))";
     s = ss.str();
     result.clear();
     discrete = LogicalExpression::createFromString(s);
-    discrete->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    discrete->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(2) != result.end());
     ASSERT_TRUE(result.find(3) != result.end());
 
     // Discrete(1 : {0,1}, 2 : 0, 3 : 0) = 1
     ss.str("");
-    ss << "Discrete(($c(1) : $s(" << stateIndex << ")) "
-        "($c(2) : $c(0)) ($c(3) : $c(0)))";
+    ss << "Discrete(($c(1) : $s(" << stateIndex
+       << ")) "
+          "($c(2) : $c(0)) ($c(3) : $c(0)))";
     s = ss.str();
     result.clear();
     discrete = LogicalExpression::createFromString(s);
-    discrete->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    discrete->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(1) != result.end());
 }
@@ -1695,17 +1684,17 @@ TEST_F(EvaluateToKleeneTest, testEvalMultiCond) {
     string s = ss.str();
     result.clear();
     LogicalExpression* multicond = LogicalExpression::createFromString(s);
-    multicond->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    multicond->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(1, result.size());
     ASSERT_TRUE(result.find(2) != result.end());
 
     // if ({0,1}) then (0.5) else (2) = {0.5, 2}
     ss.str("");
-    ss <<"switch( ($s(" << stateIndex << ") : $c(0.5)) ($c(1) : $c(2)))";
+    ss << "switch( ($s(" << stateIndex << ") : $c(0.5)) ($c(1) : $c(2)))";
     s = ss.str();
     result.clear();
     multicond = LogicalExpression::createFromString(s);
-    multicond->evaluateToKleene(result, kleeneT||kleeneF, *actionDummy);
+    multicond->evaluateToKleene(result, kleeneT || kleeneF, *actionDummy);
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result.find(0.5) != result.end());
     ASSERT_TRUE(result.find(2) != result.end());
