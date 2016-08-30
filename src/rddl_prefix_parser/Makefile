@@ -1,7 +1,8 @@
-HEADERS = rddl.h \
+HEADERS = rddl_parser.h \
 	  instantiator.h \
 	  preprocessor.h \
 	  task_analyzer.h \
+	  planning_task.h \
 	  evaluatables.h \
 	  logical_expressions.h \
 	  states.h \
@@ -11,7 +12,7 @@ HEADERS = rddl.h \
 	  utils/system_utils.h \
 	  utils/math_utils.h \
 
-SOURCES = $(HEADERS:%.h=%.cc)
+SOURCES = main.cc $(HEADERS:%.h=%.cc)
 
 SHELL = /bin/bash
 
@@ -31,15 +32,11 @@ TARGET_DEBUG    = $(TARGET)$(TARGET_SUFFIX_DEBUG)
 CC     = g++
 DEPEND = g++ -MM -std=c++0x
 
-LEX = flex
-YACC = bison
-YFLAGS = -d
-
 ## Test related
 GTEST_DIR = ../test/gtest
 TEST_MAIN = ../test/testMain
-TEST_BINARIES = $(basename $(wildcard ../test/rddl_parser/*Test.cc))
-TEST_OBJECTS = $(addsuffix .o, $(TEST_BINARIES))
+TEST_BINARIES = $(basename $(wildcard ../test/rddl_prefix_parser/*Test.cc))
+TEST_OBJECTS = $(addsuffix .o, $(TEST_BINARIES)) 
 
 ## CCOPT, LINKOPT are options for compiler and linker that are used
 ## for both targets (release and debug).
@@ -47,7 +44,7 @@ TEST_OBJECTS = $(addsuffix .o, $(TEST_BINARIES))
 CCOPT = -g -Wall -W -Wno-sign-compare -Wno-deprecated -ansi -pedantic -Werror -std=c++0x #-Wconversion
 LINKOPT = -g
 
-OPT = -std=c++0x
+OPT =
 
 LBITS := $(shell getconf LONG_BIT)
 ifeq ($(LBITS),64)
@@ -62,7 +59,7 @@ CCOPT_RELEASE  = -O3 -fomit-frame-pointer -DNDEBUG
 CCOPT_DEBUG    = -fprofile-arcs -ftest-coverage
 
 LINKOPT_RELEASE  = -O3 #-static -static-libgcc
-LINKOPT_DEBUG    =
+LINKOPT_DEBUG    = 
 
 CCOPT_GTEST += -I../test -DGTEST_HAS_PTHREAD=0
 
@@ -81,13 +78,7 @@ all: covclear release debug test_build test
 release: $(TARGET_RELEASE)
 
 $(TARGET_RELEASE): $(OBJECTS_RELEASE)
-	## Bison and flex generation rules
-	bison -d parser.ypp --output-file parser.tab.cc
-	flex lexer.l parser.tab.hh
-	g++ -std=c++11 -c -o .obj/lex.yy.o lex.yy.c
-	g++ -std=c++11 -c -o parser.tab.o parser.tab.cc
-	##
-	$(CC) $(LINKOPT) $(OPT) $(LINKOPT_RELEASE) $(OBJECTS_RELEASE) parser.tab.o .obj/lex.yy.o -o $(TARGET_RELEASE)
+	$(CC) $(LINKOPT) $(OPT) $(LINKOPT_RELEASE) $(OBJECTS_RELEASE) -o $(TARGET_RELEASE)
 
 $(OBJECTS_RELEASE): .obj/%$(OBJECT_SUFFIX_RELEASE).o: %.cc
 	@mkdir -p $$(dirname $@)
@@ -98,13 +89,7 @@ $(OBJECTS_RELEASE): .obj/%$(OBJECT_SUFFIX_RELEASE).o: %.cc
 debug: $(TARGET_DEBUG) covclear
 
 $(TARGET_DEBUG): $(OBJECTS_DEBUG)
-	## Bison and flex generation rules
-	bison -d parser.ypp --output-file parser.tab.cc
-	flex lexer.l parser.tab.hh
-	g++ -std=c++11 -c -o .obj/lex.yy.o lex.yy.c
-	g++ -std=c++11 -c -o parser.tab.o parser.tab.cc
-	##
-	$(CC) $(LINKOPT) $(OPT) $(LINKOPT_DEBUG) $(OBJECTS_DEBUG) parser.tab.o .obj/lex.yy.o -o $(TARGET_DEBUG) -lgcov
+	$(CC) $(LINKOPT) $(OPT) $(LINKOPT_DEBUG) $(OBJECTS_DEBUG) -o $(TARGET_DEBUG) -lgcov
 
 $(OBJECTS_DEBUG): .obj/%$(OBJECT_SUFFIX_DEBUG).o: %.cc
 	@mkdir -p $$(dirname $@)
@@ -115,7 +100,7 @@ $(OBJECTS_DEBUG): .obj/%$(OBJECT_SUFFIX_DEBUG).o: %.cc
 test_build:  $(TEST_MAIN).o $(GTEST_DIR)/gtest-all.o $(filter-out .obj/main.debug.o, $(OBJECTS_DEBUG)) $(TEST_OBJECTS)
 				$(CC) $(CCOPT) $(OPT) -o runTests  $^ -lgcov
 
-$(TEST_MAIN).o: $(TEST_MAIN).cc
+$(TEST_MAIN).o: $(TEST_MAIN).cc 
 				$(CC) $(filter-out -Werror, $(CCOPT)) $(OPT) -c  $< -o $@
 
 $(GTEST_DIR)/gtest_main.o : $(GTEST_DIR)/gtest.h $(GTEST_DIR)/gtest_main.cc
@@ -123,37 +108,36 @@ $(GTEST_DIR)/gtest_main.o : $(GTEST_DIR)/gtest.h $(GTEST_DIR)/gtest_main.cc
 
 
 $(GTEST_DIR)/gtest-all.o : $(GTEST_DIR)/gtest.h $(GTEST_DIR)/gtest-all.cc
-	$(CC) $(CCOPT_GTEST) -g -c $(GTEST_DIR)/gtest-all.cc -o $(GTEST_DIR)/gtest-all.o
+	$(CC) $(CCOPT_GTEST) -g -c $(GTEST_DIR)/gtest-all.cc -o $(GTEST_DIR)/gtest-all.o 
 
-%Test.o: %Test.cc
+%Test.o: %Test.cc 
 				$(CC) $(filter-out -Werror, $(CCOPT)) $(OPT) -c $< -o $@
 
 ## Automatically runs all tests
-run_tests:
+run_tests: 
 	./runTests
 
 # Creates code coverage html files.
 coverage:
-	@rm -rf ../../coverage/rddl_parser
+	@rm -rf ../../coverage/rddl_prefix_parser
 	@mkdir -p ../../coverage
-	@mkdir ../../coverage/rddl_parser
-	@../../scripts/gcovr -r . -b -o ../../coverage/rddl_parser/branch_coverage
-	@../../scripts/gcovr -r . --html --html-details -o ../../coverage/rddl_parser/coverage.html
-	@echo "Coverage files created. Open <PROST_DIRECTORY>/coverage/rddl_parser/coverage.html to view code coverage"
-	@echo "Open <PROST_DIRECTORY>/coverage/rddl_parser/branch_coverage to view branch coverage"
+	@mkdir ../../coverage/rddl_prefix_parser
+	@../../scripts/gcovr -r . -b -o ../../coverage/rddl_prefix_parser/branch_coverage
+	@../../scripts/gcovr -r . --html --html-details -o ../../coverage/rddl_prefix_parser/coverage.html
+	@echo "Coverage files created. Open <PROST_DIRECTORY>/coverage/rddl_prefix_parser/coverage.html to view code coverage" 
+	@echo "Open <PROST_DIRECTORY>/coverage/rddl_prefix_parser/branch_coverage to view branch coverage"
 
 # Deletes code coverage gcda files.
 covclear:
 		find .obj/ -name '*.gcda' | xargs rm -f
 clean:
 	rm -rf .obj
-	rm -rf ../../coverage/rddl_parser
+	rm -rf ../../coverage/rddl_prefix_parser
 	rm -f *~ utils/*~ logical_expressions_includes/*~
 	rm -f Makefile.depend
-	rm -f ../test/rddl_parser/*.o
-	rm -f ../test/rddl_parser/*.obj
+	rm -f ../test/rddl_prefix_parser/*.o
+	rm -f ../test/rddl_prefix_parser/*.obj
 	rm -f ../test/gtest/*.o
-	rm -rf *~ $(PROGRAM) *.tab.* lex.* \.combined
 
 distclean: clean
 	rm -f $(TARGET_RELEASE) $(TARGET_DEBUG) runTests
