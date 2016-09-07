@@ -30,8 +30,7 @@ public:
 
     // Outcome selection
     virtual SearchNode* selectOutcome(SearchNode* node, PDState& nextState,
-                                      int const& varIndex,
-                                      int const& lastProbVarIndex) = 0;
+                                      int varIndex, int lastProbVarIndex) = 0;
 
     // Prints statistics
     virtual void printStats(std::ostream& /*out*/, std::string /*indent*/) {}
@@ -46,18 +45,20 @@ class MCOutcomeSelection : public OutcomeSelection {
 public:
     MCOutcomeSelection(THTS* _thts) : OutcomeSelection(_thts) {}
 
-    virtual SearchNode* selectOutcome(SearchNode* node, PDState& nextState,
-                                      int const& varIndex,
-                                      int const& lastProbVarIndex);
+    SearchNode* selectOutcome(SearchNode* node, PDState& nextState,
+                              int varIndex, int lastProbVarIndex) override;
+
+    virtual void computeBlacklist(SearchNode* /*node*/, PDState& /*nextState*/,
+                                  int /*varIndex*/,
+                                  std::vector<int>& /*blacklist*/) const {}
 };
 
-class UnsolvedMCOutcomeSelection : public OutcomeSelection {
+class UnsolvedMCOutcomeSelection : public MCOutcomeSelection {
 public:
-    UnsolvedMCOutcomeSelection(THTS* _thts) : OutcomeSelection(_thts) {}
+    UnsolvedMCOutcomeSelection(THTS* _thts) : MCOutcomeSelection(_thts) {}
 
-    virtual SearchNode* selectOutcome(SearchNode* node, PDState& nextState,
-                                      int const& varIndex,
-                                      int const& lastProbVarIndex);
+    void computeBlacklist(SearchNode* node, PDState& nextState, int varIndex,
+                          std::vector<int>& blacklist) const override;
 };
 
 #endif
