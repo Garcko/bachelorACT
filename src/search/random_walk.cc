@@ -15,7 +15,7 @@ bool RandomWalk::setValueFromString(std::string& param,
         setNumberOfIterations(atoi(value.c_str()));
         return true;
     }
-    
+
     return SearchEngine::setValueFromString(param, value);
 }
 
@@ -49,18 +49,15 @@ void RandomWalk::performRandomWalks(PDState const& root, int firstActionIndex,
     PDState next;
 
     for (unsigned int i = 0; i < numberOfIterations; ++i) {
-        PDState current(root.stepsToGo() -1);
+        PDState current(root.stepsToGo() - 1);
         sampleSuccessorState(root, firstActionIndex, current, reward);
         result += reward;
 
         while (current.stepsToGo() > 0) {
-            std::vector<int> applicableActions =
-                getIndicesOfApplicableActions(current);
+            int rndActionIndex = MathUtils::rnd->randomElement(
+                getIndicesOfApplicableActions(current));
             next.reset(current.stepsToGo() - 1);
-
-            int actIndex = std::rand() % applicableActions.size();
-            sampleSuccessorState(current, applicableActions[actIndex],
-                                 next, reward);
+            sampleSuccessorState(current, rndActionIndex, next, reward);
             result += reward;
             current = next;
         }
@@ -68,11 +65,13 @@ void RandomWalk::performRandomWalks(PDState const& root, int firstActionIndex,
     result /= (double)numberOfIterations;
 }
 
-void RandomWalk::sampleSuccessorState(PDState const& current, int const& actionIndex,
-                                      PDState& next, double& reward) const {
+void RandomWalk::sampleSuccessorState(PDState const& current,
+                                      int const& actionIndex, PDState& next,
+                                      double& reward) const {
     calcReward(current, actionIndex, reward);
     calcSuccessorState(current, actionIndex, next);
-    for (unsigned int varIndex = 0; varIndex < State::numberOfProbabilisticStateFluents; ++varIndex) {
+    for (unsigned int varIndex = 0;
+         varIndex < State::numberOfProbabilisticStateFluents; ++varIndex) {
         next.sample(varIndex);
     }
 }

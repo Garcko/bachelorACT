@@ -3,6 +3,7 @@
 #include "thts.h"
 #include "uniform_evaluation_search.h"
 
+#include "utils/math_utils.h"
 #include "utils/string_utils.h"
 #include "utils/system_utils.h"
 
@@ -36,8 +37,8 @@ Initializer* Initializer::fromString(std::string& desc, THTS* thts) {
         StringUtils::nextParamValuePair(desc, param, value);
 
         if (!result->setValueFromString(param, value)) {
-            SystemUtils::abort("Unused parameter value pair: " +
-                               param + " / " + value);
+            SystemUtils::abort("Unused parameter value pair: " + param + " / " +
+                               value);
         }
     }
     return result;
@@ -47,13 +48,13 @@ bool Initializer::setValueFromString(std::string& param, std::string& value) {
     if (param == "-h") {
         setHeuristic(SearchEngine::fromString(value));
         return true;
-    }  else if (param == "-hw") {
+    } else if (param == "-hw") {
         setHeuristicWeight(atof(value.c_str()));
         return true;
     } else if (param == "-iv") {
         setNumberOfInitialVisits(atoi(value.c_str()));
         return true;
-    } 
+    }
 
     return false;
 }
@@ -76,7 +77,8 @@ void Initializer::learn() {
     if (heuristic->getMaxSearchDepth() == 0) {
         UniformEvaluationSearch* _heuristic = new UniformEvaluationSearch();
         setHeuristic(_heuristic);
-        std::cout << "Search depth is too low for selected heuristic!" << std::endl;
+        std::cout << "Search depth is too low for selected heuristic!"
+                  << std::endl;
     }
 }
 
@@ -100,12 +102,12 @@ void Initializer::setMaxSearchDepth(int maxSearchDepth) {
                             Print
 ******************************************************************/
 
-void Initializer::printStats(std::ostream& out,
-                             bool const& printRoundStats,
+void Initializer::printStats(std::ostream& out, bool const& printRoundStats,
                              std::string indent) const {
     out << indent << "Initializer: " << name << std::endl;
     out << indent << "Heuristic weight: " << heuristicWeight << std::endl;
-    out << indent << "Number of initial visits: " << numberOfInitialVisits << std::endl;
+    out << indent << "Number of initial visits: " << numberOfInitialVisits
+        << std::endl;
     out << indent << "Heuristic: " << std::endl;
     heuristic->printStats(out, printRoundStats, indent + "  ");
 }
@@ -135,8 +137,8 @@ void ExpandNodeInitializer::initialize(SearchNode* node, State const& current) {
             node->children[index]->initialized = true;
 
             node->numberOfVisits += numberOfInitialVisits;
-            node->futureReward =
-                std::max(node->futureReward, node->children[index]->futureReward);
+            node->futureReward = std::max(node->futureReward,
+                                          node->children[index]->futureReward);
 
             // std::cout << "Initialized child ";
             // SearchEngine::actionStates[index].printCompact(std::cout);
@@ -152,7 +154,8 @@ void ExpandNodeInitializer::initialize(SearchNode* node, State const& current) {
                         ExpandNodeInitializer
 ******************************************************************/
 
-void SingleChildInitializer::initialize(SearchNode* node, State const& current) {
+void SingleChildInitializer::initialize(SearchNode* node,
+                                        State const& current) {
     // std::cout << "initializing state: " << std::endl;
     // current.print(std::cout);
 
@@ -179,7 +182,7 @@ void SingleChildInitializer::initialize(SearchNode* node, State const& current) 
     }
 
     assert(!candidates.empty());
-    int actionIndex = candidates[rand() % candidates.size()];
+    int actionIndex = MathUtils::rnd->randomElement(candidates);
 
     double initialQValue = 0.0;
     heuristic->estimateQValue(current, actionIndex, initialQValue);

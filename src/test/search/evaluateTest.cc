@@ -1,8 +1,8 @@
 #include "../gtest/gtest.h"
 
+#include "../../search/parser.h"
 #include "../../search/prost_planner.h"
 #include "../../search/thts.h"
-#include "../../search/parser.h"
 
 using std::string;
 using std::vector;
@@ -14,17 +14,19 @@ class EvaluateTest : public testing::Test {
 protected:
     EvaluateTest() {
         string domainName = "crossing_traffic";
-        string problemFileName = "../test/testdomains/"+domainName+"_inst_mdp__1";
+        string problemFileName =
+            "../test/testdomains/" + domainName + "_inst_mdp__1";
         Parser parser(problemFileName);
         parser.parseTask(stateVariableIndices, stateVariableValues);
         // Create an Action State dummy, since we don't need one
         vector<int> vecDummy;
         vector<ActionFluent*> scheduledActionFluents;
         vector<DeterministicEvaluatable*> actionPreconditions;
-        ActionState tmp(0, vecDummy, scheduledActionFluents, actionPreconditions);
+        ActionState tmp(0, vecDummy, scheduledActionFluents,
+                        actionPreconditions);
         actionDummy = &tmp;
 
-        // Create two states which we often use 
+        // Create two states which we often use
         vector<double> stateVector;
         string fluentName = "obstacle-at(x2, y2)";
         for (int i = 0; i < State::numberOfDeterministicStateFluents; ++i) {
@@ -44,13 +46,13 @@ protected:
         State::calcStateHashKey(x2y2True);
         State::calcStateFluentHashKeys(x2y2False);
         State::calcStateHashKey(x2y2False);
-        
+
         // index of the state variable
         fluentName = "obstacle-at(x2, y2)";
         for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
             if (SearchEngine::stateFluents[i]->name == fluentName) {
                 stateIndex = i;
-                break;   
+                break;
             }
         }
     }
@@ -64,7 +66,7 @@ protected:
     State x2y2False;
     ProstPlanner* planner;
     map<string, int> stateVariableIndices;
-    vector<vector<string> > stateVariableValues;
+    vector<vector<string>> stateVariableValues;
     State dummyState;
     ActionState* actionDummy;
     int stateIndex;
@@ -108,13 +110,13 @@ TEST_F(EvaluateTest, testEvalBooleanProbabilisticStateFluent) {
     State::calcStateHashKey(x3y2True);
     State::calcStateFluentHashKeys(x3y2False);
     State::calcStateHashKey(x3y2False);
-   
+
     // Get the state fluent which corresponds to the name
     StateFluent* fluent;
     for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
         if (SearchEngine::stateFluents[i]->name == fluentName) {
             fluent = SearchEngine::stateFluents[i];
-            break;   
+            break;
         }
     }
 
@@ -131,13 +133,13 @@ TEST_F(EvaluateTest, testEvalBooleanProbabilisticStateFluent) {
 // Tests the evaluation of an action fluent when there are no
 // concurrent actions
 TEST_F(EvaluateTest, testEvalActionFluentSingleAction) {
-    // Get corresponding action state 
+    // Get corresponding action state
     fluentName = "move-west";
     ActionState* actionState;
-    for (size_t i = 0; i < SearchEngine::actionStates.size();i++) {
+    for (size_t i = 0; i < SearchEngine::actionStates.size(); i++) {
         if (SearchEngine::actionStates[i].scheduledActionFluents.size() == 1 &&
-                SearchEngine::actionStates[i].scheduledActionFluents[0]->name 
-                == fluentName) {
+            SearchEngine::actionStates[i].scheduledActionFluents[0]->name ==
+                fluentName) {
             actionState = &SearchEngine::actionStates[i];
         }
     }
@@ -147,7 +149,7 @@ TEST_F(EvaluateTest, testEvalActionFluentSingleAction) {
     for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
         if (SearchEngine::actionFluents[i]->name == fluentName) {
             fluent = SearchEngine::actionFluents[i];
-            break;   
+            break;
         }
     }
 
@@ -161,7 +163,7 @@ TEST_F(EvaluateTest, testEvalActionFluentSingleAction) {
     for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
         if (SearchEngine::actionFluents[i]->name == fluentName) {
             fluent = SearchEngine::actionFluents[i];
-            break;   
+            break;
         }
     }
     // Move east is not in the action state, therefore it should evaluate to 0
@@ -169,23 +171,21 @@ TEST_F(EvaluateTest, testEvalActionFluentSingleAction) {
     fluent->evaluate(result, dummyState, *actionState);
     ASSERT_DOUBLE_EQ(0, result);
     result = 0;
-
 }
 
 // Tests the evaluation of an action fluent with concurrent actions
 TEST_F(EvaluateTest, testEvalActionFluentConcurrentActions) {
     string domainName = "earth_observation";
-    string problemFileName = "../test/testdomains/" + 
-        domainName + "_inst_mdp__03";
+    string problemFileName =
+        "../test/testdomains/" + domainName + "_inst_mdp__03";
     Parser parser(problemFileName);
     parser.parseTask(stateVariableIndices, stateVariableValues);
 
-    // Get action state where slew(east) and take-image is possible, 
+    // Get action state where slew(east) and take-image is possible,
     // which is the only one with two scheduledActionFluents
     ActionState* actionState;
-    for (size_t i = 0; i < SearchEngine::actionStates.size();i++) {
-        if (SearchEngine::actionStates[i].scheduledActionFluents.size() 
-                == 2) {
+    for (size_t i = 0; i < SearchEngine::actionStates.size(); i++) {
+        if (SearchEngine::actionStates[i].scheduledActionFluents.size() == 2) {
             actionState = &SearchEngine::actionStates[i];
         }
     }
@@ -196,7 +196,7 @@ TEST_F(EvaluateTest, testEvalActionFluentConcurrentActions) {
     for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
         if (SearchEngine::actionFluents[i]->name == fluentName) {
             fluent = SearchEngine::actionFluents[i];
-            break;   
+            break;
         }
     }
     // Since the actionFluent corresponds to the action state it should evaluate
@@ -210,7 +210,7 @@ TEST_F(EvaluateTest, testEvalActionFluentConcurrentActions) {
     for (size_t i = 0; i < SearchEngine::stateFluents.size(); i++) {
         if (SearchEngine::actionFluents[i]->name == fluentName) {
             fluent = SearchEngine::actionFluents[i];
-            break;   
+            break;
         }
     }
     // This action is not in the action state
@@ -582,7 +582,7 @@ TEST_F(EvaluateTest, testEvalAdditionWithSingleResult) {
     ASSERT_DOUBLE_EQ(0, result);
 }
 
-// Tests evaluation of subtractions. Note that subtractions 
+// Tests evaluation of subtractions. Note that subtractions
 // are only defined for two expressions
 TEST_F(EvaluateTest, testEvalSubtractionWithSingleResult) {
     s = "-($c(0) $c(1))";
@@ -595,7 +595,6 @@ TEST_F(EvaluateTest, testEvalSubtractionWithSingleResult) {
     result = 0;
     subtraction->evaluate(result, dummyState, *actionDummy);
     ASSERT_DOUBLE_EQ(0, result);
-
 
     s = "-($c(0) $c(0))";
     subtraction = LogicalExpression::createFromString(s);
@@ -628,7 +627,7 @@ TEST_F(EvaluateTest, testEvalSubtractionWithSingleResult) {
     ASSERT_DOUBLE_EQ(-5, result);
 }
 
-// Tests of multiplications. Note that multiplications 
+// Tests of multiplications. Note that multiplications
 // are only defined for two expressions
 TEST_F(EvaluateTest, testEvalMultiplicationWithSingleResult) {
     s = "*($c(0) $c(1))";
@@ -673,7 +672,7 @@ TEST_F(EvaluateTest, testEvalMultiplicationWithSingleResult) {
     ASSERT_DOUBLE_EQ(-6.25, result);
 }
 
-// Tests evaluation of divisions. Note that divisions 
+// Tests evaluation of divisions. Note that divisions
 // are only defined for two expressions
 TEST_F(EvaluateTest, testEvalDivisionWithSingleResult) {
     s = "/($c(0) $c(1))";
@@ -686,7 +685,6 @@ TEST_F(EvaluateTest, testEvalDivisionWithSingleResult) {
     result = 0;
     division->evaluate(result, dummyState, *actionDummy);
     ASSERT_DOUBLE_EQ(1, result);
-
 
     s = "/($c(-1) $c(1))";
     division = LogicalExpression::createFromString(s);
@@ -748,7 +746,7 @@ TEST_F(EvaluateTest, testEvalMultiCond) {
 
     // if (0) then (0.5) else (2) = 2
     ss.str("");
-    ss <<"switch( ($c(0) : $c(0.5)) ($c(1) : $c(2)))";
+    ss << "switch( ($c(0) : $c(0.5)) ($c(1) : $c(2)))";
     s = ss.str();
     result = 0;
     multicond = LogicalExpression::createFromString(s);
@@ -766,7 +764,7 @@ TEST_F(EvaluateTest, testEvalNestedCond) {
     ASSERT_DOUBLE_EQ(1, result);
 
     // equals 3 * 2 * 0.5 = 3
-    s = "*(switch( ($c(0) : $c(1)) ($c(0) : $c(2)) ($c(1) : $c(3)))" 
+    s = "*(switch( ($c(0) : $c(1)) ($c(0) : $c(2)) ($c(1) : $c(3)))"
         "*(switch( ($c(0) : $c(1)) ($c(1) : $c(2)))"
         "switch( ($c(1) : $c(0.5)) ($c(1) : $c(2)))))";
     multiplication = LogicalExpression::createFromString(s);
@@ -774,11 +772,10 @@ TEST_F(EvaluateTest, testEvalNestedCond) {
     ASSERT_DOUBLE_EQ(3, result);
 
     // equals 3 + 2 + 0.5 = 5.5
-    s = "+(switch( ($c(0) : $c(1)) ($c(0) : $c(2)) ($c(1) : $c(3)))" 
+    s = "+(switch( ($c(0) : $c(1)) ($c(0) : $c(2)) ($c(1) : $c(3)))"
         "switch( ($c(0) : $c(1)) ($c(1) : $c(2)))"
         "switch( ($c(1) : $c(0.5)) ($c(1) : $c(2))))";
     multiplication = LogicalExpression::createFromString(s);
     multiplication->evaluate(result, dummyState, *actionDummy);
     ASSERT_DOUBLE_EQ(5.5, result);
 }
-

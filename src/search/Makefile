@@ -18,10 +18,11 @@ HEADERS = parser.h \
 	  logical_expressions.h \
 	  probability_distribution.h \
 	  utils/strxml.h \
-	  utils/timer.h \
+	  utils/stopwatch.h \
 	  utils/string_utils.h \
 	  utils/system_utils.h \
 	  utils/math_utils.h \
+	  utils/random.h \
 
 SOURCES = main.cc $(HEADERS:%.h=%.cc)
 
