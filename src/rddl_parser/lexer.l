@@ -79,6 +79,7 @@ forall                                                  { return forall_token; }
 exists                                                  { return exists_token; }
 sum                                                     { return sum_token; }
 product                                                 { return product_token; }
+prod                                                    { return product_token; }
 if                                                      { return if_token; }
 then                                                    { return then_token; }
 else                                                    { return else_token; }
