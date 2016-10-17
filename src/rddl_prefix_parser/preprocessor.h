@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-class RDDLTask;
+class PlanningTask;
 class Evaluatable;
 class ActionPrecondition;
 class ActionState;
@@ -15,12 +15,12 @@ class StateFluent;
 
 class Preprocessor {
 public:
-    Preprocessor(RDDLTask* _task) : task(_task) {}
+    Preprocessor(PlanningTask* _task) : task(_task) {}
 
     void preprocess(bool const& output = true);
 
 private:
-    RDDLTask* task;
+    PlanningTask* task;
 
     void prepareEvaluatables();
     void prepareActions();

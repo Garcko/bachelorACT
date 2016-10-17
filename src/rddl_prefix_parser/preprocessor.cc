@@ -1,8 +1,7 @@
 #include "preprocessor.h"
 
 #include "evaluatables.h"
-
-#include "rddl.h"
+#include "planning_task.h"
 
 #include "utils/math_utils.h"
 #include "utils/system_utils.h"

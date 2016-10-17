@@ -1,5 +1,5 @@
-#include "../../rddl_parser/logical_expressions.h"
-#include "../../rddl_parser/rddl_parser.h"
+#include "../../rddl_prefix_parser/logical_expressions.h"
+#include "../../rddl_prefix_parser/rddl_parser.h"
 #include "../gtest/gtest.h"
 
 using std::string;

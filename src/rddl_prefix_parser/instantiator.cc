@@ -1,11 +1,9 @@
 #include "instantiator.h"
 
 #include "evaluatables.h"
-#include "rddl.h"
+#include "planning_task.h"
 
 #include "utils/timer.h"
-
-#include <iostream>
 
 using namespace std;
 

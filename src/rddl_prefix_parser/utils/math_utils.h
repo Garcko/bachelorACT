@@ -3,6 +3,7 @@
 
 #define EPSILON 0.000000001 // std::numeric_limits<double>::epsilon()
 
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
