@@ -35,6 +35,7 @@ class RecommendationFunction;
 struct SearchNode {
     SearchNode(double const& _prob, int const& _stepsToGo)
         : children(),
+          parents(),
           immediateReward(0.0),
           prob(_prob),
           stepsToGo(_stepsToGo),
@@ -49,10 +50,16 @@ struct SearchNode {
                 delete children[i];
             }
         }
+        for (unsigned int i = 0; i < parents.size(); ++i) {
+            if (parents[i]) {
+                delete parents[i];
+            }
+        }
     }
 
     void reset(double const& _prob, int const& _stepsToGo) {
         children.clear();
+        parents.clear();
         immediateReward = 0.0;
         prob = _prob;
         stepsToGo = _stepsToGo;
@@ -60,6 +67,7 @@ struct SearchNode {
         numberOfVisits = 0;
         initialized = false;
         solved = false;
+	isChanceNode=false;
     }
 
     double getExpectedRewardEstimate() const {
@@ -81,6 +89,7 @@ struct SearchNode {
     }
 
     std::vector<SearchNode*> children;
+    std::vector<SearchNode*> parents;
 
     double immediateReward;
     double prob;
@@ -88,6 +97,8 @@ struct SearchNode {
 
     double futureReward;
     int numberOfVisits;
+
+
 
     // This is used in two ways: in decision nodes, it is true if all children
     // are initialized; and in chance nodes that represent an action (i.e., in
@@ -97,6 +108,11 @@ struct SearchNode {
 
     // A node is solved if futureReward is equal to the true future reward
     bool solved;
+
+	/* new  */
+	bool isChanceNode;	//to different between Chance and Decision Node
+	
+	
 };
 
 class THTS : public ProbabilisticSearchEngine {
@@ -169,8 +185,10 @@ public:
 
     // Methods to create search nodes
     SearchNode* createRootNode();
-    SearchNode* createDecisionNode(double const& _prob);
-    SearchNode* createChanceNode(double const& _prob);
+    SearchNode* createDecisionNode(double const& _prob,SearchNode* node);
+    SearchNode* createChanceNode(double const& _prob,SearchNode* node);
+
+
 
     // Methods that return certain nodes of the explicated tree
     SearchNode const* getCurrentRootNode() const {

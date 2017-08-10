@@ -526,7 +526,7 @@ void THTS::visitDummyChanceNode(SearchNode* node) {
 
     if (node->children.empty()) {
         node->children.resize(1, nullptr);
-        node->children[0] = createDecisionNode(1.0);
+        node->children[0] = createDecisionNode(1.0,node);
     }
     assert(node->children.size() == 1);
 
@@ -603,7 +603,7 @@ SearchNode* THTS::createRootNode() {
     return res;
 }
 
-SearchNode* THTS::createDecisionNode(double const& prob) {
+SearchNode* THTS::createDecisionNode(double const& prob,SearchNode* node) {
     assert(lastUsedNodePoolIndex < nodePool.size());
 
     SearchNode* res = nodePool[lastUsedNodePoolIndex];
@@ -618,10 +618,13 @@ SearchNode* THTS::createDecisionNode(double const& prob) {
                res->immediateReward);
 
     ++lastUsedNodePoolIndex;
+
+	res->isChanceNode=false;
+    res->parents.push_back(node);
     return res;
 }
 
-SearchNode* THTS::createChanceNode(double const& prob) {
+SearchNode* THTS::createChanceNode(double const& prob,SearchNode* node) {
     assert(lastUsedNodePoolIndex < nodePool.size());
 
     SearchNode* res = nodePool[lastUsedNodePoolIndex];
@@ -634,6 +637,9 @@ SearchNode* THTS::createChanceNode(double const& prob) {
     }
 
     ++lastUsedNodePoolIndex;
+
+	res->isChanceNode=true;
+    res->parents.push_back(node);
     return res;
 }
 
