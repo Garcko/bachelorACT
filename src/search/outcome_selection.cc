@@ -73,7 +73,7 @@ SearchNode* MCOutcomeSelection::selectOutcome(SearchNode* node,
             node->children[childIndex] =
                 thts->createDecisionNode(sample.second,node);
         } else {
-            node->children[childIndex] = thts->createChanceNode(sample.second,node);
+            node->children[childIndex] = thts->createChanceNode(sample.second, node, false);
         }
     }
 

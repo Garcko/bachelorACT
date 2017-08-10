@@ -619,12 +619,11 @@ SearchNode* THTS::createDecisionNode(double const& prob,SearchNode* node) {
 
     ++lastUsedNodePoolIndex;
 
-	res->isChanceNode=false;
     res->parents.push_back(node);
     return res;
 }
 
-SearchNode* THTS::createChanceNode(double const& prob,SearchNode* node) {
+SearchNode* THTS::createChanceNode(double const& prob, SearchNode* node, bool isActionNode) {
     assert(lastUsedNodePoolIndex < nodePool.size());
 
     SearchNode* res = nodePool[lastUsedNodePoolIndex];
@@ -638,7 +637,8 @@ SearchNode* THTS::createChanceNode(double const& prob,SearchNode* node) {
 
     ++lastUsedNodePoolIndex;
 
-	res->isChanceNode=true;
+    res->isChanceNode = true;
+    res->isActionNode = isActionNode;
     res->parents.push_back(node);
     return res;
 }

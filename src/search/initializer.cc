@@ -130,7 +130,7 @@ void ExpandNodeInitializer::initialize(SearchNode* node, State const& current) {
 
     for (unsigned int index = 0; index < node->children.size(); ++index) {
         if (actionsToExpand[index] == index) {
-            node->children[index] = thts->createChanceNode(1.0,node);
+            node->children[index] = thts->createChanceNode(1.0, node, true);
             node->children[index]->futureReward =
                 heuristicWeight * initialQValues[index];
             node->children[index]->numberOfVisits = numberOfInitialVisits;
@@ -167,7 +167,7 @@ void SingleChildInitializer::initialize(SearchNode* node,
         std::vector<int> actionsToExpand = thts->getApplicableActions(current);
         for (unsigned int index = 0; index < node->children.size(); ++index) {
             if (actionsToExpand[index] == index) {
-                node->children[index] = thts->createChanceNode(1.0,node);
+                node->children[index] = thts->createChanceNode(1.0, node, true);
                 candidates.push_back(index);
             }
         }

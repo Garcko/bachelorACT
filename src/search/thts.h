@@ -42,7 +42,9 @@ struct SearchNode {
           futureReward(-std::numeric_limits<double>::max()),
           numberOfVisits(0),
           initialized(false),
-          solved(false) {}
+          solved(false),
+          isChanceNode(false),
+          isActionNode(false) {}
 
     ~SearchNode() {
         for (unsigned int i = 0; i < children.size(); ++i) {
@@ -67,7 +69,8 @@ struct SearchNode {
         numberOfVisits = 0;
         initialized = false;
         solved = false;
-	isChanceNode=false;
+	isChanceNode = false;
+        isActionNode = false;
     }
 
     double getExpectedRewardEstimate() const {
@@ -109,8 +112,11 @@ struct SearchNode {
     // A node is solved if futureReward is equal to the true future reward
     bool solved;
 
-	/* new  */
-	bool isChanceNode;	//to different between Chance and Decision Node
+    /* new  */
+    bool isChanceNode;	//to different between Chance and Decision Node
+
+    // An action node is a chance node whose parent is a decision node
+    bool isActionNode;
 	
 	
 };
@@ -185,8 +191,8 @@ public:
 
     // Methods to create search nodes
     SearchNode* createRootNode();
-    SearchNode* createDecisionNode(double const& _prob,SearchNode* node);
-    SearchNode* createChanceNode(double const& _prob,SearchNode* node);
+    SearchNode* createDecisionNode(double const& _prob, SearchNode* node);
+    SearchNode* createChanceNode(double const& _prob, SearchNode* node, bool isActionNode);
 
 
 
