@@ -1,9 +1,11 @@
 #ifndef THTS_H
 #define THTS_H
 
+#include <queue>
 #include "search_engine.h"
 
 #include "utils/stopwatch.h"
+
 
 class ActionSelection;
 class OutcomeSelection;
@@ -69,7 +71,7 @@ struct SearchNode {
         numberOfVisits = 0;
         initialized = false;
         solved = false;
-	isChanceNode = false;
+		isChanceNode = false;
         isActionNode = false;
     }
 
@@ -82,6 +84,8 @@ struct SearchNode {
     }
 
     void print(std::ostream& out, std::string indent = "") const {
+        out << indent << "stepsToGO: " << stepsToGo
+            << " is ChanceNode: "<< isChanceNode << std::endl;
         if (solved) {
             out << indent << "SOLVED with: " << getExpectedRewardEstimate()
                 << " (in " << numberOfVisits << " real visits)" << std::endl;
@@ -89,6 +93,14 @@ struct SearchNode {
             out << indent << getExpectedRewardEstimate() << " (in "
                 << numberOfVisits << " real visits)" << std::endl;
         }
+    }
+    bool isALeafNode() {
+        for (SearchNode* child : children) {
+            if (!child->children.empty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     std::vector<SearchNode*> children;
@@ -188,6 +200,19 @@ public:
         // not in the middle of a trial)
         nodePool.resize(maxNumberOfNodes + 20000, nullptr);
     }
+    //compare method for SearchNode used in the priority queue
+    struct CompareSearchNodeDepth {
+        bool operator()(SearchNode*  lhs, SearchNode*  rhs) const {
+            if(lhs->stepsToGo != rhs->stepsToGo){ // not same level
+                return lhs->stepsToGo > rhs->stepsToGo;
+            }
+            //same level , compare Node type
+            return lhs->isChanceNode;
+        }
+
+    };
+
+
 
     // Methods to create search nodes
     SearchNode* createRootNode();
@@ -309,6 +334,20 @@ private:
     friend class BFSTestSearch;
     friend class MCUCTTestSearch;
     friend class UCTBaseTestSearch;
+
+    //PriorityQueue
+    std::priority_queue <SearchNode*,std::vector <SearchNode*>,CompareSearchNodeDepth> pq;
+
+    std::set<SearchNode*> equivalenceClass;
+    std::set<SearchNode*> equiClasstemp;
+    std::map<std::set<SearchNode*>,double> mapOfEquivalenceClass;   //equivalence class and q-value
+
+    std::vector<std::set<SearchNode*>> vectorEquivalenceClass;
+    SearchNode* temp;
+    SearchNode* temp2;
+
+    void generateEquivalenceClass();
+
 };
 
 #endif

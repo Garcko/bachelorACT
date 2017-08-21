@@ -288,7 +288,20 @@ void THTS::estimateBestActions(State const& _rootState,
         //         currentRootNode->children[i]->print(std::cout, "  ");
         //     }
         // }
-        // assert(currentTrial != 100);
+        pq.push(currentRootNode);
+
+        /*
+       if(currentTrial==10){
+           while(!pq.empty()){
+               pq.top()->print(std::cout);
+               pq.pop();
+               std::cout <<""<<std::endl;
+           }
+            std::cout <<
+            "---------------------------------------------------------" <<
+            std::endl;
+       }*/
+        assert(currentTrial == 10);
     }
 
     recommendationFunction->recommend(currentRootNode, bestActions);
@@ -699,5 +712,39 @@ void THTS::printStats(std::ostream& out, bool const& printRoundStats,
             << accumulatedNumberOfTrialsInRootState << std::endl;
         out << indent << "Accumulated number of search nodes in root state: "
             << accumulatedNumberOfSearchNodesInRootState << std::endl;
+    }
+}
+
+
+/******************************************************************
+                    generate Equivalence Class
+******************************************************************/
+
+void THTS::generateEquivalenceClass() {
+
+    while(!pq.empty()){
+        temp=pq.top();
+        if(temp->isALeafNode()){
+            // equivalence class 0
+            equivalenceClass.insert(pq.top());
+            if(vectorEquivalenceClass.size()==0){
+                // empty vector -> new equivalence need to be created
+                equiClasstemp.insert(pq.top());
+                vectorEquivalenceClass.push_back(equiClasstemp);
+            }else{
+                // insert into the first EQ class
+                vectorEquivalenceClass[0].insert(pq.top());
+            }
+
+            //mapOfEquivalenceClass.insert(make_pair(equivalenceClass,temp->immediateReward));    //provisorisch
+
+        }else {
+            //überprüfe ob die searchnode in eine existierende equiclass passt
+            //ansonsten add neue equivalence classe
+        }
+        if(temp->isChanceNode!=temp2->isChanceNode){
+            //change between chance and decision and vice versa
+            //garantiert eine neue EquiClass anlegen
+        }
     }
 }
