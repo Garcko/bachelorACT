@@ -204,10 +204,10 @@ public:
     struct CompareSearchNodeDepth {
         bool operator()(SearchNode*  lhs, SearchNode*  rhs) const {
             if(lhs->stepsToGo != rhs->stepsToGo){ // not same level
-                return lhs->stepsToGo > rhs->stepsToGo;
+                return lhs->stepsToGo < rhs->stepsToGo;
             }
             //same level , compare Node type
-            return lhs->isChanceNode;
+            return rhs->isChanceNode;
         }
 
     };
@@ -343,8 +343,9 @@ private:
     std::map<std::set<SearchNode*>,double> mapOfEquivalenceClass;   //equivalence class and q-value
 
     std::vector<std::set<SearchNode*>> vectorEquivalenceClass;
-    SearchNode* temp;
-    SearchNode* temp2;
+    std::set<int> childrenSet;
+    SearchNode* temp;   //current searchnode
+    SearchNode* temp2;  //previews searchnode
 
     void generateEquivalenceClass();
 

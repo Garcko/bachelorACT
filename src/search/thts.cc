@@ -281,27 +281,48 @@ void THTS::estimateBestActions(State const& _rootState,
         // std::endl;
         visitDecisionNode(currentRootNode);
         ++currentTrial;
-        // for(unsigned int i = 0; i < currentRootNode->children.size(); ++i) {
-        //     if(currentRootNode->children[i]) {
-        //         SearchEngine::actionStates[i].print(std::cout);
-        //         std::cout << std::endl;
-        //         currentRootNode->children[i]->print(std::cout, "  ");
-        //     }
-        // }
         pq.push(currentRootNode);
 
         /*
-       if(currentTrial==10){
-           while(!pq.empty()){
-               pq.top()->print(std::cout);
-               pq.pop();
-               std::cout <<""<<std::endl;
+       for(unsigned int i = 0; i < currentRootNode->children.size(); ++i) {
+            if(currentRootNode->children[i]) {
+                SearchEngine::actionStates[i].print(std::cout);
+                std::cout << std::endl;
+                currentRootNode->children[i]->print(std::cout, "  ");
+            }
+        }
+*/
+
+
+       for(unsigned int i = 0; i < currentRootNode->children.size(); ++i) {
+           if(currentRootNode->children[i]) {
+               pq.push(currentRootNode->children[i]);
            }
+       }
+
+
+
+        if(currentTrial==60){
+            std::cout << "starting " <<std::endl;
+            int temp21=0;
+            std::cout <<"size is "<<pq.size() << std::endl;
+            while(!pq.empty()){
+
+              //  pq.top()->print(std::cout);
+                if(pq.top()->stepsToGo!=temp21) {
+                    std::cout << " leafnode steps: " << pq.top()->stepsToGo << std::endl;
+                    temp21=pq.top()->stepsToGo;
+                }
+                pq.pop();
+
+
+            }
             std::cout <<
-            "---------------------------------------------------------" <<
-            std::endl;
-       }*/
-        assert(currentTrial == 10);
+                      "---------------------------------------------------------" <<
+                      std::endl;
+           //generateEquivalenceClass();
+       }
+        assert(currentTrial == 60);
     }
 
     recommendationFunction->recommend(currentRootNode, bestActions);
@@ -721,30 +742,60 @@ void THTS::printStats(std::ostream& out, bool const& printRoundStats,
 ******************************************************************/
 
 void THTS::generateEquivalenceClass() {
-
+    std::cout << "starting generating"<<std::endl;
+    if(!pq.empty()){
+        temp2=pq.top(); // initialize temp2
+    }
     while(!pq.empty()){
         temp=pq.top();
         if(temp->isALeafNode()){
+            std::cout << "is aleaf"<<std::endl;
+
             // equivalence class 0
-            equivalenceClass.insert(pq.top());
-            if(vectorEquivalenceClass.size()==0){
+            equivalenceClass.insert(temp);
+            if(vectorEquivalenceClass.size()== 0){
                 // empty vector -> new equivalence need to be created
-                equiClasstemp.insert(pq.top());
+                equiClasstemp.clear();
+                equiClasstemp.insert(temp);
                 vectorEquivalenceClass.push_back(equiClasstemp);
             }else{
                 // insert into the first EQ class
-                vectorEquivalenceClass[0].insert(pq.top());
+                vectorEquivalenceClass[0].insert(temp);
             }
 
-            //mapOfEquivalenceClass.insert(make_pair(equivalenceClass,temp->immediateReward));    //provisorisch
 
-        }else {
-            //überprüfe ob die searchnode in eine existierende equiclass passt
-            //ansonsten add neue equivalence classe
-        }
-        if(temp->isChanceNode!=temp2->isChanceNode){
+        }else if(temp->isChanceNode!=temp2->isChanceNode){
+            std::cout << "change Nodetype"<<std::endl;
+
             //change between chance and decision and vice versa
             //garantiert eine neue EquiClass anlegen
+            equiClasstemp.clear();
+            equiClasstemp.insert(pq.top());
+            vectorEquivalenceClass.push_back(equiClasstemp);
+
+        }else {
+            std::cout << "children"<<std::endl;
+
+            childrenSet.clear();
+            for (unsigned int i = 0; i < temp->children.size(); ++i) {
+                for(int j=0; j<vectorEquivalenceClass.size();j++){
+                   if(vectorEquivalenceClass[j].find(temp->children[i])!=vectorEquivalenceClass[i].end()){
+                       //children i is in EQ-class j
+                       childrenSet.insert(j);
+                   }
+                }
+            }
+            //all class except the first EQ-class with the leaves
+
+            equiClasstemp.clear();
+            equiClasstemp.insert(temp);
+            vectorEquivalenceClass.push_back(equiClasstemp);
+            //überprüfe ob die searchnode in eine existierende equiclass passt
+            //ansonsten add neue equivalence classe
+
         }
+        temp2=temp; //temp2 is the previews and in temp the current Searchnode
+        pq.pop();
+
     }
 }
