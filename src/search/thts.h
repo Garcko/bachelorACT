@@ -46,7 +46,10 @@ struct SearchNode {
           initialized(false),
           solved(false),
           isChanceNode(false),
-          isActionNode(false) {}
+
+          isActionNode(false),
+          equivalenceClassPos(-1){}
+
 
     ~SearchNode() {
         for (unsigned int i = 0; i < children.size(); ++i) {
@@ -73,6 +76,7 @@ struct SearchNode {
         solved = false;
 		isChanceNode = false;
         isActionNode = false;
+        equivalenceClassPos=-1;//empty
     }
 
     double getExpectedRewardEstimate() const {
@@ -96,7 +100,7 @@ struct SearchNode {
     }
     bool isALeafNode() {
         for (SearchNode* child : children) {
-            if (!child->children.empty()) {
+            if (child&&!child->children.empty()) {
                 return false;
             }
         }
@@ -129,6 +133,9 @@ struct SearchNode {
 
     // An action node is a chance node whose parent is a decision node
     bool isActionNode;
+
+    //number of the equivalenzclass
+    int equivalenceClassPos;
 	
 	
 };
@@ -204,10 +211,12 @@ public:
     struct CompareSearchNodeDepth {
         bool operator()(SearchNode*  lhs, SearchNode*  rhs) const {
             if(lhs->stepsToGo != rhs->stepsToGo){ // not same level
-                return lhs->stepsToGo < rhs->stepsToGo;
+                return lhs->stepsToGo > rhs->stepsToGo;
             }
             //same level , compare Node type
-            return rhs->isChanceNode;
+            //return rhs->isChanceNode;
+
+            return !lhs->isChanceNode;
         }
 
     };
@@ -336,18 +345,30 @@ private:
     friend class UCTBaseTestSearch;
 
     //PriorityQueue
-    std::priority_queue <SearchNode*,std::vector <SearchNode*>,CompareSearchNodeDepth> pq;
+    std::multiset <SearchNode*,CompareSearchNodeDepth> pq;
 
     std::set<SearchNode*> equivalenceClass;
     std::set<SearchNode*> equiClasstemp;
     std::map<std::set<SearchNode*>,double> mapOfEquivalenceClass;   //equivalence class and q-value
 
     std::vector<std::set<SearchNode*>> vectorEquivalenceClass;
+    std::vector< std::map<int,double>> vectorChildrenOnLevel;
+
     std::set<int> childrenSet;
-    SearchNode* temp;   //current searchnode
+    std::map<int,double> tempMap;   //current searchnode children
+    std::map<int,double> currentChildrenMap;
     SearchNode* temp2;  //previews searchnode
 
+    int currentLevel;
+    int numberOfEQclasses;
+    int newLeaveCLassLevel;
+    int currentLeaveLevel;
+
+    int childEQ;
+    bool isSameEQClass;
+
     void generateEquivalenceClass();
+    std::map<int,double> makeChildrenOnLevel(SearchNode*);
 
 };
 
