@@ -34,6 +34,9 @@ class RecommendationFunction;
 
 // Add ingredients by deriving from the corresponding class.
 
+
+static std::vector<double>qvalueMean;
+
 struct SearchNode {
     SearchNode(double const& _prob, int const& _stepsToGo)
         : children(),
@@ -46,7 +49,6 @@ struct SearchNode {
           initialized(false),
           solved(false),
           isChanceNode(false),
-
           isActionNode(false),
           equivalenceClassPos(-1){}
 
@@ -80,7 +82,13 @@ struct SearchNode {
     }
 
     double getExpectedRewardEstimate() const {
-        return immediateReward + futureReward;
+        if (equivalenceClassPos == -1) {
+            return immediateReward + futureReward;
+        } else {
+            //hier durchschnitt nehmen aus q value aus beiden vectoren
+           //return immediateReward + futureReward;
+            return qvalueMean[equivalenceClassPos];
+        }
     }
 
     double getExpectedFutureRewardEstimate() const {
@@ -139,6 +147,7 @@ struct SearchNode {
 	
 	
 };
+
 
 class THTS : public ProbabilisticSearchEngine {
 public:
@@ -211,12 +220,12 @@ public:
     struct CompareSearchNodeDepth {
         bool operator()(SearchNode*  lhs, SearchNode*  rhs) const {
             if(lhs->stepsToGo != rhs->stepsToGo){ // not same level
-                return lhs->stepsToGo > rhs->stepsToGo;
+                return lhs->stepsToGo < rhs->stepsToGo;
             }
             //same level , compare Node type
             //return rhs->isChanceNode;
 
-            return !lhs->isChanceNode;
+            return lhs->isChanceNode;
         }
 
     };
@@ -242,6 +251,11 @@ public:
     // Print
     void printStats(std::ostream& out, bool const& printRoundStats,
                     std::string indent = "") const override;
+
+
+    /*new */
+
+
 
 private:
     // Main search functions
@@ -361,14 +375,27 @@ private:
 
     int currentLevel;
     int numberOfEQclasses;
-    int newLeaveCLassLevel;
+    int leaveEQCLass;
     int currentLeaveLevel;
+
+    bool leaveisChanceNode=true;
+    bool currentIsChanceNode=true;
+
+    bool overlappingEQclass=false; // if its true  the EQ class can overlap over multiple level ,else it is levelinternal
+    //default false; n
 
     int childEQ;
     bool isSameEQClass;
+    std::vector<double> qvalueSum;
+    std::vector<double>qvalueNumbersOfEQClasses;
+
+
 
     void generateEquivalenceClass();
     std::map<int,double> makeChildrenOnLevel(SearchNode*);
+
+    void makeQmean();
+
 
 };
 
