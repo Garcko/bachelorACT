@@ -114,6 +114,19 @@ struct SearchNode {
         }
         return true;
     }
+    // pr the probability of the small chancenode sub-tree
+    void collectAllDecisionNodeSuccessor(std::vector<std::pair<SearchNode*,double>> &result,double pr=1.0){
+        if(!isChanceNode){
+            result.push_back(std::make_pair(this,pr));
+        }else{
+          for(SearchNode* child: children)   {
+              if(child){
+                  child->collectAllDecisionNodeSuccessor(result,child->prob*pr);
+              }
+          }
+        }
+
+    }
 
     std::vector<SearchNode*> children;
     std::vector<SearchNode*> parents;
@@ -388,6 +401,8 @@ private:
     bool isSameEQClass;
     std::vector<double> qvalueSum;
     std::vector<double>qvalueNumbersOfEQClasses;
+
+    std::vector<std::pair<SearchNode*,double>> specialChildren;
 
 
 

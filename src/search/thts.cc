@@ -827,23 +827,43 @@ void THTS::generateEquivalenceClass() {
             for(auto &c:vectorChildrenOnLevel){
                 if(c.size()==currentChildrenMap.size()){
                     isSameEQClass=true;
-                    for (unsigned int i = 0; i < currentNode->children.size(); ++i) {
-                        if(currentNode->children[i]) {
-                            childEQ = currentNode->children[i]->equivalenceClassPos;
-                            //if there is no same EQ or not the same value in EQ
-                            if (!c.count(childEQ) || c.at(childEQ) != currentChildrenMap.at(childEQ)) {
-                                isSameEQClass = false;
-                           //     std::cout <<"not same "  <<std::endl;
-                                break;
+
+                    if(currentNode->isChanceNode){
+                        specialChildren.clear();
+                        currentNode->collectAllDecisionNodeSuccessor(specialChildren);
+                        for (unsigned int i = 0; i < specialChildren.size(); ++i) {
+                            if(specialChildren[i].first) {
+                                childEQ = specialChildren[i].first->equivalenceClassPos;
+                                //if there is no same EQ or not the same value in EQ
+                                if (!c.count(childEQ) || c.at(childEQ) != currentChildrenMap.at(childEQ)) {
+                                    isSameEQClass = false;
+                                    //     std::cout <<"not same "  <<std::endl;
+                                    break;
+                                }
+                            }
+                        }
+                    }else{
+                        for (unsigned int i = 0; i < currentNode->children.size(); ++i) {
+                            if(currentNode->children[i]) {
+                                childEQ = currentNode->children[i]->equivalenceClassPos;
+                                //if there is no same EQ or not the same value in EQ
+                                if (!c.count(childEQ) || c.at(childEQ) != currentChildrenMap.at(childEQ)) {
+                                    isSameEQClass = false;
+                                    //     std::cout <<"not same "  <<std::endl;
+                                    break;
+                                }
                             }
                         }
                     }
+
                     if(isSameEQClass){
                         currentNode->equivalenceClassPos=c.at(-2);
-
-                        std::cout <<"before " <<qvalueSum[numberOfEQclasses]<<std::endl;
+                        std::cout <<"same EQclass with the eqpos  " <<  currentNode->equivalenceClassPos<<std::endl;
+                        //std::cout <<"before " <<qvalueSum[numberOfEQclasses]<<std::endl;
                         qvalueSum[numberOfEQclasses]+=currentNode->immediateReward;
-                        std::cout <<"after " <<qvalueSum[numberOfEQclasses]<<std::endl;
+                        //std::cout <<"after " <<qvalueSum[numberOfEQclasses]<<std::endl;
+                     //   std::cout <<"immediate reward is  " <<currentNode->immediateReward<<std::endl;
+                       // std::cout <<"future  reward is  " <<currentNode->futureReward<<std::endl;
 
                         qvalueNumbersOfEQClasses[numberOfEQclasses]+=1;
                   //      std::cout <<"gleichheit mit EQ1 " <<  currentNode->equivalenceClassPos<<std::endl;
@@ -857,6 +877,7 @@ void THTS::generateEquivalenceClass() {
                 currentNode->equivalenceClassPos=numberOfEQclasses;
 
                 qvalueNumbersOfEQClasses.push_back(1);
+                std::cout <<"before 2: " <<qvalueNumbersOfEQClasses[numberOfEQclasses]<<std::endl;
                 qvalueSum.push_back(currentNode->immediateReward);
 
                 numberOfEQclasses++;
@@ -864,22 +885,31 @@ void THTS::generateEquivalenceClass() {
             }else{
                // std::cout <<"gleichheit mit EQ2 " <<  currentNode->equivalenceClassPos<<std::endl;
             }
+            currentChildrenMap.at(-2)=currentNode->equivalenceClassPos;
             vectorChildrenOnLevel.push_back(currentChildrenMap);
         }
 
         //TEST
         if( currentNode->equivalenceClassPos==-1) {
             std::cout << "FAIL" << currentNode->equivalenceClassPos << std::endl;
+            std::cout << "FAIL is ChanceNode " << currentNode->isChanceNode << std::endl;
+            std::cout << "FAIL is same EQClass " << isSameEQClass << std::endl;
+            std::cout << "FAIL vector size  " << vectorChildrenOnLevel.size()<< std::endl;
+
         }
 
     }
     makeQmean();
     std::cout <<"finished generating there are " <<numberOfEQclasses <<"classes "<<std::endl;
 }
+
+
+
+
 std::map<int,double> THTS::makeChildrenOnLevel(SearchNode * node) {
     std::cout <<"-.-   entering makeChildrenOnLevel on level "<<node->stepsToGo <<"// and ischancenode "<<node->isChanceNode<<std::endl;
     tempMap.clear();
-
+if(!node->isChanceNode){
     //create the children EQclass-probability map for the currentNode
   //  std::cout <<"making oof children with size " <<currentNode->children.size()<< std::endl;
     for (SearchNode* child : (node->children)) {
@@ -912,6 +942,46 @@ std::map<int,double> THTS::makeChildrenOnLevel(SearchNode * node) {
             //std::cout <<"child not exist  " <<std::endl;
         }
     }
+}else{
+    std::cout << "################entering  in special Kids" <<std::endl;
+    // is a ChanceNode , here not the children are scanned but the level with the decisionnode(so the rekursiv chancenodes children)
+    specialChildren.clear();
+    node->collectAllDecisionNodeSuccessor(specialChildren);
+    for (unsigned int i = 0; i < specialChildren.size(); ++i) {
+        if(specialChildren[i].first) {
+            //    std::cout <<"child with  " <<  child->equivalenceClassPos<<std::endl;
+            if (tempMap.count(specialChildren[i].first->equivalenceClassPos)) {
+                //already a child with the same EQclass
+                //   std::cout << "same with EQ class: " <<child->equivalenceClassPos <<" //"<<currentNode->children.size()<<" and is chancenode"<<child->isChanceNode<<std::endl;
+                tempMap.at(specialChildren[i].first->equivalenceClassPos) += specialChildren[i].second;//add the probability
+                if(specialChildren[i].first->equivalenceClassPos==-1){
+                    std::cout << "################failed in special Kids" <<std::endl;
+
+                    std::cout << "#################################child is ChanceNode " <<specialChildren[i].first->isChanceNode<<" and EQ " <<specialChildren[i].first->equivalenceClassPos <<" and level "<<specialChildren[i].first->stepsToGo<<std::endl;
+                    std::cout << "#################################parent isChanceNode " <<node->isChanceNode <<" and EQ " <<node->equivalenceClassPos<<" and level "<<node->stepsToGo<<std::endl;
+
+                }
+
+            } else {
+                //new EQclass
+                std::cout << "new with EQclass " <<specialChildren[i].first->equivalenceClassPos <<" size of specialchildren "<<specialChildren.size()<<
+                          " child steps "<<specialChildren[i].first->stepsToGo<< " and isChancenode "<<specialChildren[i].first->isChanceNode
+                          <<" and is  a leaf: "<<specialChildren[i].first->isALeafNode()<<std::endl;
+
+                tempMap.insert(std::make_pair(specialChildren[i].first->equivalenceClassPos, specialChildren[i].first->prob));
+                if(specialChildren[i].first->equivalenceClassPos==-1){
+                    std::cout << "#################################child is ChanceNode " <<specialChildren[i].first->isChanceNode<<" and EQ " <<specialChildren[i].first->equivalenceClassPos <<" and level "<<specialChildren[i].first->stepsToGo<<std::endl;
+                    std::cout << "#################################parent isChanceNode " <<node->isChanceNode <<" and EQ " <<node->equivalenceClassPos<<" and level "<<node->stepsToGo<<std::endl;
+
+                }
+            }
+        }else{
+            //std::cout <<"child not exist  " <<std::endl;
+        }
+    }
+}
+    std::cout<< "-.-  finished adding" << std::endl;
+
     std::cout<< "-.-  finished adding" << std::endl;
     //add the information of the parent , note this is -1 if not initialize
     tempMap.insert(std::make_pair(-2,node->equivalenceClassPos));
@@ -924,8 +994,8 @@ std::map<int,double> THTS::makeChildrenOnLevel(SearchNode * node) {
     std::cout <<"vector size  " <<qvalueNumbersOfEQClasses.size()<<std::endl;
 
     qvalueMean.clear();
-    for (unsigned int i = 0; i < qvalueSum.size(); ++i) {
-        std::cout <<"is " <<qvalueSum[i]<<std::endl;
+    for (unsigned int i = 0; i < qvalueSum.size(); i++) {
+        std::cout <<i<<" is " <<qvalueSum[i]<<std::endl;
         std::cout <<"with numb " <<qvalueNumbersOfEQClasses[i]<<std::endl;
          qvalueMean.push_back(qvalueSum[i]/qvalueNumbersOfEQClasses[i]);
     }
