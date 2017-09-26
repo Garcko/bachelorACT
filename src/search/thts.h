@@ -374,17 +374,13 @@ private:
     //PriorityQueue
     std::multiset <SearchNode*,CompareSearchNodeDepth> pq;
 
-    std::set<SearchNode*> equivalenceClass;
-    std::set<SearchNode*> equiClasstemp;
-    std::map<std::set<SearchNode*>,double> mapOfEquivalenceClass;   //equivalence class and q-value
 
     std::vector<std::set<SearchNode*>> vectorEquivalenceClass;
     std::vector< std::map<int,double>> vectorChildrenOnLevel;
 
-    std::set<int> childrenSet;
+
     std::map<int,double> tempMap;   //current searchnode children
     std::map<int,double> currentChildrenMap;
-    SearchNode* temp2;  //previews searchnode
 
     int currentLevel;
     int numberOfEQclasses;
@@ -404,7 +400,7 @@ private:
 
     std::vector<std::pair<SearchNode*,double>> specialChildren;
 
-
+    int timemodulo=100; // after how many trials the  EQ classes are generated
 
     void generateEquivalenceClass();
     std::map<int,double> makeChildrenOnLevel(SearchNode*);
