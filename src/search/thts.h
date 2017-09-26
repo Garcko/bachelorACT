@@ -400,7 +400,7 @@ private:
 
     std::vector<std::pair<SearchNode*,double>> specialChildren;
 
-    int timemodulo=100; // after how many trials the  EQ classes are generated
+    int timemodulo; // after how many trials the  EQ classes are generated
 
     void generateEquivalenceClass();
     std::map<int,double> makeChildrenOnLevel(SearchNode*);

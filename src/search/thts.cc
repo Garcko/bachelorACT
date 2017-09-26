@@ -38,7 +38,8 @@ THTS::THTS(std::string _name)
       accumulatedNumberOfStepsToGoInFirstSolvedRootState(0),
       firstSolvedFound(false),
       accumulatedNumberOfTrialsInRootState(0),
-      accumulatedNumberOfSearchNodesInRootState(0) {
+      accumulatedNumberOfSearchNodesInRootState(0),
+      timemodulo(100) {
     setMaxNumberOfNodes(24000000);
     setTimeout(1.0);
     setRecommendationFunction(new ExpectedBestArmRecommendation(this));
@@ -92,6 +93,9 @@ bool THTS::setValueFromString(std::string& param, std::string& value) {
         return true;
     } else if (param == "-node-limit") {
         setMaxNumberOfNodes(atoi(value.c_str()));
+        return true;
+    }  else if (param == "-uf") {
+        timemodulo = atoi(value.c_str());
         return true;
     }
 
