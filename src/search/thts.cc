@@ -389,6 +389,7 @@ void THTS::visitDecisionNode(SearchNode* node) {
     if (node == currentRootNode) {
         initTrial();
     } else {
+
         // Continue trial (i.e., set next state to be the current)
         initTrialStep();
 
@@ -399,6 +400,7 @@ void THTS::visitDecisionNode(SearchNode* node) {
             if (!tipNodeOfTrial) {
                 tipNodeOfTrial = node;
             }
+            pq.insert(node);
             return;
         }
     }
@@ -755,7 +757,7 @@ void THTS::printStats(std::ostream& out, bool const& printRoundStats,
 ******************************************************************/
 
 void THTS::generateEquivalenceClass() {
-    std::cout <<"size is "<<pq.size() << std::endl;
+  //  std::cout <<"size is "<<pq.size() << std::endl;
 //    std::cout <<"lowest level is  "<<pq.begin() << std::endl;
     currentLevel=-1;
     currentLeaveLevel=-1;
@@ -771,13 +773,16 @@ void THTS::generateEquivalenceClass() {
 
     vectorChildrenOnLevel.clear();
     currentChildrenMap.clear();
+    specialChildren.clear();
     tempMap.clear();
 
    // int test=0;
     for(SearchNode* const & currentNode : pq) {
+       // std::cout << "current node steps to go are   "<<currentNode->stepsToGo<<" and is a ChanceNode "<<currentNode->isChanceNode<<std::endl;
+/*
         if(currentLeaveLevel==-1){
             std::cout << "das niedrigste level ist  "<<currentNode->stepsToGo<<std::endl;
-        }
+        }*/
        //nodes that are leaves :
         if(currentNode->isALeafNode()){
             //if it is a leaf node check on which level it is and save this level
@@ -910,7 +915,7 @@ void THTS::generateEquivalenceClass() {
 
     }
     makeQmean();    //here the vector is generated for the Qmean with vector qsum and qnumberofEqclass
-    std::cout <<"finished generating there are " <<numberOfEQclasses <<"classes "<<std::endl;
+   // std::cout <<"finished generating there are " <<numberOfEQclasses <<"classes "<<std::endl;
 }
 
 
@@ -952,6 +957,7 @@ if(!node->isChanceNode){
 }else{
     // is a ChanceNode , here not the children are scanned but the level with the decisionnode(so the rekursiv chancenodes children)
     specialChildren.clear();
+    assert(specialChildren.size()==0);
     node->collectAllDecisionNodeSuccessor(specialChildren);
     for (unsigned int i = 0; i < specialChildren.size(); ++i) {
         if(specialChildren[i].first) {
@@ -969,6 +975,7 @@ if(!node->isChanceNode){
 
             }
 
+            //ERROR
             if(specialChildren[i].first->equivalenceClassPos==-1){
               std::cout << "#################################child is ChanceNode " <<specialChildren[i].first->isChanceNode<<" and EQ " <<specialChildren[i].first->equivalenceClassPos <<" and level "<<specialChildren[i].first->stepsToGo<<std::endl;
                 std::cout << "#################################child is a leaf " <<specialChildren[i].first->isALeafNode()<<" and has prob  " <<specialChildren[i].second <<std::endl;
@@ -978,6 +985,7 @@ if(!node->isChanceNode){
                 std::cout << "#################################current level is  "<<currentLevel<<" and current leaf level is "<<currentLeaveLevel <<std::endl;
 
                 std::cout << "#################################cspecial children size is  "<<specialChildren.size()<<" and current i is : "<<i <<std::endl;
+                std::cout << "#################################normal children size is    "<<node->children.size()<< std::endl;
 
                 assert(specialChildren[i].first->equivalenceClassPos!=-1);
             }
