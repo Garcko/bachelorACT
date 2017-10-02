@@ -387,8 +387,8 @@ private:
     int leaveEQCLass;
     int currentLeaveLevel;
 
-    bool leaveisChanceNode=true;
-    bool currentIsChanceNode=true;
+    bool leaveisChanceNode;
+    bool currentIsChanceNode;
 
     bool overlappingEQclass=false; // if its true  the EQ class can overlap over multiple level ,else it is levelinternal
     //default false; n
