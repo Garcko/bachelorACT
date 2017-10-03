@@ -96,7 +96,7 @@ bool THTS::setValueFromString(std::string& param, std::string& value) {
         setMaxNumberOfNodes(atoi(value.c_str()));
         return true;
     }  else if (param == "-uf") {
-        timestep = atoi(value.c_str());
+        timestep = atof(value.c_str());
         return true;
     }
 
@@ -303,7 +303,7 @@ void THTS::estimateBestActions(State const& _rootState,
         if(stopwatch.operator()()-lasttime>=timestep){  //parameter alle modul zeit
             lasttime=stopwatch.operator()();
             generateEquivalenceClass();
-            std::cout << "starting " <<timestep<<std::endl;
+          //  std::cout << "starting " <<timestep<<std::endl;
 
           //  std::cout << "---------------------------------------------------------" << std::endl;
 
