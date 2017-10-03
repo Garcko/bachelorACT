@@ -39,7 +39,8 @@ THTS::THTS(std::string _name)
       firstSolvedFound(false),
       accumulatedNumberOfTrialsInRootState(0),
       accumulatedNumberOfSearchNodesInRootState(0),
-      timemodulo(100) {
+      timestep(0.01),
+      lasttime(0.0){
     setMaxNumberOfNodes(24000000);
     setTimeout(1.0);
     setRecommendationFunction(new ExpectedBestArmRecommendation(this));
@@ -95,7 +96,7 @@ bool THTS::setValueFromString(std::string& param, std::string& value) {
         setMaxNumberOfNodes(atoi(value.c_str()));
         return true;
     }  else if (param == "-uf") {
-        timemodulo = atoi(value.c_str());
+        timestep = atoi(value.c_str());
         return true;
     }
 
@@ -250,6 +251,7 @@ void THTS::estimateBestActions(State const& _rootState,
     assert(bestActions.empty());
 
     stopwatch.reset();
+    lasttime=0.0;
 
     // Init round (if this is the first call in a round)
     if (_rootState.stepsToGo() == SearchEngine::horizon) {
@@ -298,29 +300,13 @@ void THTS::estimateBestActions(State const& _rootState,
             }
         }
 */
-
-        if(currentTrial%timemodulo==0){  //parameter alle modul zeit
-            //std::cout << "starting " <<std::endl;
-
-            /*
-            for(auto t : pq){
-                std::cout <<t->isChanceNode<<" isChanceNode and steps "<< t->stepsToGo <<"and is Leave "<<t->isALeafNode() <<std::endl;
-                if(!t->isALeafNode()){
-                    std::cout  << " has children "<<t->children.size()<<std::endl;
-                    for(SearchNode* c:(t->children)){
-                        if(c){
-                            std::cout  << " child "<<c->isChanceNode<<std::endl;
-                        }else{
-                            std::cout  << " child is empty"<<std::endl;
-                        }
-
-                    }
-
-
-                }
-            }*/
-          //  std::cout << "---------------------------------------------------------" << std::endl;
+        if(stopwatch.operator()()-lasttime>=timestep){  //parameter alle modul zeit
+            lasttime=stopwatch.operator()();
             generateEquivalenceClass();
+            std::cout << "starting " <<timestep<<std::endl;
+
+          //  std::cout << "---------------------------------------------------------" << std::endl;
+
             // assert(currentTrial == 100);
        }
 
@@ -785,8 +771,14 @@ void THTS::generateEquivalenceClass() {
         }*/
        //nodes that are leaves :
         if(currentNode->isALeafNode()){
+            if(!currentNode->isChanceNode&&currentNode->children.size()==0){
+                currentNode->equivalenceClassPos=numberOfEQclasses;
+                qvalueNumbersOfEQClasses.push_back(1.0);
+                qvalueSum.push_back(currentNode->immediateReward+currentNode->futureReward);
+                numberOfEQclasses++;
+            }
             //if it is a leaf node check on which level it is and save this level
-            if(currentNode->stepsToGo!=currentLeaveLevel||leaveisChanceNode!=currentNode->isChanceNode){
+            else if(currentNode->stepsToGo!=currentLeaveLevel||leaveisChanceNode!=currentNode->isChanceNode){
                 leaveisChanceNode=currentNode->isChanceNode;
                 currentNode->equivalenceClassPos=numberOfEQclasses;
                 leaveEQCLass=numberOfEQclasses;   //save the EQ class
@@ -1002,9 +994,6 @@ if(!node->isChanceNode){
 }
 //generate the QValue of the EQ classes
  void THTS::makeQmean(){
-  //  std::cout <<"makeQmean " <<std::endl;
- //   std::cout <<"vector size  " <<qvalueSum.size()<<std::endl;
- //   std::cout <<"vector size  " <<qvalueNumbersOfEQClasses.size()<<std::endl;
     assert(qvalueSum.size()>0);
     assert(qvalueNumbersOfEQClasses.size()==qvalueSum.size());
     qvalueMean.clear();
