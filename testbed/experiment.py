@@ -37,10 +37,9 @@ benchmark="ippc-all"
 # (each of these is run on each instance in the benchmark folder)
 configs = [
     "IPPC2011",                                         # The configuration that participated at IPPC 2011
-    "IPPC2014 -uf 1000",                                         # The configuration that participated at IPPC 2014
-    "UCT -init [Single -h [RandomWalk]]",               # The configuration that is closest to "plain UCT"
-    "UCT -init [Expand -h [IDS]] -rec [MPA]",           # Best UCT configuration according to Keller's dissertation
-    "DP-UCT -init [Single -h [Uniform]]"                # A configuration that works well in wildfire and sysadmin    
+    "IPPC2014",                                         # The configuration that participated at IPPC 2014 with timestep 0.01
+    "IPPC2014 -uf 0.02",                                         # The configuration that participated at IPPC 2014
+    "IPPC2014 -uf 0.05",                                         # The configuration that participated at IPPC 2014
 ]
 
 # The number of runs (30 in competition, should be higher (>=100) for
