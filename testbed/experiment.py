@@ -47,7 +47,7 @@ configs = [
 numRuns = "100"
 
 # The current revision (used for appropriate naming only)
-revision = "rev1a070516eb4bc"
+revision = "rev81846114906240a2a"
 
 # The timeout per task in hh:mm:ss
 timeout = "1:40:00"
