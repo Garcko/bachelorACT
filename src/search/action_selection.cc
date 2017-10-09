@@ -53,25 +53,36 @@ ActionSelection* ActionSelection::fromString(std::string& desc, THTS* thts) {
                           ActionSelection
 ******************************************************************/
 
+
 int ActionSelection::selectAction(SearchNode* node) {
     bestActionIndices.clear();
+
+
 
     if (node->numberOfVisits <= 1) {
         selectGreedyAction(node);
     }
+
+
 
     if (selectLeastVisitedActionInRoot &&
         (node == thts->getCurrentRootNode()) && bestActionIndices.empty()) {
         selectLeastVisitedAction(node);
     }
 
+
+
     if (bestActionIndices.empty()) {
         selectActionBasedOnVisitDifference(node);
     }
 
+
+
     if (bestActionIndices.empty()) {
         _selectAction(node);
     }
+
+
 
     assert(!bestActionIndices.empty());    
     int selectedIndex = MathUtils::rnd->randomElement(bestActionIndices);
@@ -217,18 +228,23 @@ void UCB1ActionSelection::_selectAction(SearchNode* node) {
         parentVisitPart *= std::log((double)node->numberOfVisits);
     }
 
+
+
     for (unsigned int childIndex = 0; childIndex < node->children.size();
          ++childIndex) {
         if (node->children[childIndex] &&
             node->children[childIndex]->initialized &&
             !node->children[childIndex]->solved) {
+
             double visitPart =
                 magicConstant *
                 std::sqrt(parentVisitPart /
                           (double)node->children[childIndex]->numberOfVisits);
+
             double UCTValue =
                 node->children[childIndex]->getExpectedRewardEstimate() +
                 visitPart;
+
 
             assert(!MathUtils::doubleIsMinusInfinity(UCTValue));
 

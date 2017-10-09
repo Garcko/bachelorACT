@@ -8,6 +8,8 @@
 
 #include "utils/system_utils.h"
 
+std::vector<double> SearchNode::qvalueMean;
+
 /******************************************************************
                      Search Engine Creation
 ******************************************************************/
@@ -283,11 +285,12 @@ void THTS::estimateBestActions(State const& _rootState,
         // std::cout <<
         // "---------------------------------------------------------" <<
         // std::endl;
-        // std::cout << "TRIAL " << (currentTrial+1) << std::endl;
+      //  std::cout << "TRIAL " << (currentTrial+1) << std::endl;
         // std::cout <<
         // "---------------------------------------------------------" <<
         // std::endl;
         visitDecisionNode(currentRootNode);
+      //  std::cout << "visited decision node  " <<std::endl;
         ++currentTrial;
 
 
@@ -300,12 +303,13 @@ void THTS::estimateBestActions(State const& _rootState,
             }
         }
 */
-        if(stopwatch.operator()()-lasttime>=timestep){  //parameter alle modul zeit
-            lasttime=stopwatch.operator()();
+        if(stopwatch()-lasttime>=timestep){  //parameter alle modul zeit
+            lasttime=stopwatch();
+       //     std::cout << "starting  " <<timestep<<std::endl;
             generateEquivalenceClass();
-          //  std::cout << "starting " <<timestep<<std::endl;
 
-          //  std::cout << "---------------------------------------------------------" << std::endl;
+
+         //  std::cout << "finished generate EQ class" << std::endl;
 
             // assert(currentTrial == 100);
        }
@@ -372,6 +376,7 @@ bool THTS::moreTrials() {
 }
 
 void THTS::visitDecisionNode(SearchNode* node) {
+  //  std::cout << "t visit decison node  " <<std::endl;
     if (node == currentRootNode) {
         initTrial();
     } else {
@@ -386,11 +391,12 @@ void THTS::visitDecisionNode(SearchNode* node) {
             if (!tipNodeOfTrial) {
                 tipNodeOfTrial = node;
             }
+      //      std::cout << "t special case  " <<std::endl;
             pq.insert(node);
             return;
         }
     }
-
+  //  std::cout << "t nothing special " <<std::endl;
     // Initialize node if necessary
     if (!node->initialized) {
         if (!tipNodeOfTrial) {
@@ -400,13 +406,13 @@ void THTS::visitDecisionNode(SearchNode* node) {
         initializer->initialize(node, states[stepsToGoInCurrentState]);
         //add node+children  to the multiset
         pq.insert(node);
-       // std::cout << "parent level: "<<node->stepsToGo << " is a ChanceNode  " <<node->isChanceNode << "        and isleaf  " <<node->isALeafNode()<<std::endl;
+      //  std::cout << "parent level: "<<node->stepsToGo << " is a ChanceNode  " <<node->isChanceNode << "        and isleaf  " <<node->isALeafNode()<<std::endl;
 
         // add the chanceNode children of the decision node to the multiset if they exist
         for (SearchNode* child : node->children) {
             if(child) {
                 pq.insert(child);
-               // std::cout << "level: "<<child->stepsToGo << " is a ChanceNode  " <<child->isChanceNode << "         and isleaf  " <<child->isALeafNode()<<std::endl;
+            //    std::cout << "level: "<<child->stepsToGo << " is a ChanceNode  " <<child->isChanceNode << "         and isleaf  " <<child->isALeafNode()<<std::endl;
                // std::cout << "with children size"<<child->children.size()  <<std::endl;
             }
         }
@@ -416,15 +422,19 @@ void THTS::visitDecisionNode(SearchNode* node) {
             ++initializedDecisionNodes;
         }
     }
+   // std::cout << "t not initialized " <<std::endl;
 
     // std::cout << std::endl << std::endl << "Current state is: " << std::endl;
     // states[stepsToGoInCurrentState].printCompact(std::cout);
      //std::cout << "Reward is " << node->immediateReward << std::endl;
 
+   // std::cout << "t before continue trial  " <<std::endl;
     // Determine if we continue with this trial
     if (continueTrial(node)) {
+    //    std::cout << "t in continue trial " <<std::endl;
         // Select the action that is simulated
         appliedActionIndex = actionSelection->selectAction(node);
+     //   std::cout << "t after  selectAction " <<std::endl;
         assert(node->children[appliedActionIndex]);
         assert(!node->children[appliedActionIndex]->solved);
 
@@ -433,8 +443,10 @@ void THTS::visitDecisionNode(SearchNode* node) {
         // std::cout << std::endl;
 
         // Sample successor state
+        //std::cout << "t before calc " <<std::endl;
         calcSuccessorState(states[stepsToGoInCurrentState], appliedActionIndex,
                            states[stepsToGoInNextState]);
+        //std::cout << "t after calc " <<std::endl;
 
         // std::cout << "Sampled PDState is " << std::endl;
         // states[stepsToGoInNextState].printPDStateCompact(std::cout);
@@ -457,7 +469,7 @@ void THTS::visitDecisionNode(SearchNode* node) {
 
         // Start outcome selection with the first probabilistic variable
         chanceNodeVarIndex = 0;
-
+       // std::cout << "t before visitng NODES " <<std::endl;
         // Continue trial with chance nodes
         if (lastProbabilisticVarIndex < 0) {
             visitDummyChanceNode(node->children[appliedActionIndex]);
@@ -465,10 +477,12 @@ void THTS::visitDecisionNode(SearchNode* node) {
             visitChanceNode(node->children[appliedActionIndex]);
         }
 
+       // std::cout << "t before backup " <<std::endl;
         // Backup this node
         backupFunction->backupDecisionNode(node);
         trialReward += node->immediateReward;
 
+       // std::cout << "t after backup " <<std::endl;
         // If the backup function labeled the node as solved, we store the
         // result for the associated state in case we encounter it somewhere
         // else in the tree in the future
@@ -484,6 +498,7 @@ void THTS::visitDecisionNode(SearchNode* node) {
         }
     } else {
         // The trial is finished
+      //  std::cout << "t trial is finished " <<std::endl;
         trialReward = node->getExpectedRewardEstimate();
     }
 }
@@ -743,8 +758,10 @@ void THTS::printStats(std::ostream& out, bool const& printRoundStats,
 ******************************************************************/
 
 void THTS::generateEquivalenceClass() {
-  //  std::cout <<"size is "<<pq.size() << std::endl;
-//    std::cout <<"lowest level is  "<<pq.begin() << std::endl;
+   // std::cout <<"size is "<<pq.size() << std::endl;
+   // std::cout <<"size of qvaluemean"<<SearchNode::qvalueMean.size() << std::endl;
+
+
     currentLevel=-1;
     currentLeaveLevel=-1;
 
@@ -754,8 +771,8 @@ void THTS::generateEquivalenceClass() {
     currentIsChanceNode=true;
 
     qvalueSum.clear();
-    qvalueMean.clear();
     qvalueNumbersOfEQClasses.clear();
+
 
     vectorChildrenOnLevel.clear();
     currentChildrenMap.clear();
@@ -765,10 +782,10 @@ void THTS::generateEquivalenceClass() {
    // int test=0;
     for(SearchNode* const & currentNode : pq) {
        // std::cout << "current node steps to go are   "<<currentNode->stepsToGo<<" and is a ChanceNode "<<currentNode->isChanceNode<<std::endl;
-/*
+
         if(currentLeaveLevel==-1){
-            std::cout << "das niedrigste level ist  "<<currentNode->stepsToGo<<std::endl;
-        }*/
+        //    std::cout << "das niedrigste level ist  "<<currentNode->stepsToGo<<std::endl;
+        }
        //nodes that are leaves :
         if(currentNode->isALeafNode()){
             if(!currentNode->isChanceNode&&currentNode->children.size()==0){
@@ -895,7 +912,7 @@ void THTS::generateEquivalenceClass() {
         }
 
         //Debugging if this is true , this   Node is uninitialized
-        if( currentNode->equivalenceClassPos==-1) {
+     /*   if( currentNode->equivalenceClassPos==-1) {
             std::cout << "#################FAIL##############"  << std::endl;
             std::cout << "FAIL" << currentNode->equivalenceClassPos << std::endl;
             std::cout << "FAIL is ChanceNode " << currentNode->isChanceNode << std::endl;
@@ -903,11 +920,11 @@ void THTS::generateEquivalenceClass() {
             std::cout << "FAIL vector size  " << vectorChildrenOnLevel.size()<< std::endl;
             std::cout << "#################FAIL##############"  << std::endl;
             assert(false);
-        }
+        }*/
 
     }
     makeQmean();    //here the vector is generated for the Qmean with vector qsum and qnumberofEqclass
-   // std::cout <<"finished generating there are " <<numberOfEQclasses <<"classes "<<std::endl;
+    //std::cout <<"finished generating there are " <<numberOfEQclasses <<"classes "<<std::endl;
 }
 
 
@@ -968,7 +985,7 @@ if(!node->isChanceNode){
             }
 
             //ERROR
-            if(specialChildren[i].first->equivalenceClassPos==-1){
+          /*  if(specialChildren[i].first->equivalenceClassPos==-1){
               std::cout << "#################################child is ChanceNode " <<specialChildren[i].first->isChanceNode<<" and EQ " <<specialChildren[i].first->equivalenceClassPos <<" and level "<<specialChildren[i].first->stepsToGo<<std::endl;
                 std::cout << "#################################child is a leaf " <<specialChildren[i].first->isALeafNode()<<" and has prob  " <<specialChildren[i].second <<std::endl;
                 std::cout << "#################################parent isChanceNode " <<node->isChanceNode <<" and EQ " <<node->equivalenceClassPos<<" and level "<<node->stepsToGo<<std::endl;
@@ -979,8 +996,9 @@ if(!node->isChanceNode){
                 std::cout << "#################################cspecial children size is  "<<specialChildren.size()<<" and current i is : "<<i <<std::endl;
                 std::cout << "#################################normal children size is    "<<node->children.size()<< std::endl;
 
-                assert(specialChildren[i].first->equivalenceClassPos!=-1);
-            }
+
+            }*/
+            assert(specialChildren[i].first->equivalenceClassPos!=-1);
         }else{
             //std::cout <<"child not exist  " <<std::endl;
         }
@@ -996,16 +1014,17 @@ if(!node->isChanceNode){
  void THTS::makeQmean(){
     assert(qvalueSum.size()>0);
     assert(qvalueNumbersOfEQClasses.size()==qvalueSum.size());
-    qvalueMean.clear();
+    SearchNode::qvalueMean.clear();
 
     for (unsigned int i = 0; i < qvalueSum.size(); i++) {
         //std::cout <<"current level is "<<i<<" the sum here is: " <<qvalueSum[i]<<std::endl;
         //std::cout <<"and it's size (number of classes in it)  " <<qvalueNumbersOfEQClasses[i]<<std::endl;
-         qvalueMean.push_back(qvalueSum[i]/qvalueNumbersOfEQClasses[i]);
+        SearchNode:: qvalueMean.push_back(qvalueSum[i]/qvalueNumbersOfEQClasses[i]);
     }
-/*
-    std::cout <<"all the Q-value means " <<std::endl;
-    for(auto &v:qvalueMean){
+
+    //std::cout <<"all the Q-value means and size is "<<SearchNode::qvalueMean.size() <<std::endl;
+   /* for(auto &v:SearchNode::qvalueMean){
         std::cout <<" " <<v<<std::endl;
     }*/
+   // std::cout <<"finished qvalue-mean " <<std::endl;
 }

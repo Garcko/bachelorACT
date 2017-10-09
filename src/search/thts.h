@@ -34,9 +34,6 @@ class RecommendationFunction;
 
 // Add ingredients by deriving from the corresponding class.
 
-
-static std::vector<double>qvalueMean;
-
 struct SearchNode {
     SearchNode(double const& _prob, int const& _stepsToGo)
         : children(),
@@ -87,6 +84,9 @@ struct SearchNode {
         } else {
             //hier durchschnitt nehmen aus q value aus beiden vectoren
            //return immediateReward + futureReward;
+         //   std::cout << qvalueMean.size() << " / " << equivalenceClassPos << std::endl;
+            assert(qvalueMean.size() > equivalenceClassPos);
+            assert(equivalenceClassPos >= 0);
             return qvalueMean[equivalenceClassPos];
         }
     }
@@ -128,6 +128,8 @@ struct SearchNode {
 
     }
 
+    static std::vector<double> qvalueMean;
+
     std::vector<SearchNode*> children;
     std::vector<SearchNode*> parents;
 
@@ -157,12 +159,13 @@ struct SearchNode {
 
     //number of the equivalenzclass
     int equivalenceClassPos;
-	
-	
+
+
 };
 
 
 class THTS : public ProbabilisticSearchEngine {
+
 public:
     enum TerminationMethod {
         TIME,                     // stop after timeout sec
@@ -267,7 +270,6 @@ public:
 
 
     /*new */
-
 
 
 private:
@@ -397,6 +399,7 @@ private:
     bool isSameEQClass;
     std::vector<double> qvalueSum;
     std::vector<double>qvalueNumbersOfEQClasses;
+
 
     std::vector<std::pair<SearchNode*,double>> specialChildren;
 
