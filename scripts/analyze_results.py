@@ -441,7 +441,8 @@ def analyzeResults(directory, outFile, compress):
     summarize_results.summarizeResults(directory, compress)
     resultDirNames = os.listdir(directory)
     for resultDirName in resultDirNames:
-        domains, plannerNames = readResults(directory+resultDirName, domains, planners, "Other")
+	if resultDirName !="serverLogs":
+		domains, plannerNames = readResults(directory+resultDirName, domains, planners, "Other")
 
     for d in domains:
         domains[d].calcValues()

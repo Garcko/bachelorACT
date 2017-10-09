@@ -446,7 +446,8 @@ def analyzeIncompleteResults(directory, outFile):
 
     resultDirNames = os.listdir(highscoreDir)
     for resultDirName in resultDirNames:
-        domains, plannerNames = readResults(highscoreDir+resultDirName, domains, planners, "MinMax")
+	if resultDirName !="serverLogs":
+		domains, plannerNames = readResults(highscoreDir+resultDirName, domains, planners, "MinMax")
 
     summarize_incomplete_results.summarizeIncompleteResults(directory)
     resultDirNames = os.listdir(directory)
