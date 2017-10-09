@@ -436,8 +436,8 @@ def analyzeResults(directory, outFile, compress):
 
     resultDirNames = os.listdir(highscoreDir)
     for resultDirName in resultDirNames:
-        domains, plannerNames = readResults(highscoreDir+resultDirName, domains, planners, "MinMax")
-
+	if resultDirName !="serverLogs":
+		domains, plannerNames = readResults(highscoreDir+resultDirName, domains, planners, "MinMax")
     summarize_results.summarizeResults(directory, compress)
     resultDirNames = os.listdir(directory)
     for resultDirName in resultDirNames:
