@@ -36,10 +36,17 @@ benchmark="ippc-all"
 # The search engine configurations that are started in this experiment
 # (each of these is run on each instance in the benchmark folder)
 configs = [
-    "IPPC2011",                                         # The configuration that participated at IPPC 2011
-    "IPPC2014",                                         # The configuration that participated at IPPC 2014 with timestep 0.01
-    "IPPC2014 -uf 0.02",                                         # The configuration that participated at IPPC 2014
-    "IPPC2014 -uf 0.05",                                         # The configuration that participated at IPPC 2014
+    "IPPC2011 -uf 1",                                         # The configuration that participated at IPPC 2011
+    "IPPC2014 -uf 1",                                         # The configuration that participated at IPPC 2014 
+    "IPPC2014 -uf 0.0",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2014 -uf 0.01",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2014 -uf 0.02",                                         # The configuration that participated at IPPC 2014 with ASAP 
+    "IPPC2014 -uf 0.03",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2014 -uf 0.05",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2014 -uf 0.08",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2014 -uf 0.1",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2014 -uf 0.5",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2014 -uf 0.75",                                         # The configuration that participated at IPPC 2014 with ASAP
 ]
 
 # The number of runs (30 in competition, should be higher (>=100) for
@@ -47,7 +54,7 @@ configs = [
 numRuns = "100"
 
 # The current revision (used for appropriate naming only)
-revision = "rev81846114906240a2a"
+revision = "rev4e3d3a69b7b1fb"
 
 # The timeout per task in hh:mm:ss
 timeout = "1:40:00"
