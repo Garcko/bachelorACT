@@ -36,8 +36,8 @@ benchmark="ippc-all"
 # The search engine configurations that are started in this experiment
 # (each of these is run on each instance in the benchmark folder)
 configs = [
-    "IPPC2011 -uf 1",                                         # The configuration that participated at IPPC 2011
-    "IPPC2014 -uf 1",                                         # The configuration that participated at IPPC 2014 
+    "IPPC2011 -uf 2",                                         # The configuration that participated at IPPC 2011
+    "IPPC2014 -uf 2",                                         # The configuration that participated at IPPC 2014 
     "IPPC2014 -uf 0.0",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.01",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.02",                                         # The configuration that participated at IPPC 2014 with ASAP 
