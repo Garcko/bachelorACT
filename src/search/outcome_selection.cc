@@ -71,9 +71,9 @@ SearchNode* MCOutcomeSelection::selectOutcome(SearchNode* node,
     if (!node->children[childIndex]) {
         if (varIndex == lastProbVarIndex) {
             node->children[childIndex] =
-                thts->createDecisionNode(sample.second,node);
+                thts->createDecisionNode(sample.second);
         } else {
-            node->children[childIndex] = thts->createChanceNode(sample.second, node, false);
+            node->children[childIndex] = thts->createChanceNode(sample.second, false);
         }
     }
 

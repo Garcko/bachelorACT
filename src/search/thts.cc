@@ -303,6 +303,7 @@ void THTS::estimateBestActions(State const& _rootState,
             }
         }
 */
+
         if(stopwatch()-lasttime>=timestep){  //parameter alle modul zeit
             lasttime=stopwatch();
        //     std::cout << "starting  " <<timestep<<std::endl;
@@ -576,7 +577,7 @@ void THTS::visitDummyChanceNode(SearchNode* node) {
 
     if (node->children.empty()) {
         node->children.resize(1, nullptr);
-        node->children[0] = createDecisionNode(1.0,node);
+        node->children[0] = createDecisionNode(1.0);
     }
     assert(node->children.size() == 1);
 
@@ -653,7 +654,7 @@ SearchNode* THTS::createRootNode() {
     return res;
 }
 
-SearchNode* THTS::createDecisionNode(double const& prob,SearchNode* node) {
+SearchNode* THTS::createDecisionNode(double const& prob) {
     assert(lastUsedNodePoolIndex < nodePool.size());
 
     SearchNode* res = nodePool[lastUsedNodePoolIndex];
@@ -669,11 +670,11 @@ SearchNode* THTS::createDecisionNode(double const& prob,SearchNode* node) {
 
     ++lastUsedNodePoolIndex;
 
-    res->parents.push_back(node);
+
     return res;
 }
 
-SearchNode* THTS::createChanceNode(double const& prob, SearchNode* node, bool isActionNode) {
+SearchNode* THTS::createChanceNode(double const& prob, bool isActionNode) {
     assert(lastUsedNodePoolIndex < nodePool.size());
 
     SearchNode* res = nodePool[lastUsedNodePoolIndex];
@@ -689,7 +690,6 @@ SearchNode* THTS::createChanceNode(double const& prob, SearchNode* node, bool is
 
     res->isChanceNode = true;
     res->isActionNode = isActionNode;
-    res->parents.push_back(node);
     return res;
 }
 
@@ -783,11 +783,12 @@ void THTS::generateEquivalenceClass() {
     for(SearchNode* const & currentNode : pq) {
        // std::cout << "current node steps to go are   "<<currentNode->stepsToGo<<" and is a ChanceNode "<<currentNode->isChanceNode<<std::endl;
 
-        if(currentLeaveLevel==-1){
+       // if(currentLeaveLevel==-1){
         //    std::cout << "das niedrigste level ist  "<<currentNode->stepsToGo<<std::endl;
-        }
+       // }
        //nodes that are leaves :
         if(currentNode->isALeafNode()){
+            //special case , where desicion node have no children and the reward is known
             if(!currentNode->isChanceNode&&currentNode->children.size()==0){
                 currentNode->equivalenceClassPos=numberOfEQclasses;
                 qvalueNumbersOfEQClasses.push_back(1.0);

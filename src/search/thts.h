@@ -37,7 +37,6 @@ class RecommendationFunction;
 struct SearchNode {
     SearchNode(double const& _prob, int const& _stepsToGo)
         : children(),
-          parents(),
           immediateReward(0.0),
           prob(_prob),
           stepsToGo(_stepsToGo),
@@ -56,16 +55,10 @@ struct SearchNode {
                 delete children[i];
             }
         }
-        for (unsigned int i = 0; i < parents.size(); ++i) {
-            if (parents[i]) {
-                delete parents[i];
-            }
-        }
     }
 
     void reset(double const& _prob, int const& _stepsToGo) {
         children.clear();
-        parents.clear();
         immediateReward = 0.0;
         prob = _prob;
         stepsToGo = _stepsToGo;
@@ -131,7 +124,6 @@ struct SearchNode {
     static std::vector<double> qvalueMean;
 
     std::vector<SearchNode*> children;
-    std::vector<SearchNode*> parents;
 
     double immediateReward;
     double prob;
@@ -250,8 +242,8 @@ public:
 
     // Methods to create search nodes
     SearchNode* createRootNode();
-    SearchNode* createDecisionNode(double const& _prob, SearchNode* node);
-    SearchNode* createChanceNode(double const& _prob, SearchNode* node, bool isActionNode);
+    SearchNode* createDecisionNode(double const& _prob);
+    SearchNode* createChanceNode(double const& _prob,  bool isActionNode);
 
 
 

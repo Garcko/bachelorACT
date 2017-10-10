@@ -36,8 +36,8 @@ benchmark="ippc-all"
 # The search engine configurations that are started in this experiment
 # (each of these is run on each instance in the benchmark folder)
 configs = [
-    "IPPC2011 -uf 2",                                         # The configuration that participated at IPPC 2011
-    "IPPC2014 -uf 2",                                         # The configuration that participated at IPPC 2014 
+    "IPPC2011 -uf 2.0",                                         # The configuration that participated at IPPC 2011
+    "IPPC2014 -uf 2.0",                                         # The configuration that participated at IPPC 2014 
     "IPPC2014 -uf 0.0",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.01",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.02",                                         # The configuration that participated at IPPC 2014 with ASAP 
@@ -54,7 +54,7 @@ configs = [
 numRuns = "100"
 
 # The current revision (used for appropriate naming only)
-revision = "rev4e3d3a69b7b1fb"
+revision = "rev0995fa884d07a"
 
 # The timeout per task in hh:mm:ss
 timeout = "1:40:00"
