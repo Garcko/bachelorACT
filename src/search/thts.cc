@@ -304,10 +304,17 @@ void THTS::estimateBestActions(State const& _rootState,
         }
 */
 
+
         if(stopwatch()-lasttime>=timestep){  //parameter alle modul zeit
             lasttime=stopwatch();
        //     std::cout << "starting  " <<timestep<<std::endl;
+            time_before=std::chrono::steady_clock::now();
             generateEquivalenceClass();
+            time_interval=std::chrono::steady_clock::now()-time_before;
+            //  std::cout << time_interval.count()<< std::endl;
+           // time2=std::chrono::steady_clock::now();
+
+
 
 
          //  std::cout << "finished generate EQ class" << std::endl;
@@ -356,7 +363,7 @@ bool THTS::moreTrials() {
     // Check selected termination criterion
     switch (terminationMethod) {
     case THTS::TIME:
-        if (MathUtils::doubleIsGreater(stopwatch(), timeout)) {
+        if (MathUtils::doubleIsGreater(stopwatch()-time_interval.count(), timeout)) {
             return false;
         }
         break;
@@ -366,7 +373,7 @@ bool THTS::moreTrials() {
         }
         break;
     case THTS::TIME_AND_NUMBER_OF_TRIALS:
-        if (MathUtils::doubleIsGreater(stopwatch(), timeout) ||
+        if (MathUtils::doubleIsGreater(stopwatch()-time_interval.count(), timeout) ||
             (currentTrial == maxNumberOfTrials)) {
             return false;
         }

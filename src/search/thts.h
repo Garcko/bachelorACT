@@ -403,6 +403,9 @@ private:
 
     void makeQmean();
 
+    std::chrono::steady_clock::time_point time_before;  //time before generateEQ class
+    std::chrono::duration<double> time_interval;    // how long the generateEQ class take times , this is subtracted from the current time
+    // therefore the generate EQ class time has now no impact on the timeout !!
 
 };
 
