@@ -11,11 +11,14 @@ public:
     Stopwatch() : startTime(std::chrono::steady_clock::now()) {}
 
     void reset();
+    void saveTime();
+    void continueTime();
     // Returns the elapsed time since start
     double operator()() const;
 
 private:
     std::chrono::steady_clock::time_point startTime;
+    std::chrono::steady_clock::time_point stopTime;
 };
 
 // Convenience operator to stream elapsed time with seconds as unit
