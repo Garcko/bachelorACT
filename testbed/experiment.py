@@ -90,7 +90,7 @@ logfile = "stdout.log"
 # Template for the string that is executed for each job
 TASK_TEMPLATE = "export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH && " \
 "mkdir -p %(resultsDir)s && " \
-"./run-server benchmarks/%(benchmark)s/ %(port)s %(numRuns)s 0 0 1 %(serverLogDir)s > %(resultsDir)s/%(instance)s_server.log 2> %(resultsDir)s/%(instance)s_server.err &" \
+"./run-server benchmarks/%(benchmark)s/ %(port)s %(numRuns)s 0 0 1 0 %(serverLogDir)s > %(resultsDir)s/%(instance)s_server.log 2> %(resultsDir)s/%(instance)s_server.err &" \
 " sleep 45 &&" \
 " ../src/search/prost benchmarks/%(benchmark)s/prost/%(instance)s -p %(port)s [PROST -s 1 -se [%(config)s]] > %(resultsDir)s/%(instance)s.log 2> %(resultsDir)s/%(instance)s.err"
 
@@ -110,8 +110,8 @@ SLURM_TEMPLATE = "#! /bin/bash -l\n" \
                  "#SBATCH -t %(timeout)s\n"\
                  "### Number of tasks.\n"\
                  "#SBATCH --array=1-%(num_tasks)s\n"\
-                 "### Adjustment to priority ([-2147483645, 2147483645])."\
-                 "#SBATCH --nice=%(nice)s"\
+                 "### Adjustment to priority ([-2147483645, 2147483645]).\n"\
+                 "#SBATCH --nice=%(nice)s\n"\
                  "### Send mail? Mail type can be e.g. NONE, END, FAIL, ARRAY_TASKS.\n"\
                  "#SBATCH --mail-type=END\n"\
                  "#SBATCH --mail-user=%(email)s\n"\
@@ -166,6 +166,7 @@ def create_tasks(filename, instances):
                                     memout=memout,
                                     timeout=timeout,
                                     num_tasks=str(len(tasks)),
+                                    nice=nice,
                                     email=email)
         
         for task_id,task in zip(range(1, len(tasks)+1), tasks):
