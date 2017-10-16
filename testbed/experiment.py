@@ -14,7 +14,7 @@ qos="infai"
 nice="2000"
 
 # The email adress that receives an email when the experiment is finished
-email = "timsteindel@gmail.com"
+email = "tim.steindel@stud.unibas.ch"
 
 ############ FREIBURG GRID PARAMETER ############
 # defines which queue to use for one task. Possible values are
