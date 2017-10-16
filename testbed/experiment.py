@@ -10,8 +10,11 @@ import sys
 partition="infai"
 qos="infai"
 
+# Gives the task's priority as a value between 0 (highest) and 2000 (lowest).
+nice="2000"
+
 # The email adress that receives an email when the experiment is finished
-email = "tim.steindel@stud.unibas.ch"
+email = "timsteindel@gmail.com"
 
 ############ FREIBURG GRID PARAMETER ############
 # defines which queue to use for one task. Possible values are
@@ -36,7 +39,7 @@ benchmark="ippc-all"
 # The search engine configurations that are started in this experiment
 # (each of these is run on each instance in the benchmark folder)
 configs = [
-    "IPPC2011 -uf 2.0",                                         # The configuration that participated at IPPC 2011
+        "IPPC2011 -uf 2.0",                                         # The configuration that participated at IPPC 2011
     "IPPC2014 -uf 2.0",                                         # The configuration that participated at IPPC 2014 
     "IPPC2014 -uf 0.0",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.01",                                         # The configuration that participated at IPPC 2014 with ASAP
@@ -47,6 +50,7 @@ configs = [
     "IPPC2014 -uf 0.1",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.5",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.75",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "UCT -init [Single -h [RandomWalk] -uf 0.5]"  
 ]
 
 # The number of runs (30 in competition, should be higher (>=100) for
@@ -54,7 +58,7 @@ configs = [
 numRuns = "100"
 
 # The current revision (used for appropriate naming only)
-revision = "rev0995fa884d07a"
+revision = "rev7b168b35"
 
 # The timeout per task in hh:mm:ss
 timeout = "1:40:00"
@@ -86,7 +90,7 @@ logfile = "stdout.log"
 # Template for the string that is executed for each job
 TASK_TEMPLATE = "export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH && " \
 "mkdir -p %(resultsDir)s && " \
-"./run-server benchmarks/%(benchmark)s/ %(port)s %(numRuns)s %(serverLogDir)s > %(resultsDir)s/%(instance)s_server.log 2> %(resultsDir)s/%(instance)s_server.err &" \
+"./run-server benchmarks/%(benchmark)s/ %(port)s %(numRuns)s 0 0 1 %(serverLogDir)s > %(resultsDir)s/%(instance)s_server.log 2> %(resultsDir)s/%(instance)s_server.err &" \
 " sleep 45 &&" \
 " ../src/search/prost benchmarks/%(benchmark)s/prost/%(instance)s -p %(port)s [PROST -s 1 -se [%(config)s]] > %(resultsDir)s/%(instance)s.log 2> %(resultsDir)s/%(instance)s.err"
 
@@ -106,6 +110,8 @@ SLURM_TEMPLATE = "#! /bin/bash -l\n" \
                  "#SBATCH -t %(timeout)s\n"\
                  "### Number of tasks.\n"\
                  "#SBATCH --array=1-%(num_tasks)s\n"\
+                 "### Adjustment to priority ([-2147483645, 2147483645])."\
+                 "#SBATCH --nice=%(nice)s"\
                  "### Send mail? Mail type can be e.g. NONE, END, FAIL, ARRAY_TASKS.\n"\
                  "#SBATCH --mail-type=END\n"\
                  "#SBATCH --mail-user=%(email)s\n"\
