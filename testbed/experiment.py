@@ -58,7 +58,7 @@ configs = [
 numRuns = "100"
 
 # The current revision (used for appropriate naming only)
-revision = "rev191e0cbc59c9f"
+revision = "rev4c6ae32bac93748"
 
 # The timeout per task in hh:mm:ss
 timeout = "1:40:00"
@@ -90,7 +90,7 @@ logfile = "stdout.log"
 # Template for the string that is executed for each job
 TASK_TEMPLATE = "export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH && " \
 "mkdir -p %(resultsDir)s && " \
-"./run-server benchmarks/%(benchmark)s/ %(port)s %(numRuns)s 0 0 1 0 %(serverLogDir)s > %(resultsDir)s/%(instance)s_server.log 2> %(resultsDir)s/%(instance)s_server.err &" \
+"./run-server benchmarks/%(benchmark)s/ %(port)s %(numRuns)s 0 0 1 %(serverLogDir)s > %(resultsDir)s/%(instance)s_server.log 2> %(resultsDir)s/%(instance)s_server.err &" \
 " sleep 45 &&" \
 " ../src/search/prost benchmarks/%(benchmark)s/prost/%(instance)s -p %(port)s [PROST -s 1 -se [%(config)s]] > %(resultsDir)s/%(instance)s.log 2> %(resultsDir)s/%(instance)s.err"
 
