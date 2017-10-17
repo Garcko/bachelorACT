@@ -317,7 +317,7 @@ void THTS::estimateBestActions(State const &_rootState,
             stopwatch.continueTime();
             lasttime = stopwatch();
             // time_interval+=t();
-            std::cout << "/" << lasttime << " / " << std::endl;
+            //std::cout << "/" << lasttime << " / " << std::endl;
             // time2=std::chrono::steady_clock::now();
 
 

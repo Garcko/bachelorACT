@@ -50,7 +50,7 @@ configs = [
     "IPPC2014 -uf 0.1",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.5",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.75",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "UCT -init [Single -h [RandomWalk] -uf 0.5]"  
+    "UCT -init [Single -h [RandomWalk] -uf 0.5]"    
 ]
 
 # The number of runs (30 in competition, should be higher (>=100) for
@@ -58,7 +58,7 @@ configs = [
 numRuns = "100"
 
 # The current revision (used for appropriate naming only)
-revision = "rev4c6ae32bac93748"
+revision = "rev9e4bb814fad"
 
 # The timeout per task in hh:mm:ss
 timeout = "1:40:00"
@@ -110,8 +110,8 @@ SLURM_TEMPLATE = "#! /bin/bash -l\n" \
                  "#SBATCH -t %(timeout)s\n"\
                  "### Number of tasks.\n"\
                  "#SBATCH --array=1-%(num_tasks)s\n"\
-                 "### Adjustment to priority ([-2147483645, 2147483645]).\n"\
-                 "#SBATCH --nice=%(nice)s\n"\
+                 "### Adjustment to priority ([-2147483645, 2147483645])."\
+                 "#SBATCH --nice=%(nice)s"\
                  "### Send mail? Mail type can be e.g. NONE, END, FAIL, ARRAY_TASKS.\n"\
                  "#SBATCH --mail-type=END\n"\
                  "#SBATCH --mail-user=%(email)s\n"\
@@ -166,7 +166,6 @@ def create_tasks(filename, instances):
                                     memout=memout,
                                     timeout=timeout,
                                     num_tasks=str(len(tasks)),
-                                    nice=nice,
                                     email=email)
         
         for task_id,task in zip(range(1, len(tasks)+1), tasks):
