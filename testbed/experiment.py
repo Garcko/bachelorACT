@@ -41,15 +41,11 @@ benchmark="ippc-all"
 configs = [
         "IPPC2011 -uf 2.0",                                         # The configuration that participated at IPPC 2011
     "IPPC2014 -uf 2.0",                                         # The configuration that participated at IPPC 2014 
-    "IPPC2014 -uf 0.0",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "IPPC2014 -uf 0.01",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "IPPC2014 -uf 0.2",                                         # The configuration that participated at IPPC 2014 with ASAP 
-    "IPPC2014 -uf 0.05",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "IPPC2014 -uf 0.08",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "IPPC2014 -uf 0.1",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "IPPC2014 -uf 0.5",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2014 -uf 0.11",                                         # The configuration that participated at IPPC 2014 with ASAP                    
+    "IPPC2014 -uf 0.21",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2014 -uf 0.51",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.75",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "UCT -init [Single -h [RandomWalk] -uf 0.5]"    
+   # "UCT -init [Single -h [RandomWalk]] -uf 0.5"    
 ]
 
 # The number of runs (30 in competition, should be higher (>=100) for
@@ -57,7 +53,7 @@ configs = [
 numRuns = "100"
 
 # The current revision (used for appropriate naming only)
-revision = "rev9e4bb814fad"
+revision = "rev004bb814fad"
 
 # The timeout per task in hh:mm:ss
 timeout = "1:40:00"
