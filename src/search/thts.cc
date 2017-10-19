@@ -255,7 +255,6 @@ void THTS::estimateBestActions(State const &_rootState,
 
     stopwatch.reset();
     lasttime = 0.0;
-    //time_interval=0.0;
 
     // Init round (if this is the first call in a round)
     if (_rootState.stepsToGo() == SearchEngine::horizon) {
@@ -320,9 +319,6 @@ void THTS::estimateBestActions(State const &_rootState,
             //std::cout << "/" << lasttime << " / " << std::endl;
             // time2=std::chrono::steady_clock::now();
 
-
-
-
             //  std::cout << "finished generate EQ class" << std::endl;
 
             // assert(currentTrial == 100);
@@ -369,7 +365,7 @@ bool THTS::moreTrials() {
     // Check selected termination criterion
     switch (terminationMethod) {
         case THTS::TIME:
-            if (MathUtils::doubleIsGreater(stopwatch() - time_interval, timeout)) {
+            if (MathUtils::doubleIsGreater(stopwatch(), timeout)) {
                 return false;
             }
             break;
@@ -379,7 +375,7 @@ bool THTS::moreTrials() {
             }
             break;
         case THTS::TIME_AND_NUMBER_OF_TRIALS:
-            if (MathUtils::doubleIsGreater(stopwatch() - time_interval, timeout) ||
+            if (MathUtils::doubleIsGreater(stopwatch(), timeout) ||
                 (currentTrial == maxNumberOfTrials)) {
                 return false;
             }
