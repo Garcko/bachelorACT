@@ -18,7 +18,8 @@ public:
 
 private:
     std::chrono::steady_clock::time_point startTime;
-    std::chrono::steady_clock::time_point stopTime;
+    std::chrono::steady_clock::time_point clocktime;
+    //double clocktime;
 };
 
 // Convenience operator to stream elapsed time with seconds as unit

@@ -4,14 +4,17 @@ using namespace std::chrono;
 
 void Stopwatch::reset() {
     startTime = steady_clock::now();
-    stopTime = startTime;
+    clocktime = std::chrono::steady_clock::time_point();
+
 }
 void Stopwatch::saveTime() {
-    stopTime = steady_clock::now();
+    //stopTime = steady_clock::now();
+   clocktime = std::chrono::steady_clock::time_point(steady_clock::now() - startTime);
+
 }
 void Stopwatch::continueTime() {
-    auto time_span2 = steady_clock::now() - stopTime;
-    startTime.operator+=(time_span2);
+    startTime =std::chrono::steady_clock::time_point( steady_clock::now() - clocktime);
+   // startTime.operator+=(time_span2);
 }
 
 double Stopwatch::operator()() const {

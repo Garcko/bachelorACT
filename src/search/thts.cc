@@ -317,10 +317,11 @@ void THTS::estimateBestActions(State const &_rootState,
             stopwatch2.continueTime();
             generateEquivalenceClass();
             stopwatch.continueTime();
-            stopwatch2.saveTime();
             lasttime = stopwatch();
+            stopwatch2.saveTime();
+
             // time_interval+=t();
-            //std::cout << "/" << lasttime << " / " << std::endl;
+            std::cout << "/" << lasttime << " / " << std::endl;
             // time2=std::chrono::steady_clock::now();
 
             //  std::cout << "finished generate EQ class" << std::endl;
