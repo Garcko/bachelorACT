@@ -344,6 +344,7 @@ private:
 
     // The stopwatch used for timeout check
     Stopwatch stopwatch;
+    Stopwatch stopwatch2;
 
     // Parameter
     THTS::TerminationMethod terminationMethod;

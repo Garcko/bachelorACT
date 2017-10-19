@@ -254,6 +254,8 @@ void THTS::estimateBestActions(State const &_rootState,
     assert(bestActions.empty());
 
     stopwatch.reset();
+    stopwatch2.reset();
+    stopwatch2.saveTime();
     lasttime = 0.0;
 
     // Init round (if this is the first call in a round)
@@ -310,10 +312,12 @@ void THTS::estimateBestActions(State const &_rootState,
 
            // std::cout << "starting  " << std::endl;
 
-            //Stopwatch t;
+
             stopwatch.saveTime();
+            stopwatch2.continueTime();
             generateEquivalenceClass();
             stopwatch.continueTime();
+            stopwatch2.saveTime();
             lasttime = stopwatch();
             // time_interval+=t();
             //std::cout << "/" << lasttime << " / " << std::endl;
@@ -348,6 +352,7 @@ void THTS::estimateBestActions(State const &_rootState,
 
     // Print statistics
     std::cout << "Search time: " << stopwatch << std::endl;
+    std::cout << "generating abstraction: " << stopwatch2 << std::endl;
     printStats(std::cout, (_rootState.stepsToGo() == 1));
 }
 
