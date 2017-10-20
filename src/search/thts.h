@@ -370,7 +370,6 @@ private:
     std::multiset <SearchNode*,CompareSearchNodeDepth> pq;
 
 
-    std::vector<std::set<SearchNode*>> vectorEquivalenceClass;
     std::vector< std::map<int,double>> vectorChildrenOnLevel;
 
 
@@ -398,11 +397,13 @@ private:
 
     double timestep; // after how many trials the  EQ classes are generated
     double lasttime;
+    double test_stopwatch;
 
     void generateEquivalenceClass();
     std::map<int,double> makeChildrenOnLevel(SearchNode*);
 
     void makeQmean();
+
 
     std::chrono::steady_clock::time_point time_before;  //time before generateEQ class
      // how long the generateEQ class take times , this is subtracted from the current time

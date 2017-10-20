@@ -312,14 +312,14 @@ void THTS::estimateBestActions(State const &_rootState,
         if (stopwatch() - lasttime >= timestep) {  //parameter alle modul zeit
 
            // std::cout << "starting  " << std::endl;
-            double test_stopwatch = stopwatch();
+            test_stopwatch = stopwatch();
             std::cout << " stopwatch " << test_stopwatch << " / " << std::endl;
             std::cout << " lasttime  " << lasttime << " / " << std::endl;
 
             std::cout << "stopwatch - lasttime  " << test_stopwatch-lasttime << " / " << std::endl;
             stopwatch.saveTime();
             stopwatch2.continueTime();
-            std::cout << " startEQ "  << std::endl;
+           // std::cout << " startEQ "  << std::endl;
             generateEquivalenceClass();
             std::cout << "endEQ "  << std::endl;
             stopwatch.continueTime();
@@ -328,7 +328,7 @@ void THTS::estimateBestActions(State const &_rootState,
 
             // time_interval+=t();
             std::cout << "lasttime" << lasttime << " / " << std::endl;
-            std::cout << "end stopwatch " << stopwatch  << std::endl;
+           // std::cout << "end stopwatch " << stopwatch  << std::endl;
 
             // time2=std::chrono::steady_clock::now();
 
@@ -781,7 +781,7 @@ void THTS::printStats(std::ostream &out, bool const &printRoundStats,
 ******************************************************************/
 
 void THTS::generateEquivalenceClass() {
-    // std::cout <<"size is "<<pq.size() << std::endl;
+     std::cout <<"size is "<<pq.size() << std::endl;
     // std::cout <<"size of qvaluemean"<<SearchNode::qvalueMean.size() << std::endl;
 
 
@@ -817,10 +817,18 @@ void THTS::generateEquivalenceClass() {
                 qvalueNumbersOfEQClasses.push_back(1.0);
                 qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
                 numberOfEQclasses++;
+
             }
-                //if it is a leaf node check on which level it is and save this level
+                //if it is a leaf node and it is a new level or a different nodetype save it is and save this level/type
+                //because there are decision and chance node with empty children
             else if (currentNode->stepsToGo != currentLeaveLevel || leaveisChanceNode != currentNode->isChanceNode) {
+                //std::cout <<"------------new level leaf with leaveEQCLass  " <<leaveEQCLass<<"and step"<<currentLeaveLevel
+                  //        <<" and "<<leaveisChanceNode<< std::endl;
+                //std::cout <<"------------node info:\n is chance node  " <<currentNode->isChanceNode<<"and step "<<currentNode->stepsToGo
+                 //         <<" and "<<leaveisChanceNode<<" and has kids"<<currentNode->children.size()<< std::endl;
+
                 leaveisChanceNode = currentNode->isChanceNode;
+
                 currentNode->equivalenceClassPos = numberOfEQclasses;
                 leaveEQCLass = numberOfEQclasses;   //save the EQ class
                 currentLeaveLevel = currentNode->stepsToGo;         //save the level so that other leaves on this level have the same number
@@ -876,7 +884,7 @@ void THTS::generateEquivalenceClass() {
             // check the children maps of the other nodes on the same level , if there is a match
             //std::cout <<"compare vector  " <<currentNode->stepsToGo<< std::endl;
             isSameEQClass = false;
-            for (auto &c:vectorChildrenOnLevel) {
+            for (auto c:vectorChildrenOnLevel) {
                 if (c.size() == currentChildrenMap.size()) {
                     isSameEQClass = true;
 
@@ -948,6 +956,7 @@ void THTS::generateEquivalenceClass() {
         }
 
     }
+    std::cout <<"before makeQmean" <<numberOfEQclasses <<"classes "<<std::endl;
     makeQmean();    //here the vector is generated for the Qmean with vector qsum and qnumberofEqclass
     //std::cout <<"finished generating there are " <<numberOfEQclasses <<"classes "<<std::endl;
 }
