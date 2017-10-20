@@ -257,6 +257,7 @@ void THTS::estimateBestActions(State const &_rootState,
     stopwatch2.reset();
     stopwatch2.saveTime();
     lasttime = 0.0;
+    std::cout << "reset of the stopwatch "  << std::endl;
 
     // Init round (if this is the first call in a round)
     if (_rootState.stepsToGo() == SearchEngine::horizon) {
@@ -311,8 +312,11 @@ void THTS::estimateBestActions(State const &_rootState,
         if (stopwatch() - lasttime >= timestep) {  //parameter alle modul zeit
 
            // std::cout << "starting  " << std::endl;
+            double test_stopwatch = stopwatch();
+            std::cout << " \n stopwatch " << test_stopwatch << " / " << std::endl;
+            std::cout << " lasttime  " << lasttime << " / " << std::endl;
 
-
+            std::cout << "stopwatch - lasttime  " << test_stopwatch-lasttime << " / " << std::endl;
             stopwatch.saveTime();
             stopwatch2.continueTime();
             generateEquivalenceClass();
@@ -321,7 +325,9 @@ void THTS::estimateBestActions(State const &_rootState,
             stopwatch2.saveTime();
 
             // time_interval+=t();
-            std::cout << "/" << lasttime << " / " << std::endl;
+            std::cout << "lasttime" << lasttime << " / " << std::endl;
+            std::cout << "stopwatchtime" << stopwatch  << std::endl;
+
             // time2=std::chrono::steady_clock::now();
 
             //  std::cout << "finished generate EQ class" << std::endl;
