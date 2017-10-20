@@ -313,20 +313,22 @@ void THTS::estimateBestActions(State const &_rootState,
 
            // std::cout << "starting  " << std::endl;
             double test_stopwatch = stopwatch();
-            std::cout << " \n stopwatch " << test_stopwatch << " / " << std::endl;
+            std::cout << " stopwatch " << test_stopwatch << " / " << std::endl;
             std::cout << " lasttime  " << lasttime << " / " << std::endl;
 
             std::cout << "stopwatch - lasttime  " << test_stopwatch-lasttime << " / " << std::endl;
             stopwatch.saveTime();
             stopwatch2.continueTime();
+            std::cout << " startEQ "  << std::endl;
             generateEquivalenceClass();
+            std::cout << "endEQ "  << std::endl;
             stopwatch.continueTime();
             lasttime = stopwatch();
             stopwatch2.saveTime();
 
             // time_interval+=t();
             std::cout << "lasttime" << lasttime << " / " << std::endl;
-            std::cout << "stopwatchtime" << stopwatch  << std::endl;
+            std::cout << "end stopwatch " << stopwatch  << std::endl;
 
             // time2=std::chrono::steady_clock::now();
 
