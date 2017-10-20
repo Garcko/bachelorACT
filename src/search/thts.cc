@@ -312,14 +312,14 @@ void THTS::estimateBestActions(State const &_rootState,
         if (stopwatch() - lasttime >= timestep) {  //parameter alle modul zeit
 
            // std::cout << "starting  " << std::endl;
-            test_stopwatch = stopwatch();
-            std::cout << " stopwatch " << test_stopwatch << " / " << std::endl;
-            std::cout << " lasttime  " << lasttime << " / " << std::endl;
+            //test_stopwatch = stopwatch();
+           // std::cout << " stopwatch " << test_stopwatch << " / " << std::endl;
+            //std::cout << " lasttime  " << lasttime << " / " << std::endl;
 
-            std::cout << "stopwatch - lasttime  " << test_stopwatch-lasttime << " / " << std::endl;
+            //std::cout << "stopwatch - lasttime  " << test_stopwatch-lasttime << " / " << std::endl;
             stopwatch.saveTime();
             stopwatch2.continueTime();
-           // std::cout << " startEQ "  << std::endl;
+            std::cout << " startEQ "  << std::endl;
             generateEquivalenceClass();
             std::cout << "endEQ "  << std::endl;
             stopwatch.continueTime();
@@ -327,7 +327,7 @@ void THTS::estimateBestActions(State const &_rootState,
             stopwatch2.saveTime();
 
             // time_interval+=t();
-            std::cout << "lasttime" << lasttime << " / " << std::endl;
+           // std::cout << "lasttime" << lasttime << " / " << std::endl;
            // std::cout << "end stopwatch " << stopwatch  << std::endl;
 
             // time2=std::chrono::steady_clock::now();
@@ -884,7 +884,7 @@ void THTS::generateEquivalenceClass() {
             // check the children maps of the other nodes on the same level , if there is a match
             //std::cout <<"compare vector  " <<currentNode->stepsToGo<< std::endl;
             isSameEQClass = false;
-            for (auto c:vectorChildrenOnLevel) {
+            for (auto &c:vectorChildrenOnLevel) {
                 if (c.size() == currentChildrenMap.size()) {
                     isSameEQClass = true;
 

@@ -9,11 +9,11 @@ void Stopwatch::reset() {
 }
 void Stopwatch::saveTime() {
     //stopTime = steady_clock::now();
-   clocktime = std::chrono::steady_clock::time_point(steady_clock::now() - startTime);
+   clocktime = steady_clock::time_point(steady_clock::now() - startTime);
 
 }
 void Stopwatch::continueTime() {
-    startTime =std::chrono::steady_clock::time_point( steady_clock::now() - clocktime);
+    startTime =steady_clock::time_point( steady_clock::now() - clocktime);
    // startTime.operator+=(time_span2);
 }
 

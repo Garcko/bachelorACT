@@ -384,7 +384,7 @@ private:
     bool leaveisChanceNode;
     bool currentIsChanceNode;
 
-    bool overlappingEQclass=false; // if its true  the EQ class can overlap over multiple level ,else it is levelinternal
+    //bool overlappingEQclass=false; // if its true  the EQ class can overlap over multiple level ,else it is levelinternal
     //default false; n
 
     int childEQ;
@@ -397,7 +397,7 @@ private:
 
     double timestep; // after how many trials the  EQ classes are generated
     double lasttime;
-    double test_stopwatch;
+    //double test_stopwatch;
 
     void generateEquivalenceClass();
     std::map<int,double> makeChildrenOnLevel(SearchNode*);
