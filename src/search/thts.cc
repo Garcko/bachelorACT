@@ -937,11 +937,13 @@ void THTS::generateEquivalenceClass() {
 
 
                 numberOfEQclasses++;
+                currentChildrenMap.at(-2) = currentNode->equivalenceClassPos;
+                vectorChildrenOnLevel.push_back(currentChildrenMap);
             } else {
                 // std::cout <<"gleichheit mit EQ2 " <<  currentNode->equivalenceClassPos<<std::endl;
             }
-            currentChildrenMap.at(-2) = currentNode->equivalenceClassPos;
-            vectorChildrenOnLevel.push_back(currentChildrenMap);
+
+
         }
 
         //Debugging if this is true , this   Node is uninitialized
