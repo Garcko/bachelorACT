@@ -370,11 +370,12 @@ private:
     std::multiset <SearchNode*,CompareSearchNodeDepth> pq;
 
 
-    std::vector< std::map<int,double>> vectorChildrenOnLevel;
+    std::vector< std::vector<std::pair<int,double>>> vectorChildrenOnLevel;
 
 
-    std::map<int,double> tempMap;   //current searchnode children
-    std::map<int,double> currentChildrenMap;
+
+    std::vector<std::pair<int,double>> childrenEQprob;  //last element is the pair <-2,EQ-class>
+    std::vector<std::pair<int,double>> currentChildrenVector;
 
     int currentLevel;
     int numberOfEQclasses;
@@ -388,7 +389,9 @@ private:
     //default false; n
 
     int childEQ;
-    bool isSameEQClass;
+    bool isSameEQClass; // is the node in the same EQ class
+    bool alreadyInVector;
+    bool isSameEQandProb;   // is the child in same EQ (multiple isSameEQandProb necessarily to be a isSameEQClass)
     std::vector<double> qvalueSum;
     std::vector<double>qvalueNumbersOfEQClasses;
 
@@ -400,7 +403,7 @@ private:
     //double test_stopwatch;
 
     void generateEquivalenceClass();
-    std::map<int,double> makeChildrenOnLevel(SearchNode*);
+    std::vector<std::pair<int,double>> makeChildrenOnLevel(SearchNode*);
 
     void makeQmean();
 
