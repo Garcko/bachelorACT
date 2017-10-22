@@ -178,7 +178,7 @@ void THTS::learn() {
 ******************************************************************/
 
 void THTS::initRound() {
-    std::cout << name << "t init round"<<std::endl;
+    //std::cout << name << "t init round"<<std::endl;
     pq.clear();
     firstSolvedFound = false;
 
@@ -813,10 +813,11 @@ void THTS::generateEquivalenceClass() {
         if (currentNode->isALeafNode()) {
             //special case , where desicion node have no children and the reward is known
             if (!currentNode->isChanceNode && currentNode->children.size() == 0) {
+                numberOfEQclasses++;
                 currentNode->equivalenceClassPos = numberOfEQclasses;
                 qvalueNumbersOfEQClasses.push_back(1.0);
                 qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
-                numberOfEQclasses++;
+
 
             }
                 //if it is a leaf node and it is a new level or a different nodetype save it is and save this level/type
@@ -829,6 +830,7 @@ void THTS::generateEquivalenceClass() {
 
                 leaveisChanceNode = currentNode->isChanceNode;
 
+                numberOfEQclasses++;
                 currentNode->equivalenceClassPos = numberOfEQclasses;
                 leaveEQCLass = numberOfEQclasses;   //save the EQ class
                 currentLeaveLevel = currentNode->stepsToGo;         //save the level so that other leaves on this level have the same number
@@ -838,14 +840,13 @@ void THTS::generateEquivalenceClass() {
                 qvalueNumbersOfEQClasses.push_back(1.0);
                 qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
 
-                numberOfEQclasses++;
             } else {
                 currentNode->equivalenceClassPos = leaveEQCLass;
                 assert(numberOfEQclasses > 0);
                 assert(qvalueSum.size() == numberOfEQclasses);
 
-                qvalueSum[numberOfEQclasses - 1] += currentNode->immediateReward + currentNode->futureReward;
-                qvalueNumbersOfEQClasses[numberOfEQclasses - 1] += 1.0;
+                qvalueSum[leaveEQCLass - 1] += currentNode->immediateReward + currentNode->futureReward;
+                qvalueNumbersOfEQClasses[leaveEQCLass - 1] += 1.0;
 
 /*
                 if(leaveEQCLass==0) {
@@ -865,6 +866,7 @@ void THTS::generateEquivalenceClass() {
 
             //create mapping of the child with level-prob
 
+            numberOfEQclasses++;
             currentNode->equivalenceClassPos = numberOfEQclasses;
             currentLevel = currentNode->stepsToGo;    //new level
             //std::cout <<"------------make new childrenmap vector , number of EQs is "<<numberOfEQclasses<<"// node stepstogo"<<currentNode->stepsToGo<< std::endl;
@@ -875,7 +877,7 @@ void THTS::generateEquivalenceClass() {
             qvalueNumbersOfEQClasses.push_back(1.0);
             qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
 
-            numberOfEQclasses++;
+
 
         } else {
             //  std::cout <<"------------make children old level"<<currentLevel<<"// node stepstogo"<<currentNode->stepsToGo<< std::endl;
@@ -899,6 +901,7 @@ void THTS::generateEquivalenceClass() {
                                 for(auto child=c.begin();child !=c.end();++child) {
                                     if(child->first==childEQ&& child->second==it->second){
                                        isSameEQandProb=true;
+                                        break;
                                     }
                                 }
                                 if(!isSameEQandProb){
@@ -918,6 +921,7 @@ void THTS::generateEquivalenceClass() {
                                 for(auto child1=c.begin();child1 !=c.end();++child1) {
                                     if(child1->first==childEQ&& child1->second==child->prob){
                                         isSameEQandProb=true;
+                                        break;
                                     }
                                 }
                                 if(!isSameEQandProb){
@@ -934,8 +938,8 @@ void THTS::generateEquivalenceClass() {
                         currentNode->equivalenceClassPos = c.back().second;
                         assert(c.back().first==-2);
                         // std::cout <<"same EQclass with the eqpos  " <<  currentNode->equivalenceClassPos<<std::endl;
-                        qvalueSum[numberOfEQclasses - 1] += currentNode->immediateReward + currentNode->futureReward;
-                        qvalueNumbersOfEQClasses[numberOfEQclasses - 1] += 1.0;
+                        qvalueSum[currentNode->equivalenceClassPos-1 ] += currentNode->immediateReward + currentNode->futureReward;
+                        qvalueNumbersOfEQClasses[currentNode->equivalenceClassPos -1] += 1.0;
 
                         //      std::cout <<"gleichheit mit EQ1 " <<  currentNode->equivalenceClassPos<<std::endl;
                         break;
@@ -945,13 +949,14 @@ void THTS::generateEquivalenceClass() {
             //  std::cout <<" finished compare vector  " <<currentNode->stepsToGo<< std::endl;
             //no same children EQ
             if (!isSameEQClass) {
+                numberOfEQclasses++;
                 currentNode->equivalenceClassPos = numberOfEQclasses;
 
                 qvalueNumbersOfEQClasses.push_back(1.0);
                 qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
 
 
-                numberOfEQclasses++;
+
                 currentChildrenVector.back().second = currentNode->equivalenceClassPos;
                 vectorChildrenOnLevel.push_back(currentChildrenVector);
             } else {
