@@ -256,7 +256,7 @@ void THTS::estimateBestActions(State const &_rootState,
     stopwatch.reset();
     stopwatch2.reset();
     stopwatch2.saveTime();
-    lasttime = 0.0;
+    lasttimepoint=std::chrono::steady_clock::now();
     std::cout << "reset of the stopwatch "  << std::endl;
 
     // Init round (if this is the first call in a round)
@@ -308,27 +308,26 @@ void THTS::estimateBestActions(State const &_rootState,
         }
 */
 
-
-        if (stopwatch() - lasttime >= timestep) {  //parameter alle modul zeit
+        lasttime = std::chrono::steady_clock::now() - lasttimepoint;
+        if (lasttime.count() >= timestep) {  //parameter alle modul zeit
 
            // std::cout << "starting  " << std::endl;
-            //test_stopwatch = stopwatch();
            // std::cout << " stopwatch " << test_stopwatch << " / " << std::endl;
             //std::cout << " lasttime  " << lasttime << " / " << std::endl;
 
-            //std::cout << "stopwatch - lasttime  " << test_stopwatch-lasttime << " / " << std::endl;
+
             stopwatch.saveTime();
             stopwatch2.continueTime();
             std::cout << " startEQ "  << std::endl;
             generateEquivalenceClass();
             std::cout << "endEQ "  << std::endl;
             stopwatch.continueTime();
-            lasttime = stopwatch();
+           lasttimepoint=std::chrono::steady_clock::now();
             stopwatch2.saveTime();
 
             // time_interval+=t();
            // std::cout << "lasttime" << lasttime << " / " << std::endl;
-           // std::cout << "end stopwatch " << stopwatch  << std::endl;
+            std::cout << "end stopwatch " << stopwatch  << std::endl;
 
             // time2=std::chrono::steady_clock::now();
 

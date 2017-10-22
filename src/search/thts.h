@@ -399,7 +399,8 @@ private:
     std::vector<std::pair<SearchNode*,double>> specialChildren;
 
     double timestep; // after how many trials the  EQ classes are generated
-    double lasttime;
+    std::chrono::duration<double>  lasttime;
+    std::chrono::steady_clock::time_point lasttimepoint;
     //double test_stopwatch;
 
     void generateEquivalenceClass();
