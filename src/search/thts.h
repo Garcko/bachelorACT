@@ -80,7 +80,7 @@ struct SearchNode {
          //   std::cout << qvalueMean.size() << " / " << equivalenceClassPos << std::endl;
             assert(qvalueMean.size() > equivalenceClassPos);
             assert(equivalenceClassPos >= 0);
-            return qvalueMean[equivalenceClassPos];
+            return qvalueMean[equivalenceClassPos-1];
         }
     }
 
