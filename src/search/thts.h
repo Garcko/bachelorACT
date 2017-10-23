@@ -78,7 +78,7 @@ struct SearchNode {
             //hier durchschnitt nehmen aus q value aus beiden vectoren
            //return immediateReward + futureReward;
          //   std::cout << qvalueMean.size() << " / " << equivalenceClassPos << std::endl;
-            assert(qvalueMean.size() > equivalenceClassPos);
+            assert(qvalueMean.size() > equivalenceClassPos-1);
             assert(equivalenceClassPos >= 0);
             return qvalueMean[equivalenceClassPos-1];
         }

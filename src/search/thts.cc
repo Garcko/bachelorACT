@@ -802,7 +802,7 @@ void THTS::generateEquivalenceClass() {
     childrenEQprob.clear();
 
     // int test=0;
-    for (SearchNode *const &currentNode : pq) {
+    for (SearchNode *const currentNode : pq) {
         // std::cout << "current node steps to go are   "<<currentNode->stepsToGo<<" and is a ChanceNode "<<currentNode->isChanceNode<<std::endl;
 
         // if(currentLeaveLevel==-1){
@@ -996,17 +996,17 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
                 alreadyInVector=false;
                 //    std::cout <<"child with  " <<  child->equivalenceClassPos<<std::endl;
                 if(childrenEQprob.empty()){
-                    childrenEQprob.push_back(std::make_pair(child->equivalenceClassPos, child->prob));
+                    childrenEQprob.push_back(std::make_pair(child->equivalenceClassPos, 1));
                 }else{
                     for(auto c=childrenEQprob.begin();c !=childrenEQprob.end();++c) {
                         if(c->first==child->equivalenceClassPos){
-                            c->second+=child->prob; //already in the list
+                            c->second+=1; //already in the list
                             alreadyInVector=true;
                             break;
                         }
                     }
                     if(!alreadyInVector){
-                        childrenEQprob.push_back(std::make_pair(child->equivalenceClassPos, child->prob));  // new entry
+                        childrenEQprob.push_back(std::make_pair(child->equivalenceClassPos, 1));  // new entry
                     }
                 }
 
