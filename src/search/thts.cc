@@ -359,6 +359,7 @@ void THTS::estimateBestActions(State const &_rootState,
     }
 
     // Print statistics
+    assert(stopwatch()>0.1);
     std::cout << "Search time: " << stopwatch << std::endl;
     std::cout << "generating abstraction: " << stopwatch2 << std::endl;
     printStats(std::cout, (_rootState.stepsToGo() == 1));
@@ -792,8 +793,9 @@ void THTS::generateEquivalenceClass() {
     leaveisChanceNode = true;
     currentIsChanceNode = true;
 
-    qvalueSum.clear();
-    qvalueNumbersOfEQClasses.clear();
+    //qvalueSum.clear();
+    qvalueOfEQ.clear();
+    //qvalueNumbersOfEQClasses.clear();
 
 
     vectorChildrenOnLevel.clear();
@@ -814,8 +816,9 @@ void THTS::generateEquivalenceClass() {
             if (!currentNode->isChanceNode && currentNode->children.size() == 0) {
                 numberOfEQclasses++;
                 currentNode->equivalenceClassPos = numberOfEQclasses;
-                qvalueNumbersOfEQClasses.push_back(1.0);
-                qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
+                qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
+              //  qvalueNumbersOfEQClasses.push_back(1.0);
+               // qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
 
 
             }
@@ -836,16 +839,21 @@ void THTS::generateEquivalenceClass() {
 
                 //   std::cout <<"------------new level leaf with leaveEQCLass  " <<leaveEQCLass<<"and step"<<currentLeaveLevel<< std::endl;
 
-                qvalueNumbersOfEQClasses.push_back(1.0);
-                qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
+                qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
+                //qvalueNumbersOfEQClasses.push_back(1.0);
+                //qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
 
             } else {
                 currentNode->equivalenceClassPos = leaveEQCLass;
                 assert(numberOfEQclasses > 0);
-                assert(qvalueSum.size() == numberOfEQclasses);
+                assert(qvalueOfEQ.size() == numberOfEQclasses);
 
-                qvalueSum[leaveEQCLass - 1] += currentNode->immediateReward + currentNode->futureReward;
-                qvalueNumbersOfEQClasses[leaveEQCLass - 1] += 1.0;
+
+
+                qvalueOfEQ[leaveEQCLass-1].first+=currentNode->immediateReward + currentNode->futureReward;
+                qvalueOfEQ[leaveEQCLass-1].second+=1.0;
+                //qvalueSum[leaveEQCLass - 1] += currentNode->immediateReward + currentNode->futureReward;
+               // qvalueNumbersOfEQClasses[leaveEQCLass - 1] += 1.0;
 
 /*
                 if(leaveEQCLass==0) {
@@ -873,8 +881,9 @@ void THTS::generateEquivalenceClass() {
             vectorChildrenOnLevel.push_back(
                     makeChildrenOnLevel(currentNode));  // make children can different between chance and decision node
 
-            qvalueNumbersOfEQClasses.push_back(1.0);
-            qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
+            //qvalueNumbersOfEQClasses.push_back(1.0);
+            //qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
+            qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
 
 
 
@@ -936,9 +945,10 @@ void THTS::generateEquivalenceClass() {
                     if (isSameEQClass) {
                         currentNode->equivalenceClassPos = c.back().second;
                         assert(c.back().first==-2);
+                        assert(leaveEQCLass>1);
                         // std::cout <<"same EQclass with the eqpos  " <<  currentNode->equivalenceClassPos<<std::endl;
-                        qvalueSum[currentNode->equivalenceClassPos-1 ] += currentNode->immediateReward + currentNode->futureReward;
-                        qvalueNumbersOfEQClasses[currentNode->equivalenceClassPos -1] += 1.0;
+                        qvalueOfEQ[leaveEQCLass-1].first+=currentNode->immediateReward + currentNode->futureReward;
+                        qvalueOfEQ[leaveEQCLass-1].second+=1.0;
 
                         //      std::cout <<"gleichheit mit EQ1 " <<  currentNode->equivalenceClassPos<<std::endl;
                         break;
@@ -951,8 +961,9 @@ void THTS::generateEquivalenceClass() {
                 numberOfEQclasses++;
                 currentNode->equivalenceClassPos = numberOfEQclasses;
 
-                qvalueNumbersOfEQClasses.push_back(1.0);
-                qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
+                //qvalueNumbersOfEQClasses.push_back(1.0);
+                //qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
+                qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
 
 
 
@@ -1074,14 +1085,19 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
 
 //generate the QValue of the EQ classes
 void THTS::makeQmean() {
-    assert(qvalueSum.size() > 0);
-    assert(qvalueNumbersOfEQClasses.size() == qvalueSum.size());
+    assert(qvalueOfEQ.size() > 0);
+    //assert(qvalueNumbersOfEQClasses.size() == qvalueSum.size());
     SearchNode::qvalueMean.clear();
 
-    for (unsigned int i = 0; i < qvalueSum.size(); ++i) {
+  /*  for (unsigned int i = 0; i < qvalueSum.size(); ++i) {
         //std::cout <<"current level is "<<i<<" the sum here is: " <<qvalueSum[i]<<std::endl;
         //std::cout <<"and it's size (number of classes in it)  " <<qvalueNumbersOfEQClasses[i]<<std::endl;
         SearchNode::qvalueMean.push_back(qvalueSum[i] / qvalueNumbersOfEQClasses[i]);
+    }*/
+    for (unsigned int i = 0; i < qvalueOfEQ.size(); ++i) {
+        //std::cout <<"current level is "<<i<<" the sum here is: " <<qvalueSum[i]<<std::endl;
+        //std::cout <<"and it's size (number of classes in it)  " <<qvalueNumbersOfEQClasses[i]<<std::endl;
+        SearchNode::qvalueMean.push_back(qvalueOfEQ[i].first / qvalueOfEQ[i].second);
     }
 
     //std::cout <<"all the Q-value means and size is "<<SearchNode::qvalueMean.size() <<std::endl;

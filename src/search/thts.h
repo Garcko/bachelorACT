@@ -392,8 +392,10 @@ private:
     bool isSameEQClass; // is the node in the same EQ class
     bool alreadyInVector;
     bool isSameEQandProb;   // is the child in same EQ (multiple isSameEQandProb necessarily to be a isSameEQClass)
-    std::vector<double> qvalueSum;
-    std::vector<double>qvalueNumbersOfEQClasses;
+   // std::vector<double> qvalueSum;
+   // std::vector<double>qvalueNumbersOfEQClasses;
+
+    std::vector<std::pair<double,double>> qvalueOfEQ;
 
 
     std::vector<std::pair<SearchNode*,double>> specialChildren;
