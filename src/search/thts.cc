@@ -270,6 +270,7 @@ void THTS::estimateBestActions(State const &_rootState,
     // output
     initStep(_rootState);
 
+
     // Check if there is an obviously optimal policy (as, e.g., in the last step
     // or in a reward lock)
     int uniquePolicyOpIndex = getUniquePolicy();
@@ -321,6 +322,7 @@ void THTS::estimateBestActions(State const &_rootState,
             std::cout << " startEQ "  << std::endl;
             generateEquivalenceClass();
             std::cout << "endEQ "  << std::endl;
+          //  std::cout<<"on level "<<currentTrial<<std::endl;
             stopwatch.continueTime();
            lasttimepoint=std::chrono::steady_clock::now();
             stopwatch2.saveTime();
@@ -436,8 +438,8 @@ void THTS::visitDecisionNode(SearchNode *node) {
         for (SearchNode *child : node->children) {
             if (child) {
                 pq.insert(child);
-                //    std::cout << "level: "<<child->stepsToGo << " is a ChanceNode  " <<child->isChanceNode << "         and isleaf  " <<child->isALeafNode()<<std::endl;
-                // std::cout << "with children size"<<child->children.size()  <<std::endl;
+                //std::cout << "level: "<<child->stepsToGo << " is a ChanceNode  " <<child->isChanceNode << "         and isleaf  " <<child->isALeafNode()<<std::endl;
+                //std::cout << "with children size"<<child->children.size()  <<std::endl;
             }
         }
 
@@ -525,6 +527,7 @@ void THTS::visitDecisionNode(SearchNode *node) {
         //  std::cout << "t trial is finished " <<std::endl;
         trialReward = node->getExpectedRewardEstimate();
     }
+    //  std::cout << "t trial is finished " <<std::endl;
 }
 
 bool THTS::currentStateIsSolved(SearchNode *node) {
@@ -847,7 +850,9 @@ void THTS::generateEquivalenceClass() {
                 currentNode->equivalenceClassPos = leaveEQCLass;
                 assert(numberOfEQclasses > 0);
                 assert(qvalueOfEQ.size() == numberOfEQclasses);
-
+                if(numberOfEQclasses<1){
+                    std::cout << "###" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode <<std::endl;
+                }
 
 
                 qvalueOfEQ[leaveEQCLass-1].first+=currentNode->immediateReward + currentNode->futureReward;
@@ -945,10 +950,14 @@ void THTS::generateEquivalenceClass() {
                     if (isSameEQClass) {
                         currentNode->equivalenceClassPos = c.back().second;
                         assert(c.back().first==-2);
-                        assert(leaveEQCLass>1);
+
                         // std::cout <<"same EQclass with the eqpos  " <<  currentNode->equivalenceClassPos<<std::endl;
-                        qvalueOfEQ[leaveEQCLass-1].first+=currentNode->immediateReward + currentNode->futureReward;
-                        qvalueOfEQ[leaveEQCLass-1].second+=1.0;
+
+                        if(numberOfEQclasses<currentNode->equivalenceClassPos -1){
+                            std::cout << "###" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode <<std::endl;
+                        }
+                        qvalueOfEQ[ currentNode->equivalenceClassPos-1].first+=currentNode->immediateReward + currentNode->futureReward;
+                        qvalueOfEQ[ currentNode->equivalenceClassPos-1].second+=1.0;
 
                         //      std::cout <<"gleichheit mit EQ1 " <<  currentNode->equivalenceClassPos<<std::endl;
                         break;
