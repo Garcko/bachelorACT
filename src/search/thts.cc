@@ -180,6 +180,7 @@ void THTS::learn() {
 void THTS::initRound() {
     //std::cout << name << "t init round"<<std::endl;
     //pq.clear();
+    stopwatchRuntime.reset();
     firstSolvedFound = false;
 
     actionSelection->initRound();
@@ -257,6 +258,7 @@ void THTS::estimateBestActions(State const &_rootState,
     stopwatch2.reset();
     stopwatch2.saveTime();
 
+
     std::cout << "reset of the stopwatch "  << std::endl;
 
     // Init round (if this is the first call in a round)
@@ -320,7 +322,7 @@ void THTS::estimateBestActions(State const &_rootState,
 
             stopwatch.saveTime();
             stopwatch2.continueTime();
-            std::cout << " startEQ "  << std::endl;
+            std::cout << " startEQ "  <<std::endl;
             generateEquivalenceClass();
             std::cout << "endEQ "  << std::endl;
           //  std::cout<<"on level "<<currentTrial<<std::endl;
@@ -365,6 +367,7 @@ void THTS::estimateBestActions(State const &_rootState,
    // assert(stopwatch()>0.1);
     std::cout << "Search time: " << stopwatch << std::endl;
     std::cout << "generating abstraction: " << stopwatch2 << std::endl;
+    std::cout << "All time " << stopwatchRuntime<< std::endl;
     printStats(std::cout, (_rootState.stepsToGo() == 1));
 }
 
@@ -900,7 +903,7 @@ void THTS::generateEquivalenceClass() {
             // check the children maps of the other nodes on the same level , if there is a match
             //std::cout <<"compare vector  " <<currentNode->stepsToGo<< std::endl;
             isSameEQClass = false;
-            for (auto c:vectorChildrenOnLevel) {
+            for (auto &c:vectorChildrenOnLevel) {
                 if (c.size() == currentChildrenVector.size()) {
                     isSameEQClass = true;
 
