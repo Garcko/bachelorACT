@@ -179,7 +179,7 @@ void THTS::learn() {
 
 void THTS::initRound() {
     //std::cout << name << "t init round"<<std::endl;
-    pq.clear();
+    //pq.clear();
     firstSolvedFound = false;
 
     actionSelection->initRound();
@@ -256,7 +256,7 @@ void THTS::estimateBestActions(State const &_rootState,
     stopwatch.reset();
     stopwatch2.reset();
     stopwatch2.saveTime();
-    lasttimepoint=std::chrono::steady_clock::now();
+
     std::cout << "reset of the stopwatch "  << std::endl;
 
     // Init round (if this is the first call in a round)
@@ -286,6 +286,7 @@ void THTS::estimateBestActions(State const &_rootState,
 
     // Start the main loop that starts trials until some termination criterion
     // is fullfilled
+    lasttimepoint=std::chrono::steady_clock::now();
     while (moreTrials()) {
         // std::cout <<
         // "---------------------------------------------------------" <<
@@ -361,7 +362,7 @@ void THTS::estimateBestActions(State const &_rootState,
     }
 
     // Print statistics
-    assert(stopwatch()>0.1);
+   // assert(stopwatch()>0.1);
     std::cout << "Search time: " << stopwatch << std::endl;
     std::cout << "generating abstraction: " << stopwatch2 << std::endl;
     printStats(std::cout, (_rootState.stepsToGo() == 1));
