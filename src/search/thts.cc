@@ -851,7 +851,7 @@ void THTS::generateEquivalenceClass() {
                 assert(numberOfEQclasses > 0);
                 assert(qvalueOfEQ.size() == numberOfEQclasses);
                 if(numberOfEQclasses<1){
-                    std::cout << "###" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode <<std::endl;
+                    std::cout << "###1" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode <<std::endl;
                 }
 
 
@@ -950,11 +950,14 @@ void THTS::generateEquivalenceClass() {
                     if (isSameEQClass) {
                         currentNode->equivalenceClassPos = c.back().second;
                         assert(c.back().first==-2);
+                        if(c.back().first!=-2){
+                            std::cout << "###2" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode <<std::endl;
+                        }
 
                         // std::cout <<"same EQclass with the eqpos  " <<  currentNode->equivalenceClassPos<<std::endl;
 
                         if(numberOfEQclasses<currentNode->equivalenceClassPos -1){
-                            std::cout << "###" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode <<std::endl;
+                            std::cout << "###3" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode <<std::endl;
                         }
                         qvalueOfEQ[ currentNode->equivalenceClassPos-1].first+=currentNode->immediateReward + currentNode->futureReward;
                         qvalueOfEQ[ currentNode->equivalenceClassPos-1].second+=1.0;
@@ -1015,8 +1018,11 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
             if (child) {
                 alreadyInVector=false;
                 //    std::cout <<"child with  " <<  child->equivalenceClassPos<<std::endl;
+                if(node->children.size()<childrenEQprob.size()){
+                    std::cout << "###################makechildren decisi child is ChanceNode " <<child->isChanceNode<<" and EQ " <<child->equivalenceClassPos <<" and level "<<child->stepsToGo<<std::endl;
+                }
                 if(childrenEQprob.empty()){
-                    childrenEQprob.push_back(std::make_pair(child->equivalenceClassPos, 1));
+                    childrenEQprob.push_back(std::make_pair(child->equivalenceClassPos, 1.0));
                 }else{
                     for(auto c=childrenEQprob.begin();c !=childrenEQprob.end();++c) {
                         if(c->first==child->equivalenceClassPos){
@@ -1026,7 +1032,7 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
                         }
                     }
                     if(!alreadyInVector){
-                        childrenEQprob.push_back(std::make_pair(child->equivalenceClassPos, 1));  // new entry
+                        childrenEQprob.push_back(std::make_pair(child->equivalenceClassPos, 1.0));  // new entry
                     }
                 }
 
@@ -1048,8 +1054,17 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
             if (it->first) {
                 alreadyInVector=false;
                 //    std::cout <<"child with  " <<  child->equivalenceClassPos<<std::endl;
+                if(specialChildren.size()<childrenEQprob.size()){
+                    std::cout << "##################makechancenode############child is ChanceNode " <<it->first->isChanceNode<<" and EQ " <<it->first->equivalenceClassPos <<" and level "<<it->first->stepsToGo<<std::endl;
+
+                }
                 if(childrenEQprob.empty()){
-                    childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, it->second));
+                    if(specialChildren.size()==1){
+                        childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, 1.0));
+                    }else{
+                        childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, it->second));
+                    }
+
                 }else{
                     for(auto c=childrenEQprob.begin();c !=childrenEQprob.end();++c) {
                         if(c->first==it->first->equivalenceClassPos){
@@ -1061,6 +1076,7 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
                     if(!alreadyInVector){
                         childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, it->second)); // new entry
                     }
+
                 }
 
 
