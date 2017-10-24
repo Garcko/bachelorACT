@@ -817,7 +817,7 @@ void THTS::generateEquivalenceClass() {
         //nodes that are leaves :
         if (currentNode->isALeafNode()) {
             //special case , where desicion node have no children and the reward is known
-            if (!currentNode->isChanceNode && currentNode->children.size() == 0) {
+            if (!currentNode->isChanceNode && currentNode->children.empty()) {
                 numberOfEQclasses++;
                 currentNode->equivalenceClassPos = numberOfEQclasses;
                 qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
@@ -900,7 +900,7 @@ void THTS::generateEquivalenceClass() {
             // check the children maps of the other nodes on the same level , if there is a match
             //std::cout <<"compare vector  " <<currentNode->stepsToGo<< std::endl;
             isSameEQClass = false;
-            for (auto &c:vectorChildrenOnLevel) {
+            for (auto c:vectorChildrenOnLevel) {
                 if (c.size() == currentChildrenVector.size()) {
                     isSameEQClass = true;
 
@@ -1051,53 +1051,53 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
         specialChildren.clear();
         assert(specialChildren.size() == 0);
         node->collectAllDecisionNodeSuccessor(specialChildren);
-        for(auto it=specialChildren.begin();it !=specialChildren.end();++it) {
-            if (it->first) {
-                alreadyInVector=false;
-                //    std::cout <<"child with  " <<  child->equivalenceClassPos<<std::endl;
-                if(specialChildren.size()<childrenEQprob.size()){
-                    std::cout << "##################makechancenode############child is ChanceNode " <<it->first->isChanceNode<<" and EQ " <<it->first->equivalenceClassPos <<" and level "<<it->first->stepsToGo<<std::endl;
+        if(specialChildren.size()==1){
+            childrenEQprob.push_back(std::make_pair(specialChildren.begin()->first->equivalenceClassPos, 1.0));
+        }else{
+            for(auto it=specialChildren.begin();it !=specialChildren.end();++it) {
+                if (it->first) {
+                    alreadyInVector=false;
+                    //    std::cout <<"child with  " <<  child->equivalenceClassPos<<std::endl;
+                    if(specialChildren.size()<childrenEQprob.size()){
+                        std::cout << "##################makechancenode############child is ChanceNode " <<it->first->isChanceNode<<" and EQ " <<it->first->equivalenceClassPos <<" and level "<<it->first->stepsToGo<<std::endl;
 
-                }
-                if(childrenEQprob.empty()){
-                    if(specialChildren.size()==1){
-                        childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, 1.0));
-                    }else{
+                    }
+                    if(childrenEQprob.empty()){
                         childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, it->second));
-                    }
 
-                }else{
-                    for(auto c=childrenEQprob.begin();c !=childrenEQprob.end();++c) {
-                        if(c->first==it->first->equivalenceClassPos){
-                            c->second+=it->second; //already in the list
-                            alreadyInVector=true;
-                            break;
+                    }else{
+                        for(auto c=childrenEQprob.begin();c !=childrenEQprob.end();++c) {
+                            if(c->first==it->first->equivalenceClassPos){
+                                c->second+=it->second; //already in the list
+                                alreadyInVector=true;
+                                break;
+                            }
                         }
-                    }
-                    if(!alreadyInVector){
-                        childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, it->second)); // new entry
+                        if(!alreadyInVector){
+                            childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, it->second)); // new entry
+                        }
+
                     }
 
+
+                    //ERROR
+                      if(it->first->equivalenceClassPos==-1){
+                        std::cout << "#################################child is ChanceNode " <<it->first->isChanceNode<<" and EQ " <<it->first->equivalenceClassPos <<" and level "<<it->first->stepsToGo<<std::endl;
+                          std::cout << "#################################child is a leaf " <<it->first->isALeafNode()<<" and has prob  " <<it->second <<std::endl;
+                          std::cout << "#################################parent isChanceNode " <<node->isChanceNode <<" and EQ " <<node->equivalenceClassPos<<" and level "<<node->stepsToGo<<std::endl;
+                          std::cout << "#################################parent  is a leaf " <<node->isALeafNode() <<std::endl;
+
+                          std::cout << "#################################current level is  "<<currentLevel<<" and current leaf level is "<<currentLeaveLevel <<std::endl;
+
+                          std::cout << "#################################cspecial children size is  "<<specialChildren.size() <<std::endl;
+                          std::cout << "#################################normal children size is    "<<node->children.size()<< std::endl;
+
+
+                      }
+                    assert(it->first->equivalenceClassPos != -1);
+                } else {
+                    std::cout <<"#####no kid this means the chance is a leaf" <<std::endl;
                 }
-
-
-                //ERROR
-                  if(it->first->equivalenceClassPos==-1){
-                    std::cout << "#################################child is ChanceNode " <<it->first->isChanceNode<<" and EQ " <<it->first->equivalenceClassPos <<" and level "<<it->first->stepsToGo<<std::endl;
-                      std::cout << "#################################child is a leaf " <<it->first->isALeafNode()<<" and has prob  " <<it->second <<std::endl;
-                      std::cout << "#################################parent isChanceNode " <<node->isChanceNode <<" and EQ " <<node->equivalenceClassPos<<" and level "<<node->stepsToGo<<std::endl;
-                      std::cout << "#################################parent  is a leaf " <<node->isALeafNode() <<std::endl;
-
-                      std::cout << "#################################current level is  "<<currentLevel<<" and current leaf level is "<<currentLeaveLevel <<std::endl;
-
-                      std::cout << "#################################cspecial children size is  "<<specialChildren.size() <<std::endl;
-                      std::cout << "#################################normal children size is    "<<node->children.size()<< std::endl;
-
-
-                  }
-                assert(it->first->equivalenceClassPos != -1);
-            } else {
-                //std::cout <<"child not exist  " <<std::endl;
             }
         }
     }
