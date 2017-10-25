@@ -45,7 +45,11 @@ configs = [
     "IPPC2014 -uf 0.21",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.51",                                         # The configuration that participated at IPPC 2014 with ASAP
     "IPPC2014 -uf 0.75",                                         # The configuration that participated at IPPC 2014 with ASAP
-   # "UCT -init [Single -h [RandomWalk]] -uf 0.5"    
+    "UCT -init [Single -h [RandomWalk]] -uf 2.0",    
+    "UCT -init [Single -h [RandomWalk]] -uf 0.11" ,
+    "UCT -init [Single -h [RandomWalk]] -uf 0.21",
+ "UCT -init [Single -h [RandomWalk]] -uf 0.51",
+  "UCT -init [Single -h [RandomWalk]] -uf 0.75"
 ]
 
 # The number of runs (30 in competition, should be higher (>=100) for
@@ -53,10 +57,10 @@ configs = [
 numRuns = "100"
 
 # The current revision (used for appropriate naming only)
-revision = "rev23e26926d5c9d46"
+revision = "rev0621ab322ad3b4e"
 
 # The timeout per task in hh:mm:ss
-timeout = "1:40:00"
+timeout = "1-00:00:00"
 
 # The maximum amount of available memory per task. The value's format is
 # either "<mem>M" or "<mem>G", where <mem> is an integer number, M
