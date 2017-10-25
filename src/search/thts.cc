@@ -854,10 +854,6 @@ void THTS::generateEquivalenceClass() {
                 currentNode->equivalenceClassPos = leaveEQCLass;
                 assert(numberOfEQclasses > 0);
                 assert(qvalueOfEQ.size() == numberOfEQclasses);
-                if(numberOfEQclasses<1){
-                    std::cout << "###1" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode <<std::endl;
-                }
-
 
                 qvalueOfEQ[leaveEQCLass-1].first+=currentNode->immediateReward + currentNode->futureReward;
                 qvalueOfEQ[leaveEQCLass-1].second+=1.0;
@@ -954,15 +950,8 @@ void THTS::generateEquivalenceClass() {
                     if (isSameEQClass) {
                         currentNode->equivalenceClassPos = c.back().second;
                         assert(c.back().first==-2);
-                        if(c.back().first!=-2){
-                            std::cout << "###2" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode <<std::endl;
-                        }
-
                         // std::cout <<"same EQclass with the eqpos  " <<  currentNode->equivalenceClassPos<<std::endl;
 
-                        if(numberOfEQclasses<currentNode->equivalenceClassPos -1){
-                            std::cout << "###3" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode <<std::endl;
-                        }
                         qvalueOfEQ[ currentNode->equivalenceClassPos-1].first+=currentNode->immediateReward + currentNode->futureReward;
                         qvalueOfEQ[ currentNode->equivalenceClassPos-1].second+=1.0;
 
@@ -993,7 +982,7 @@ void THTS::generateEquivalenceClass() {
         }
 
         //Debugging if this is true , this   Node is uninitialized
-        if (currentNode->equivalenceClassPos == -1) {
+       /* if (currentNode->equivalenceClassPos == -1) {
             std::cout << "#################FAIL##############" << std::endl;
             std::cout << "FAIL" << currentNode->equivalenceClassPos << std::endl;
             std::cout << "FAIL is ChanceNode " << currentNode->isChanceNode << std::endl;
@@ -1001,10 +990,10 @@ void THTS::generateEquivalenceClass() {
             std::cout << "FAIL vector size  " << vectorChildrenOnLevel.size() << std::endl;
             std::cout << "#################FAIL##############" << std::endl;
             assert(false);
-        }
+        }*/
 
     }
-    std::cout <<"before makeQmean" <<numberOfEQclasses <<"classes "<<std::endl;
+    std::cout <<"before makeQmean " <<numberOfEQclasses <<" classes "<<std::endl;
     makeQmean();    //here the vector is generated for the Qmean with vector qsum and qnumberofEqclass
     //std::cout <<"finished generating there are " <<numberOfEQclasses <<"classes "<<std::endl;
 }
@@ -1022,9 +1011,7 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
             if (child) {
                 alreadyInVector=false;
                 //    std::cout <<"child with  " <<  child->equivalenceClassPos<<std::endl;
-                if(node->children.size()<childrenEQprob.size()){
-                    std::cout << "###################makechildren decisi child is ChanceNode " <<child->isChanceNode<<" and EQ " <<child->equivalenceClassPos <<" and level "<<child->stepsToGo<<std::endl;
-                }
+
                 if(childrenEQprob.empty()){
                     childrenEQprob.push_back(std::make_pair(child->equivalenceClassPos, 1.0));
                 }else{
@@ -1061,10 +1048,7 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
                 if (it->first) {
                     alreadyInVector=false;
                     //    std::cout <<"child with  " <<  child->equivalenceClassPos<<std::endl;
-                    if(specialChildren.size()<childrenEQprob.size()){
-                        std::cout << "##################makechancenode############child is ChanceNode " <<it->first->isChanceNode<<" and EQ " <<it->first->equivalenceClassPos <<" and level "<<it->first->stepsToGo<<std::endl;
 
-                    }
                     if(childrenEQprob.empty()){
                         childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, it->second));
 
@@ -1084,7 +1068,7 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
 
 
                     //ERROR
-                      if(it->first->equivalenceClassPos==-1){
+                     /* if(it->first->equivalenceClassPos==-1){
                         std::cout << "#################################child is ChanceNode " <<it->first->isChanceNode<<" and EQ " <<it->first->equivalenceClassPos <<" and level "<<it->first->stepsToGo<<std::endl;
                           std::cout << "#################################child is a leaf " <<it->first->isALeafNode()<<" and has prob  " <<it->second <<std::endl;
                           std::cout << "#################################parent isChanceNode " <<node->isChanceNode <<" and EQ " <<node->equivalenceClassPos<<" and level "<<node->stepsToGo<<std::endl;
@@ -1096,10 +1080,8 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
                           std::cout << "#################################normal children size is    "<<node->children.size()<< std::endl;
 
 
-                      }
+                      }*/
                     assert(it->first->equivalenceClassPos != -1);
-                } else {
-                    std::cout <<"#####no kid this means the chance is a leaf" <<std::endl;
                 }
             }
         }
