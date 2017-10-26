@@ -39,17 +39,27 @@ benchmark="ippc-all"
 # The search engine configurations that are started in this experiment
 # (each of these is run on each instance in the benchmark folder)
 configs = [
-        "IPPC2011 -uf 2.0",                                         # The configuration that participated at IPPC 2011
-    "IPPC2014 -uf 2.0",                                         # The configuration that participated at IPPC 2014 
-    "IPPC2014 -uf 0.11",                                         # The configuration that participated at IPPC 2014 with ASAP                    
-    "IPPC2014 -uf 0.21",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "IPPC2014 -uf 0.51",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "IPPC2014 -uf 0.75",                                         # The configuration that participated at IPPC 2014 with ASAP
+     #   "IPPC2011 -uf 2.0",                                         # The configuration that participated at IPPC 2011
+    #"IPPC2014 -uf 2.0",                                         # The configuration that participated at IPPC 2014 
+    #"IPPC2014 -uf 0.11",                                         # The configuration that participated at IPPC 2014 with ASAP                    
+    #"IPPC2014 -uf 0.21",                                         # The configuration that participated at IPPC 2014 with ASAP
+    #"IPPC2014 -uf 0.51",                                         # The configuration that participated at IPPC 2014 with ASAP
+    #"IPPC2014 -uf 0.75",                                         # The configuration that participated at IPPC 2014 with ASAP
     "UCT -init [Single -h [RandomWalk]] -uf 2.0",    
     "UCT -init [Single -h [RandomWalk]] -uf 0.11" ,
     "UCT -init [Single -h [RandomWalk]] -uf 0.21",
- "UCT -init [Single -h [RandomWalk]] -uf 0.51",
-  "UCT -init [Single -h [RandomWalk]] -uf 0.75"
+    "UCT -init [Single -h [RandomWalk]] -uf 0.51",
+    "UCT -init [Single -h [RandomWalk]] -uf 0.75",
+     "UCT -init [Single -h [RandomWalk]] -uf 2.0 -ndn H",    
+    "UCT -init [Single -h [RandomWalk]] -uf 0.11 -ndn H" ,
+    "UCT -init [Single -h [RandomWalk]] -uf 0.21 -ndn H",
+    "UCT -init [Single -h [RandomWalk]] -uf 0.51 -ndn H",
+    "UCT -init [Single -h [RandomWalk]] -uf 0.75 -ndn H",
+    "IPPC2014 -uf 2.0 -ndn H",                                         # The configuration that participated at IPPC 2014 
+    "IPPC2014 -uf 0.11 -ndn H",                                         # The configuration that participated at IPPC 2014 with ASAP                    
+    "IPPC2014 -uf 0.21 -ndn H",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2014 -uf 0.51 -ndn H",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2014 -uf 0.75 -ndn H"
 ]
 
 # The number of runs (30 in competition, should be higher (>=100) for
@@ -57,7 +67,7 @@ configs = [
 numRuns = "100"
 
 # The current revision (used for appropriate naming only)
-revision = "rev0621ab322ad3b4e"
+revision = "rev01432e4a028d192f27"
 
 # The timeout per task in hh:mm:ss
 timeout = "1-00:00:00"

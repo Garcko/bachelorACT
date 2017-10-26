@@ -435,7 +435,7 @@ void THTS::visitDecisionNode(SearchNode *node) {
 
         initializer->initialize(node, states[stepsToGoInCurrentState]);
         //add node+children  to the multiset
-        pq.insert(node);
+     /*   pq.insert(node);
         //  std::cout << "parent level: "<<node->stepsToGo << " is a ChanceNode  " <<node->isChanceNode << "        and isleaf  " <<node->isALeafNode()<<std::endl;
 
         // add the chanceNode children of the decision node to the multiset if they exist
@@ -445,7 +445,7 @@ void THTS::visitDecisionNode(SearchNode *node) {
                 //std::cout << "level: "<<child->stepsToGo << " is a ChanceNode  " <<child->isChanceNode << "         and isleaf  " <<child->isALeafNode()<<std::endl;
                 //std::cout << "with children size"<<child->children.size()  <<std::endl;
             }
-        }
+        }*/
 
 
         if (node != currentRootNode) {

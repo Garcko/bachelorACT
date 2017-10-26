@@ -128,6 +128,8 @@ void ExpandNodeInitializer::initialize(SearchNode* node, State const& current) {
                                        -std::numeric_limits<double>::max());
     heuristic->estimateQValues(current, actionsToExpand, initialQValues);
 
+    thts->pq.insert(node);
+
     for (unsigned int index = 0; index < node->children.size(); ++index) {
         if (actionsToExpand[index] == index) {
             node->children[index] = thts->createChanceNode(1.0, true);
@@ -139,6 +141,8 @@ void ExpandNodeInitializer::initialize(SearchNode* node, State const& current) {
             node->numberOfVisits += numberOfInitialVisits;
             node->futureReward = std::max(node->futureReward,
                                           node->children[index]->futureReward);
+
+            thts->pq.insert(node->children[index]);
 
             // std::cout << "Initialized child ";
             // SearchEngine::actionStates[index].printCompact(std::cout);
@@ -171,6 +175,7 @@ void SingleChildInitializer::initialize(SearchNode* node,
                 candidates.push_back(index);
             }
         }
+        thts->pq.insert(node);
     } else {
         for (unsigned int index = 0; index < node->children.size(); ++index) {
             if (node->children[index] &&
@@ -193,6 +198,7 @@ void SingleChildInitializer::initialize(SearchNode* node,
     node->numberOfVisits += numberOfInitialVisits;
     node->futureReward =
         std::max(node->futureReward, node->children[actionIndex]->futureReward);
+    thts->pq.insert(node->children[actionIndex]);
 
     node->initialized = (candidates.size() == 1);
 

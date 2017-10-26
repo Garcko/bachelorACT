@@ -370,8 +370,9 @@ private:
     friend class UCTBaseTestSearch;
 
     //PriorityQueue
+public:
     std::multiset <SearchNode*,CompareSearchNodeDepth> pq;
-
+private:
 
     std::vector< std::vector<std::pair<int,double>>> vectorChildrenOnLevel;
 
