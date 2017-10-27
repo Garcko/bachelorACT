@@ -34,7 +34,7 @@ grid_engine = "slurm"
 
 # The benchmark that is used for the experiment (must be the name of a
 # folder in testbed/benchmarks)
-benchmark="ippc-all"
+benchmark="ippc-0"
 
 # The search engine configurations that are started in this experiment
 # (each of these is run on each instance in the benchmark folder)

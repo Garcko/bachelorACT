@@ -312,7 +312,7 @@ void THTS::estimateBestActions(State const &_rootState,
         }
 */
 
-        
+        /*
         if(currentTrial==1){
             std::cout << "----" << std::endl;
             generateEquivalenceClass();
@@ -337,7 +337,7 @@ void THTS::estimateBestActions(State const &_rootState,
             }
             assert(false);
         }
-
+*/
 
         lasttime = std::chrono::steady_clock::now() - lasttimepoint;
         if (lasttime.count() >= timestep) {  //parameter alle modul zeit
@@ -924,8 +924,6 @@ void THTS::generateEquivalenceClass() {
 
 
                     for(auto it=currentChildrenVector.begin();it !=currentChildrenVector.end()-1;++it) {
-
-
                         isSameEQandProb = false;
                         for (auto child = c.begin(); child != c.end()-1; ++child) {
                             if (child->first == it->first && child->second == it->second) {
@@ -962,9 +960,7 @@ void THTS::generateEquivalenceClass() {
                 qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
                 //qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
 
-
-
-                currentChildrenVector.back().second = currentNode->equivalenceClassPos;
+                currentChildrenVector.back().second = currentNode->equivalenceClassPos; // overwrite the -1 with the new EQ class
                 vectorChildrenOnLevel.push_back(currentChildrenVector);
             }
 
@@ -1011,6 +1007,7 @@ std::vector<std::pair<int,double>> THTS::makeEQpairsforChanceNodes(SearchNode *n
                     if(c->first==it->first->equivalenceClassPos){
                         c->second+=it->second; //already in the list
                         alreadyInVector=true;
+                        assert(c->second<1);
                         break;
                     }
                 }
@@ -1019,6 +1016,7 @@ std::vector<std::pair<int,double>> THTS::makeEQpairsforChanceNodes(SearchNode *n
                 }
             }
             assert(it->first->equivalenceClassPos != -1);
+
         }
     }
 
