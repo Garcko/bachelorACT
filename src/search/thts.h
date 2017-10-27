@@ -71,32 +71,52 @@ struct SearchNode {
         equivalenceClassPos=-1;//empty
     }
 
-    double getExpectedRewardEstimate() const {
+
+    double getExpectedConcreteRewardEstimate() const {
+            return immediateReward + futureReward;
+
+    }
+    double getExpectedAbstractRewardEstimate() const {
         if (equivalenceClassPos == -1) {
             return immediateReward + futureReward;
         } else {
             //hier durchschnitt nehmen aus q value aus beiden vectoren
-           //return immediateReward + futureReward;
-         //   std::cout << qvalueMean.size() << " / " << equivalenceClassPos << std::endl;
+            //return immediateReward + futureReward;
+            //   std::cout << qvalueMean.size() << " / " << equivalenceClassPos << std::endl;
+            assert(qvalueMean.size() > equivalenceClassPos-1);
+            assert(equivalenceClassPos >= 0);
+            return immediateReward + qvalueMean[equivalenceClassPos-1];
+        }
+    }
+
+    double getExpectedConcreteFutureRewardEstimate() const {
+        return futureReward;
+    }
+
+    double getExpectedAbstractFutureRewardEstimate() const {
+        if (equivalenceClassPos == -1) {
+            return futureReward;
+        } else {
+            //hier durchschnitt nehmen aus q value aus beiden vectoren
+            //return immediateReward + futureReward;
+            //   std::cout << qvalueMean.size() << " / " << equivalenceClassPos << std::endl;
             assert(qvalueMean.size() > equivalenceClassPos-1);
             assert(equivalenceClassPos >= 0);
             return qvalueMean[equivalenceClassPos-1];
         }
     }
 
-    double getExpectedFutureRewardEstimate() const {
-        return futureReward;
-    }
-
     void print(std::ostream& out, std::string indent = "") const {
         out << indent << "stepsToGO: " << stepsToGo
             << " is ChanceNode: "<< isChanceNode << std::endl;
         if (solved) {
-            out << indent << "SOLVED with: " << getExpectedRewardEstimate()
+            out << indent << "SOLVED with: " << getExpectedConcreteRewardEstimate()
                 << " (in " << numberOfVisits << " real visits)" << std::endl;
+            out << indent << "abstract "<<getExpectedAbstractRewardEstimate()<<std::endl;
         } else {
-            out << indent << getExpectedRewardEstimate() << " (in "
+            out << indent << getExpectedConcreteRewardEstimate() << " (in "
                 << numberOfVisits << " real visits)" << std::endl;
+            out << indent << "abstract "<<getExpectedAbstractRewardEstimate()<<std::endl;
         }
     }
     bool isALeafNode() {
@@ -372,6 +392,8 @@ private:
     //PriorityQueue
 public:
     std::multiset <SearchNode*,CompareSearchNodeDepth> pq;
+    //std::vector<std::pair<double,double>> qvalueOfEQ;
+    std::vector<double>qvalueNumbersOfEQClasses;
 private:
 
     std::vector< std::vector<std::pair<int,double>>> vectorChildrenOnLevel;
@@ -396,10 +418,10 @@ private:
     bool isSameEQClass; // is the node in the same EQ class
     bool alreadyInVector;
     bool isSameEQandProb;   // is the child in same EQ (multiple isSameEQandProb necessarily to be a isSameEQClass)
-   // std::vector<double> qvalueSum;
+    std::vector<double> qvalueSum;
    // std::vector<double>qvalueNumbersOfEQClasses;
 
-    std::vector<std::pair<double,double>> qvalueOfEQ;
+
 
 
     std::vector<std::pair<SearchNode*,double>> specialChildren;
@@ -411,6 +433,9 @@ private:
 
     void generateEquivalenceClass();
     std::vector<std::pair<int,double>> makeChildrenOnLevel(SearchNode*);
+
+    std::vector<std::pair<int,double>> makeEQpairsforChanceNodes(SearchNode*);
+    std::vector<std::pair<int,double>> makeEQpairsforDecisionNodes(SearchNode*);
 
     void makeQmean();
 

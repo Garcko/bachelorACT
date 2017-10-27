@@ -312,6 +312,33 @@ void THTS::estimateBestActions(State const &_rootState,
         }
 */
 
+        
+        if(currentTrial==1){
+            std::cout << "----" << std::endl;
+            generateEquivalenceClass();
+            for(auto a:pq){
+                std::cout <<"is a chance node "<<a->isChanceNode<<" EQ class "<< a->equivalenceClassPos <<" on level "<<a->stepsToGo<< " children "<<a->children.size() << std::endl;
+                if(!a->isChanceNode){
+                    for(auto b:a->children){
+                        if(b){
+                            std::cout <<"c     EQ "<< b->equivalenceClassPos <<" on level "<<b->stepsToGo<< " children "<<b->children.size() << std::endl;
+                        }
+                    }
+                }else{
+                    specialChildren.clear();
+                    a->collectAllDecisionNodeSuccessor(specialChildren);
+                    for(auto b:specialChildren){
+                        if(b.first){
+                            std::cout <<"d     EQ "<< b.first->equivalenceClassPos <<" on level "<<b.first->stepsToGo<< " children "<<b.first->children.size() << std::endl;
+                        }
+                    }
+                }
+
+            }
+            assert(false);
+        }
+
+
         lasttime = std::chrono::steady_clock::now() - lasttimepoint;
         if (lasttime.count() >= timestep) {  //parameter alle modul zeit
 
@@ -330,9 +357,10 @@ void THTS::estimateBestActions(State const &_rootState,
            lasttimepoint=std::chrono::steady_clock::now();
             stopwatch2.saveTime();
 
+
             // time_interval+=t();
            // std::cout << "lasttime" << lasttime << " / " << std::endl;
-            std::cout << "end stopwatch " << stopwatch  << std::endl;
+            std::cout << "end stopwatch:  " << stopwatch  << std::endl;
 
             // time2=std::chrono::steady_clock::now();
 
@@ -523,13 +551,13 @@ void THTS::visitDecisionNode(SearchNode *node) {
                 ProbabilisticSearchEngine::stateValueCache.end()) {
                 ProbabilisticSearchEngine::stateValueCache
                 [states[node->stepsToGo]] =
-                        node->getExpectedFutureRewardEstimate();
+                        node->getExpectedConcreteFutureRewardEstimate();
             }
         }
     } else {
         // The trial is finished
         //  std::cout << "t trial is finished " <<std::endl;
-        trialReward = node->getExpectedRewardEstimate();
+        trialReward = node->getExpectedConcreteRewardEstimate();
     }
     //  std::cout << "t trial is finished " <<std::endl;
 }
@@ -571,7 +599,7 @@ bool THTS::currentStateIsSolved(SearchNode *node) {
                    ProbabilisticSearchEngine::stateValueCache.end());
             ProbabilisticSearchEngine::stateValueCache
             [states[stepsToGoInCurrentState]] =
-                    node->getExpectedFutureRewardEstimate();
+                    node->getExpectedConcreteFutureRewardEstimate();
         }
         return true;
     }
@@ -800,9 +828,9 @@ void THTS::generateEquivalenceClass() {
     leaveisChanceNode = true;
     currentIsChanceNode = true;
 
-    //qvalueSum.clear();
-    qvalueOfEQ.clear();
-    //qvalueNumbersOfEQClasses.clear();
+    qvalueSum.clear();
+    //qvalueOfEQ.clear();
+    qvalueNumbersOfEQClasses.clear();
 
 
     vectorChildrenOnLevel.clear();
@@ -814,88 +842,79 @@ void THTS::generateEquivalenceClass() {
     for (SearchNode *const currentNode : pq) {
         // std::cout << "current node steps to go are   "<<currentNode->stepsToGo<<" and is a ChanceNode "<<currentNode->isChanceNode<<std::endl;
 
-        // if(currentLeaveLevel==-1){
-        //    std::cout << "das niedrigste level ist  "<<currentNode->stepsToGo<<std::endl;
-        // }
         //nodes that are leaves :
-        if (currentNode->isALeafNode()) {
+        if (currentNode->children.empty()) {
             //special case , where desicion node have no children and the reward is known
-            if (!currentNode->isChanceNode && currentNode->children.empty()) {
+            if (!currentNode->isChanceNode ) {
                 numberOfEQclasses++;
                 currentNode->equivalenceClassPos = numberOfEQclasses;
-                qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
-              //  qvalueNumbersOfEQClasses.push_back(1.0);
-               // qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
 
-
+               // qvalueOfEQ.push_back(std::make_pair(currentNode->immediateReward + currentNode->futureReward, 1.0));
+                qvalueNumbersOfEQClasses.push_back(1.0);
+                qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
             }
-                //if it is a leaf node and it is a new level or a different nodetype save it is and save this level/type
-                //because there are decision and chance node with empty children
-            else if (currentNode->stepsToGo != currentLeaveLevel || leaveisChanceNode != currentNode->isChanceNode) {
-                //std::cout <<"------------new level leaf with leaveEQCLass  " <<leaveEQCLass<<"and step"<<currentLeaveLevel
-                  //        <<" and "<<leaveisChanceNode<< std::endl;
-                //std::cout <<"------------node info:\n is chance node  " <<currentNode->isChanceNode<<"and step "<<currentNode->stepsToGo
-                 //         <<" and "<<leaveisChanceNode<<" and has kids"<<currentNode->children.size()<< std::endl;
-
-                leaveisChanceNode = currentNode->isChanceNode;
+                //if it is a leaf node and it is a new level  save it is and save this level/type
+            else if (currentNode->stepsToGo != currentLeaveLevel ) {
 
                 numberOfEQclasses++;
                 currentNode->equivalenceClassPos = numberOfEQclasses;
                 leaveEQCLass = numberOfEQclasses;   //save the EQ class
                 currentLeaveLevel = currentNode->stepsToGo;         //save the level so that other leaves on this level have the same number
 
-                //   std::cout <<"------------new level leaf with leaveEQCLass  " <<leaveEQCLass<<"and step"<<currentLeaveLevel<< std::endl;
 
-                qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
-                //qvalueNumbersOfEQClasses.push_back(1.0);
-                //qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
+                //qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
+               qvalueNumbersOfEQClasses.push_back(1.0);
+               qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
 
             } else {
                 currentNode->equivalenceClassPos = leaveEQCLass;
                 assert(numberOfEQclasses > 0);
-                assert(qvalueOfEQ.size() == numberOfEQclasses);
+               // assert(qvalueOfEQ.size() == numberOfEQclasses);
 
-                qvalueOfEQ[leaveEQCLass-1].first+=currentNode->immediateReward + currentNode->futureReward;
-                qvalueOfEQ[leaveEQCLass-1].second+=1.0;
-                //qvalueSum[leaveEQCLass - 1] += currentNode->immediateReward + currentNode->futureReward;
-               // qvalueNumbersOfEQClasses[leaveEQCLass - 1] += 1.0;
+               // qvalueOfEQ[leaveEQCLass-1].first+=currentNode->immediateReward + currentNode->futureReward;
+                //qvalueOfEQ[leaveEQCLass-1].second+=1.0;
+                qvalueSum[leaveEQCLass - 1] += currentNode->immediateReward + currentNode->futureReward;
+                qvalueNumbersOfEQClasses[leaveEQCLass - 1] += 1.0;
 
-/*
-                if(leaveEQCLass==0) {
-                    std::cout << "------------ bottom leaf on level" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode <<std::endl;
-                }else{
-                    std::cout << "------------ old leaf on level" << currentNode->stepsToGo <<" leaveEQCLass"<<leaveEQCLass<<" and is a chancenode "<<currentNode->isChanceNode<< std::endl;
-                }
-*/
             }
         }
-            //new level , declare new EQ class save the children map into the vector
-            //the EQ class cannot be generated over multiple level if overlappingEQclass is true
+            //new level , declare new EQ class, clear current nodes on level and  save the children map into the vector
         else if (currentLevel != currentNode->stepsToGo || currentIsChanceNode != currentNode->isChanceNode) {
 
             currentIsChanceNode = currentNode->isChanceNode;
+            currentLevel = currentNode->stepsToGo;    //new level
+
             vectorChildrenOnLevel.clear();
 
             //create mapping of the child with level-prob
 
             numberOfEQclasses++;
             currentNode->equivalenceClassPos = numberOfEQclasses;
-            currentLevel = currentNode->stepsToGo;    //new level
+
+            if(currentNode->isChanceNode){
+                vectorChildrenOnLevel.push_back(makeEQpairsforChanceNodes(currentNode));  // make children can different between chance and decision node
+            }else{
+                vectorChildrenOnLevel.push_back(makeEQpairsforDecisionNodes(currentNode));  // make children can different between chance and decision node
+
+            }
+
+            qvalueNumbersOfEQClasses.push_back(1.0);
+            qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
+            //qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
+
             //std::cout <<"------------make new childrenmap vector , number of EQs is "<<numberOfEQclasses<<"// node stepstogo"<<currentNode->stepsToGo<< std::endl;
-
-            vectorChildrenOnLevel.push_back(
-                    makeChildrenOnLevel(currentNode));  // make children can different between chance and decision node
-
-            //qvalueNumbersOfEQClasses.push_back(1.0);
-            //qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
-            qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
-
 
 
         } else {
             //  std::cout <<"------------make children old level"<<currentLevel<<"// node stepstogo"<<currentNode->stepsToGo<< std::endl;
             currentChildrenVector.clear();
-            currentChildrenVector = makeChildrenOnLevel(currentNode);
+
+            if(currentNode->isChanceNode){
+                currentChildrenVector=makeEQpairsforChanceNodes(currentNode);
+            }else{
+                currentChildrenVector=makeEQpairsforDecisionNodes(currentNode);
+            }
+
             // check the children maps of the other nodes on the same level , if there is a match
             //std::cout <<"compare vector  " <<currentNode->stepsToGo<< std::endl;
             isSameEQClass = false;
@@ -903,86 +922,56 @@ void THTS::generateEquivalenceClass() {
                 if (c.size() == currentChildrenVector.size()) {
                     isSameEQClass = true;
 
-                    if (currentNode->isChanceNode) {  // if it is a chanceNode we don't want the children but the next decisionNodes
-                        specialChildren.clear();
-                        currentNode->collectAllDecisionNodeSuccessor(specialChildren);
-                        for(auto it=specialChildren.begin();it !=specialChildren.end();++it) {
-                            if (it->first) {
-                                childEQ = it->first->equivalenceClassPos;
 
-                                isSameEQandProb=false;
-                                for(auto child=c.begin();child !=c.end();++child) {
-                                    if(child->first==childEQ&& child->second==it->second){
-                                       isSameEQandProb=true;
-                                        break;
-                                    }
-                                }
-                                if(!isSameEQandProb){
-                                    isSameEQClass=false;
-                                    break;
-                                }
+                    for(auto it=currentChildrenVector.begin();it !=currentChildrenVector.end()-1;++it) {
 
 
+                        isSameEQandProb = false;
+                        for (auto child = c.begin(); child != c.end()-1; ++child) {
+                            if (child->first == it->first && child->second == it->second) {
+                                isSameEQandProb = true;
+                                break;
                             }
                         }
-                    } else {  // for decision nodes it is only necessary to check the children
-                        for(SearchNode* child: currentNode->children)   {
-                            if (child) {
-                                childEQ = child->equivalenceClassPos;
-
-                                isSameEQandProb=false;
-                                for(auto child1=c.begin();child1 !=c.end();++child1) {
-                                    if(child1->first==childEQ&& child1->second==child->prob){
-                                        isSameEQandProb=true;
-                                        break;
-                                    }
-                                }
-                                if(!isSameEQandProb){
-                                    isSameEQClass=false;
-                                    break;
-                                }
-
-                            }
+                        if (!isSameEQandProb) {
+                            isSameEQClass = false;
+                            break;
                         }
+
                     }
 
 
                     if (isSameEQClass) {
                         currentNode->equivalenceClassPos = c.back().second;
                         assert(c.back().first==-2);
-                        // std::cout <<"same EQclass with the eqpos  " <<  currentNode->equivalenceClassPos<<std::endl;
 
-                        qvalueOfEQ[ currentNode->equivalenceClassPos-1].first+=currentNode->immediateReward + currentNode->futureReward;
-                        qvalueOfEQ[ currentNode->equivalenceClassPos-1].second+=1.0;
-
-                        //      std::cout <<"gleichheit mit EQ1 " <<  currentNode->equivalenceClassPos<<std::endl;
+                        qvalueSum[ currentNode->equivalenceClassPos-1]+=currentNode->immediateReward + currentNode->futureReward;
+                        qvalueNumbersOfEQClasses[ currentNode->equivalenceClassPos-1]+=1.0;
                         break;
                     }
                 }
             }
+
             //  std::cout <<" finished compare vector  " <<currentNode->stepsToGo<< std::endl;
             //no same children EQ
             if (!isSameEQClass) {
                 numberOfEQclasses++;
                 currentNode->equivalenceClassPos = numberOfEQclasses;
 
-                //qvalueNumbersOfEQClasses.push_back(1.0);
-                //qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
-                qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
+                qvalueNumbersOfEQClasses.push_back(1.0);
+                qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
+                //qvalueOfEQ.push_back(std::make_pair( currentNode->immediateReward + currentNode->futureReward,1.0));
 
 
 
                 currentChildrenVector.back().second = currentNode->equivalenceClassPos;
                 vectorChildrenOnLevel.push_back(currentChildrenVector);
-            } else {
-                // std::cout <<"gleichheit mit EQ2 " <<  currentNode->equivalenceClassPos<<std::endl;
             }
-
 
         }
 
         //Debugging if this is true , this   Node is uninitialized
-       /* if (currentNode->equivalenceClassPos == -1) {
+        if (currentNode->equivalenceClassPos == -1) {
             std::cout << "#################FAIL##############" << std::endl;
             std::cout << "FAIL" << currentNode->equivalenceClassPos << std::endl;
             std::cout << "FAIL is ChanceNode " << currentNode->isChanceNode << std::endl;
@@ -990,7 +979,7 @@ void THTS::generateEquivalenceClass() {
             std::cout << "FAIL vector size  " << vectorChildrenOnLevel.size() << std::endl;
             std::cout << "#################FAIL##############" << std::endl;
             assert(false);
-        }*/
+        }
 
     }
     std::cout <<"before makeQmean " <<numberOfEQclasses <<" classes "<<std::endl;
@@ -999,18 +988,58 @@ void THTS::generateEquivalenceClass() {
 }
 
 
-std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
+/*
+ * go to the successor decision nodes of the chance nodes (the children-children-.. ) and return a vector of all the EQ with their prob
+ */
+std::vector<std::pair<int,double>> THTS::makeEQpairsforChanceNodes(SearchNode *node) {
     //std::cout <<"entering makeChildrenOnLevel on level "<<node->stepsToGo <<" and with ischancenode "<<node->isChanceNode<<std::endl;
     childrenEQprob.clear();
     alreadyInVector=false;
-    if (!node->isChanceNode) {
-        //create the children EQclass-probability map for the currentNode
-        //  std::cout <<"making oof children with size " <<currentNode->children.size()<< std::endl;
-        for (SearchNode *child : (node->children)) {
 
+    // is a ChanceNode , here not the children are scanned but the level with the decisionnode(so the rekursiv chancenodes children)
+    specialChildren.clear();
+    assert(specialChildren.size() == 0);
+    node->collectAllDecisionNodeSuccessor(specialChildren);
+    for(auto it=specialChildren.begin();it !=specialChildren.end();++it) {
+        if (it->first) {
+            alreadyInVector=false;
+            if(childrenEQprob.empty()){
+                childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, it->second));
+
+            }else{
+                for(auto c=childrenEQprob.begin();c !=childrenEQprob.end();++c) {
+                    if(c->first==it->first->equivalenceClassPos){
+                        c->second+=it->second; //already in the list
+                        alreadyInVector=true;
+                        break;
+                    }
+                }
+                if(!alreadyInVector){
+                    childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, it->second)); // new entry
+                }
+            }
+            assert(it->first->equivalenceClassPos != -1);
+        }
+    }
+
+
+    //add the information of the parent , note this is -1 if not initialize
+    childrenEQprob.push_back(std::make_pair(-2, node->equivalenceClassPos));
+
+    return childrenEQprob;
+}
+
+/*
+ * go to the children of the decision node and return a vector of all the equivalence with their frequency
+ */
+std::vector<std::pair<int,double>> THTS::makeEQpairsforDecisionNodes(SearchNode *node) {
+     childrenEQprob.clear();
+    alreadyInVector=false;
+
+        //create the children EQclass-probability map for the currentNode
+        for (SearchNode *child : (node->children)) {
             if (child) {
                 alreadyInVector=false;
-                //    std::cout <<"child with  " <<  child->equivalenceClassPos<<std::endl;
 
                 if(childrenEQprob.empty()){
                     childrenEQprob.push_back(std::make_pair(child->equivalenceClassPos, 1.0));
@@ -1026,91 +1055,43 @@ std::vector<std::pair<int,double>> THTS::makeChildrenOnLevel(SearchNode *node) {
                         childrenEQprob.push_back(std::make_pair(child->equivalenceClassPos, 1.0));  // new entry
                     }
                 }
-
-
                 assert(child->equivalenceClassPos != -1);
-                //if(child->equivalenceClassPos==-1){
-                //std::cout << "#################################child is ChanceNode " <<child->isChanceNode<<" and EQ " <<child->equivalenceClassPos <<" and level "<<child->stepsToGo<<std::endl;
-                //  std::cout << "#################################parent isChanceNode " <<node->isChanceNode <<" and EQ " <<node->equivalenceClassPos<<" and level "<<node->stepsToGo<<std::endl;
 
-                //}
             }
         }
-    } else {
-        // is a ChanceNode , here not the children are scanned but the level with the decisionnode(so the rekursiv chancenodes children)
-        specialChildren.clear();
-        assert(specialChildren.size() == 0);
-        node->collectAllDecisionNodeSuccessor(specialChildren);
-        for(auto it=specialChildren.begin();it !=specialChildren.end();++it) {
-            if (it->first) {
-                alreadyInVector=false;
-                //    std::cout <<"child with  " <<  child->equivalenceClassPos<<std::endl;
-
-                if(childrenEQprob.empty()){
-                    childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, it->second));
-
-                }else{
-                    for(auto c=childrenEQprob.begin();c !=childrenEQprob.end();++c) {
-                        if(c->first==it->first->equivalenceClassPos){
-                            c->second+=it->second; //already in the list
-                            alreadyInVector=true;
-                            break;
-                        }
-                    }
-                    if(!alreadyInVector){
-                        childrenEQprob.push_back(std::make_pair(it->first->equivalenceClassPos, it->second)); // new entry
-                    }
-
-                }
-
-
-                //ERROR
-                 /* if(it->first->equivalenceClassPos==-1){
-                    std::cout << "#################################child is ChanceNode " <<it->first->isChanceNode<<" and EQ " <<it->first->equivalenceClassPos <<" and level "<<it->first->stepsToGo<<std::endl;
-                      std::cout << "#################################child is a leaf " <<it->first->isALeafNode()<<" and has prob  " <<it->second <<std::endl;
-                      std::cout << "#################################parent isChanceNode " <<node->isChanceNode <<" and EQ " <<node->equivalenceClassPos<<" and level "<<node->stepsToGo<<std::endl;
-                      std::cout << "#################################parent  is a leaf " <<node->isALeafNode() <<std::endl;
-
-                      std::cout << "#################################current level is  "<<currentLevel<<" and current leaf level is "<<currentLeaveLevel <<std::endl;
-
-                      std::cout << "#################################cspecial children size is  "<<specialChildren.size() <<std::endl;
-                      std::cout << "#################################normal children size is    "<<node->children.size()<< std::endl;
-
-
-                  }*/
-                assert(it->first->equivalenceClassPos != -1);
-            }
-        }
-
-    }
-    //std::cout<< "  finished adding" << std::endl;
-
     //add the information of the parent , note this is -1 if not initialize
     childrenEQprob.push_back(std::make_pair(-2, node->equivalenceClassPos));
 
     return childrenEQprob;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 //generate the QValue of the EQ classes
 void THTS::makeQmean() {
-    assert(qvalueOfEQ.size() > 0);
+    //assert(qvalueOfEQ.size() > 0);
     //assert(qvalueNumbersOfEQClasses.size() == qvalueSum.size());
     SearchNode::qvalueMean.clear();
 
-  /*  for (unsigned int i = 0; i < qvalueSum.size(); ++i) {
+    for (unsigned int i = 0; i < qvalueSum.size(); ++i) {
         //std::cout <<"current level is "<<i<<" the sum here is: " <<qvalueSum[i]<<std::endl;
         //std::cout <<"and it's size (number of classes in it)  " <<qvalueNumbersOfEQClasses[i]<<std::endl;
         SearchNode::qvalueMean.push_back(qvalueSum[i] / qvalueNumbersOfEQClasses[i]);
-    }*/
-    for (unsigned int i = 0; i < qvalueOfEQ.size(); ++i) {
+    }
+    /*for (unsigned int i = 0; i < qvalueOfEQ.size(); ++i) {
         //std::cout <<"current level is "<<i<<" the sum here is: " <<qvalueSum[i]<<std::endl;
         //std::cout <<"and it's size (number of classes in it)  " <<qvalueNumbersOfEQClasses[i]<<std::endl;
         SearchNode::qvalueMean.push_back(qvalueOfEQ[i].first / qvalueOfEQ[i].second);
-    }
+    }*/
 
-    //std::cout <<"all the Q-value means and size is "<<SearchNode::qvalueMean.size() <<std::endl;
-    /* for(auto &v:SearchNode::qvalueMean){
-         std::cout <<" " <<v<<std::endl;
-     }*/
-    // std::cout <<"finished qvalue-mean " <<std::endl;
 }

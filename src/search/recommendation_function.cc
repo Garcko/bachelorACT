@@ -59,7 +59,7 @@ void ExpectedBestArmRecommendation::recommend(SearchNode const* rootNode,
 
     for (unsigned int index = 0; index < actNodes.size(); ++index) {
         if (actNodes[index]) {
-            double reward = actNodes[index]->getExpectedRewardEstimate();
+            double reward = actNodes[index]->getExpectedConcreteRewardEstimate();
 
             if (MathUtils::doubleIsGreater(reward, stateValue)) {
                 stateValue = reward;
@@ -95,7 +95,7 @@ void MostPlayedArmRecommendation::recommend(SearchNode const* rootNode,
             if (!solvedChildExists) {
                 reward = actNodes[index]->numberOfVisits;
             } else {
-                reward = actNodes[index]->getExpectedRewardEstimate();
+                reward = actNodes[index]->getExpectedConcreteRewardEstimate();
             }
 
             if (MathUtils::doubleIsGreater(reward, stateValue)) {

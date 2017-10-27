@@ -89,7 +89,7 @@ void BackupFunction::backupDecisionNode(SearchNode* node) {
             if (child->initialized) {
                 node->solved &= child->solved;
                 node->futureReward = std::max(
-                    node->futureReward, child->getExpectedRewardEstimate());
+                    node->futureReward, child->getExpectedConcreteRewardEstimate());
             } else {
                 node->solved = false;
             }
@@ -142,9 +142,21 @@ void MCBackupFunction::backupChanceNode(SearchNode* node,
         initialLearningRate * (futReward - node->futureReward) /
             (1.0 + (learningRateDecay * (double)node->numberOfVisits));
 
-    // std::cout << "updated chance node:" << std::endl;
-    // node->print(std::cout);
-    // std::cout << std::endl;
+    // Update qvaluemean of eqivalence class of
+
+    if(node->equivalenceClassPos!=-1) {
+        ++thts->qvalueNumbersOfEQClasses[node->equivalenceClassPos - 1];
+
+
+        SearchNode::qvalueMean[node->equivalenceClassPos - 1] =
+                node->getExpectedAbstractRewardEstimate() +
+                initialLearningRate * (futReward - node->getExpectedAbstractRewardEstimate()) /
+                (1.0 + (learningRateDecay * (double) thts->qvalueNumbersOfEQClasses[node->equivalenceClassPos - 1]));
+
+        // std::cout << "updated chance node:" << std::endl;
+        // node->print(std::cout);
+        // std::cout << std::endl;
+    }
 }
 
 /******************************************************************
@@ -163,7 +175,7 @@ void MaxMCBackupFunction::backupChanceNode(SearchNode* node,
     for (SearchNode* child : node->children) {
         if (child) {
             node->futureReward +=
-                (child->numberOfVisits * child->getExpectedRewardEstimate());
+                (child->numberOfVisits * child->getExpectedConcreteRewardEstimate());
             numberOfChildVisits += child->numberOfVisits;
         }
     }
@@ -194,16 +206,23 @@ void PBBackupFunction::backupChanceNode(SearchNode* node,
     double solvedSum = 0.0;
     double probSum = 0.0;
 
+
     for (SearchNode* child : node->children) {
         if (child) {
             node->futureReward +=
-                (child->prob * child->getExpectedRewardEstimate());
+                (child->prob * child->getExpectedConcreteRewardEstimate());
             probSum += child->prob;
 
-            if (child->solved) {
-                solvedSum += child->prob;
-            }
         }
+        /*
+        if (child&& node->equivalenceClassPos!=-1) {
+            SearchNode::qvalueMean[node->equivalenceClassPos-1] +=
+                    (child->prob * child->getExpectedAbstractRewardEstimate());
+           // probSum += child->prob;
+            //sollte ja nicht doppelt hochgezählt werden
+
+        }*/
+
     }
 
     node->futureReward /= probSum;

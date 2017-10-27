@@ -90,11 +90,11 @@ int ActionSelection::selectAction(SearchNode* node) {
     if ((thts->getCurrentRootNode()->stepsToGo == SearchEngine::horizon) &&
         (node == thts->getCurrentRootNode())) {
         double bestValue =
-            node->children[selectedIndex]->getExpectedRewardEstimate();
+            node->children[selectedIndex]->getExpectedAbstractRewardEstimate();
 
         for (SearchNode* child : node->children) {
             if (child && MathUtils::doubleIsGreater(
-                             child->getExpectedRewardEstimate(), bestValue)) {
+                             child->getExpectedAbstractRewardEstimate(), bestValue)) {
                 ++exploreInRoot;
                 return selectedIndex;
             }
@@ -113,15 +113,15 @@ inline void ActionSelection::selectGreedyAction(SearchNode* node) {
         if (node->children[childIndex] &&
             node->children[childIndex]->initialized) {
             if (MathUtils::doubleIsGreater(
-                    node->children[childIndex]->getExpectedRewardEstimate(),
+                    node->children[childIndex]->getExpectedAbstractRewardEstimate(),
                     bestValue)) {
                 bestActionIndices.clear();
                 bestActionIndices.push_back(childIndex);
                 bestValue =
-                    node->children[childIndex]->getExpectedRewardEstimate();
+                    node->children[childIndex]->getExpectedAbstractRewardEstimate();
             } else if (MathUtils::doubleIsEqual(
                            node->children[childIndex]
-                               ->getExpectedRewardEstimate(),
+                               ->getExpectedAbstractRewardEstimate(),
                            bestValue)) {
                 bestActionIndices.push_back(childIndex);
             }
@@ -199,13 +199,13 @@ void UCB1ActionSelection::_selectAction(SearchNode* node) {
     double magicConstant;
 
     if (MathUtils::doubleIsMinusInfinity(
-            node->getExpectedFutureRewardEstimate()) ||
-        MathUtils::doubleIsEqual(node->getExpectedFutureRewardEstimate(),
+            node->getExpectedAbstractFutureRewardEstimate()) ||
+        MathUtils::doubleIsEqual(node->getExpectedAbstractRewardEstimate(),
                                  0.0)) {
         magicConstant = 100.0;
     } else {
         magicConstant = magicConstantScaleFactor *
-                        std::abs(node->getExpectedFutureRewardEstimate());
+                        std::abs(node->getExpectedAbstractFutureRewardEstimate());
     }
     assert(node->numberOfVisits > 0);
 
@@ -242,7 +242,7 @@ void UCB1ActionSelection::_selectAction(SearchNode* node) {
                           (double)node->children[childIndex]->numberOfVisits);
 
             double UCTValue =
-                node->children[childIndex]->getExpectedRewardEstimate() +
+                node->children[childIndex]->getExpectedAbstractRewardEstimate() +
                 visitPart;
 
 

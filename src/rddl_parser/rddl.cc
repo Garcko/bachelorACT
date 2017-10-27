@@ -328,9 +328,9 @@ void RDDLTask::print(std::ostream& out) {
            "lock was found during task analysis"
         << std::endl;
     out << rewardLockDetected << std::endl;
-    out << "## 1 if an unreasonable action was detected" << std::endl;
+    out << "## 0" << std::endl;  //  out << "## 1 if an unreasonable action was detected" << std::endl;
     out << unreasonableActionDetected << std::endl;
-    out << "## 1 if an unreasonable action was detected in the determinization"
+    out << "## 0" //out << "## 1 if an unreasonable action was detected in the determinization"
         << std::endl;
     out << unreasonableActionInDeterminizationDetected << std::endl;
 
