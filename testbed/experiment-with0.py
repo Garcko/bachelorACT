@@ -39,27 +39,27 @@ benchmark="ippc-0"
 # The search engine configurations that are started in this experiment
 # (each of these is run on each instance in the benchmark folder)
 configs = [
-       "IPPC2011 -uf 2.0",                                         # The configuration that participated at IPPC 2011
+       "IPPC2011 -uf 2.0 -t 0.5",                                         # The configuration that participated at IPPC 2011
    # "IPPC2014 -uf 2.0",                                         # The configuration that participated at IPPC 2014 
-    "IPPC2011 -uf 0.11",                                         # The configuration that participated at IPPC 2014 with ASAP                    
-    "IPPC2011 -uf 0.21",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "IPPC2011 -uf 0.51",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "IPPC2011 -uf 0.75",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "UCT -init [Single -h [RandomWalk]] -uf 2.0",    
-    "UCT -init [Single -h [RandomWalk]] -uf 0.11" ,
-    "UCT -init [Single -h [RandomWalk]] -uf 0.21",
-    "UCT -init [Single -h [RandomWalk]] -uf 0.51",
-    "UCT -init [Single -h [RandomWalk]] -uf 0.75",
-     "UCT -init [Single -h [RandomWalk]] -uf 2.0 -ndn H",    
-    "UCT -init [Single -h [RandomWalk]] -uf 0.11 -ndn H" ,
-    "UCT -init [Single -h [RandomWalk]] -uf 0.21 -ndn H",
-    "UCT -init [Single -h [RandomWalk]] -uf 0.51 -ndn H",
-    "UCT -init [Single -h [RandomWalk]] -uf 0.75 -ndn H",
-    "IPPC2011 -uf 2.0 -ndn H",                                         # The configuration that participated at IPPC 2014 
-    "IPPC2011 -uf 0.11 -ndn H",                                         # The configuration that participated at IPPC 2014 with ASAP                    
-    "IPPC2011 -uf 0.21 -ndn H",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "IPPC2011 -uf 0.51 -ndn H",                                         # The configuration that participated at IPPC 2014 with ASAP
-    "IPPC2011 -uf 0.75 -ndn H"
+    "IPPC2011 -uf 0.11 -t 0.5",                                         # The configuration that participated at IPPC 2014 with ASAP                    
+    "IPPC2011 -uf 0.21 -t 0.5",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2011 -uf 0.41 -t 0.5",                                         # The configuration that participated at IPPC 2014 with ASAP
+    #"IPPC2011 -uf 0.75",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "UCT -init [Single -h [RandomWalk]] -uf 2.0 -t 0.5",    
+    "UCT -init [Single -h [RandomWalk]] -uf 0.11 -t 0.5" ,
+    "UCT -init [Single -h [RandomWalk]] -uf 0.21 -t 0.5",
+    "UCT -init [Single -h [RandomWalk]] -uf 0.41 -t 0.5",
+    #"UCT -init [Single -h [RandomWalk]] -uf 0.75",
+     "UCT -init [Single -h [RandomWalk]] -uf 2.0 -ndn H -t 0.5",    
+    "UCT -init [Single -h [RandomWalk]] -uf 0.11 -ndn H -t 0.5" ,
+    "UCT -init [Single -h [RandomWalk]] -uf 0.21 -ndn H -t 0.5",
+    "UCT -init [Single -h [RandomWalk]] -uf 0.41 -ndn H -t 0.5",
+   # "UCT -init [Single -h [RandomWalk]] -uf 0.75 -ndn H",
+    "IPPC2011 -uf 2.0 -ndn H -t 0.5",                                         # The configuration that participated at IPPC 2014 
+    "IPPC2011 -uf 0.11 -ndn H -t 0.5",                                         # The configuration that participated at IPPC 2014 with ASAP                    
+    "IPPC2011 -uf 0.21 -ndn H -t 0.5",                                         # The configuration that participated at IPPC 2014 with ASAP
+    "IPPC2011 -uf 0.41 -ndn H -t 0.5",                                         # The configuration that participated at IPPC 2014 with ASAP
+    #"IPPC2011 -uf 0.75 -ndn H -t 0.5"
 ]
 
 # The number of runs (30 in competition, should be higher (>=100) for
@@ -67,7 +67,7 @@ configs = [
 numRuns = "30"
 
 # The current revision (used for appropriate naming only)
-revision = "rev81553b56046366d1fce"
+revision = "revcc04858a2ea1454e_with0"
 
 # The timeout per task in hh:mm:ss
 timeout = "1-00:00:00"

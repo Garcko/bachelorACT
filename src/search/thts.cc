@@ -838,6 +838,7 @@ void THTS::generateEquivalenceClass() {
     specialChildren.clear();
     childrenEQprob.clear();
 
+
     // int test=0;
     for (SearchNode *const currentNode : pq) {
         // std::cout << "current node steps to go are   "<<currentNode->stepsToGo<<" and is a ChanceNode "<<currentNode->isChanceNode<<std::endl;
@@ -867,6 +868,7 @@ void THTS::generateEquivalenceClass() {
                qvalueSum.push_back(currentNode->immediateReward + currentNode->futureReward);
 
             } else {
+                //old leaf therefore save it and update EQ class
                 currentNode->equivalenceClassPos = leaveEQCLass;
                 assert(numberOfEQclasses > 0);
                // assert(qvalueOfEQ.size() == numberOfEQclasses);
@@ -878,7 +880,7 @@ void THTS::generateEquivalenceClass() {
 
             }
         }
-            //new level , declare new EQ class, clear current nodes on level and  save the children map into the vector
+            //not a leaf but new level , declare new EQ class, clear current nodes on level and  save the children map into the vector
         else if (currentLevel != currentNode->stepsToGo || currentIsChanceNode != currentNode->isChanceNode) {
 
             currentIsChanceNode = currentNode->isChanceNode;
@@ -892,7 +894,7 @@ void THTS::generateEquivalenceClass() {
             currentNode->equivalenceClassPos = numberOfEQclasses;
 
             if(currentNode->isChanceNode){
-                vectorChildrenOnLevel.push_back(makeEQpairsforChanceNodes(currentNode));  // make children can different between chance and decision node
+                vectorChildrenOnLevel.push_back(makeEQpairsforChanceNodes(currentNode));
             }else{
                 vectorChildrenOnLevel.push_back(makeEQpairsforDecisionNodes(currentNode));  // make children can different between chance and decision node
 
@@ -904,10 +906,10 @@ void THTS::generateEquivalenceClass() {
 
             //std::cout <<"------------make new childrenmap vector , number of EQs is "<<numberOfEQclasses<<"// node stepstogo"<<currentNode->stepsToGo<< std::endl;
 
-
+//same level not leaf
         } else {
             //  std::cout <<"------------make children old level"<<currentLevel<<"// node stepstogo"<<currentNode->stepsToGo<< std::endl;
-            currentChildrenVector.clear();
+            currentChildrenVector.clear();  //saves either EQ and prob or EQ and anzahl
 
             if(currentNode->isChanceNode){
                 currentChildrenVector=makeEQpairsforChanceNodes(currentNode);
@@ -916,16 +918,16 @@ void THTS::generateEquivalenceClass() {
             }
 
             // check the children maps of the other nodes on the same level , if there is a match
-            //std::cout <<"compare vector  " <<currentNode->stepsToGo<< std::endl;
             isSameEQClass = false;
+
             for (auto &c:vectorChildrenOnLevel) {
                 if (c.size() == currentChildrenVector.size()) {
                     isSameEQClass = true;
 
 
-                    for(auto it=currentChildrenVector.begin();it !=currentChildrenVector.end()-1;++it) {
+                    for(auto it=currentChildrenVector.begin();it !=currentChildrenVector.end();++it) {
                         isSameEQandProb = false;
-                        for (auto child = c.begin(); child != c.end()-1; ++child) {
+                        for (auto child = c.begin(); child != c.end(); ++child) {
                             if (child->first == it->first && child->second == it->second) {
                                 isSameEQandProb = true;
                                 break;
@@ -978,9 +980,11 @@ void THTS::generateEquivalenceClass() {
         }
 
     }
+
     std::cout <<"before makeQmean " <<numberOfEQclasses <<" classes "<<std::endl;
     makeQmean();    //here the vector is generated for the Qmean with vector qsum and qnumberofEqclass
     //std::cout <<"finished generating there are " <<numberOfEQclasses <<"classes "<<std::endl;
+
 }
 
 
@@ -1091,5 +1095,6 @@ void THTS::makeQmean() {
         //std::cout <<"and it's size (number of classes in it)  " <<qvalueNumbersOfEQClasses[i]<<std::endl;
         SearchNode::qvalueMean.push_back(qvalueOfEQ[i].first / qvalueOfEQ[i].second);
     }*/
+
 
 }
