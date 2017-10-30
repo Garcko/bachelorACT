@@ -39,14 +39,14 @@ benchmark="ippc-all"
 # The search engine configurations that are started in this experiment
 # (each of these is run on each instance in the benchmark folder)
 configs = [
-    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] uf 0.126 -t 0.5",
-    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] uf 0.251 -t 0.5",
-    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] uf 0.375 -t 0.5",
-    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] uf 2.0 -t 0.5",
-    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] uf 0.126 -t 0.5 -ndn H",
-    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] uf 0.251 -t 0.5 -ndn H",
-    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] uf 0.375 -t 0.5 -ndn H",
-    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] uf 2.0 -t 0.5 -ndn H"
+    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] -uf 0.126 -t 0.5",
+    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] -uf 0.251 -t 0.5",
+    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] -uf 0.375 -t 0.5",
+    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] -uf 2.0 -t 0.5",
+    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] -uf 0.126 -t 0.5 -ndn H",
+    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] -uf 0.251 -t 0.5 -ndn H",
+    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] -uf 0.375 -t 0.5 -ndn H",
+    "THTS -act [UCB1] -out [MC] -backup [MC] -init [Expand -h [IDS]] -uf 2.0 -t 0.5 -ndn H"
     #"IPPC2011 -uf 0.75",                                         # The configuration that participated at IPPC 2014 with ASAP
    # "UCT -init [Single -h [RandomWalk]] -uf 2.0 -t 0.5",    
    # "UCT -init [Single -h [RandomWalk]] -uf 0.11 -t 0.5" ,
